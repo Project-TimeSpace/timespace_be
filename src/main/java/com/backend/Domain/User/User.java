@@ -20,7 +20,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "유저 고유 ID", example = "1")
-    private Integer id;
+    private Long id;
 
     @Column(name = "user_name", nullable = false, length = 50)
     @Schema(description = "사용자 이름", example = "홍길동")

@@ -16,6 +16,14 @@ CREATE TABLE `User` (
     created_at    DATETIME     DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
+CREATE TABLE RefreshToken (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL UNIQUE,
+    token VARCHAR(500) NOT NULL,
+    expiry_date DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES `User`(id) ON DELETE CASCADE
+);
+
 CREATE TABLE SingleSchedule (
     id          BIGINT       AUTO_INCREMENT PRIMARY KEY,
     user_id     BIGINT       NOT NULL,

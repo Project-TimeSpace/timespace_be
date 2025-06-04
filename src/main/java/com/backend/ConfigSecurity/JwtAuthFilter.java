@@ -35,6 +35,7 @@ public class JwtAuthFilter extends OncePerRequestFilter{
                 path.startsWith("/auth/success");
     }
 
+    // Spring이 자동으로 호출하는 Filter. SecurityConfig에 등록해서 씀
     // 요청마다 JWT 토큰을 꺼내서 검증하고, 인증 객체(SecurityContext)에 등록함.
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -45,19 +46,18 @@ public class JwtAuthFilter extends OncePerRequestFilter{
         if (token != null) {
             try {
                 if (!jwtTokenProvider.validateToken(token)) {
-                    Integer userId = jwtTokenProvider.getIdFromToken(token);
+                    Long userId = jwtTokenProvider.getIdFromToken(token);
                     String userType = jwtTokenProvider.getTypeFromToken(token);
                     String newToken = jwtTokenProvider.createToken(userId, userType);
                     response.setHeader("Authorization", "Bearer " + newToken);
                     token = newToken;
                 }
 
-                Integer userId = jwtTokenProvider.getIdFromToken(token);
+                Long userId = jwtTokenProvider.getIdFromToken(token);
                 String userType = jwtTokenProvider.getTypeFromToken(token);
 
                 UserDetails userDetails;
                 userDetails = userDetailsService.loadUserByUsername(String.valueOf(userId));
-
 
                 // 4) 권한 리스트 생성 ("Manager" 또는 "User")
                 List<GrantedAuthority> authorities;

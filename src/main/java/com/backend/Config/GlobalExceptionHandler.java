@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     // IllegalArgumentException, NoSuchElementException 은 400 Bad Request 로 응답
-    @ExceptionHandler({ IllegalArgumentException.class, NoSuchElementException.class })
+    @ExceptionHandler({ IllegalArgumentException.class, NoSuchElementException.class, RuntimeException.class })
     public ResponseEntity<String> handleBadRequest(Exception e) {
         return ResponseEntity
                 .badRequest()

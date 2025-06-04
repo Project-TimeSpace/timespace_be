@@ -1,12 +1,15 @@
 package com.backend.Domain.Login;
 
 import com.backend.ConfigSecurity.JwtTokenProvider;
+import com.backend.ConfigSecurity.RefreshToken.RefreshToken;
+import com.backend.ConfigSecurity.RefreshToken.RefreshTokenService;
 import com.backend.Domain.User.User;
 import com.backend.Domain.User.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -27,6 +30,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenService refreshTokenService;
 
     public void register(RegisterRequestDto request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -43,7 +47,6 @@ public class AuthService {
 
         userRepository.save(user);
     }
-
 
     public LoginResponseDto login(String email, String password) {
         // 1) Admin 먼저 조회
@@ -68,7 +71,36 @@ public class AuthService {
 
         //visitLogService.logVisit(user.getId());
         String token = jwtTokenProvider.createToken(user.getId(), "user");
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(), "user");
+
+        LocalDateTime expiryDate = LocalDateTime.now().plusDays(3);
+        refreshTokenService.saveOrUpdateToken(user, refreshToken, expiryDate);
         return new LoginResponseDto(token, "user");
+    }
+
+    public String reissueAccessToken(String refreshTokenValue) {
+        // 1) 저장된 RefreshToken 조회
+        RefreshToken refreshToken = refreshTokenService.getByToken(refreshTokenValue);
+
+        // 2) 만료 여부 확인
+        if (refreshToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Refresh token expired");
+        }
+
+        // 3) User 정보로부터 ID와 역할 가져오기
+        User user = refreshToken.getUser();
+        Long userId = user.getId();
+        String role = "user"; // 필요한 경우 User 엔티티에서 실제 역할을 가져오도록 변경
+
+        // 4) AccessToken 재발급 (ID, 역할 전달)
+        return jwtTokenProvider.createToken(userId, role);
+    }
+
+
+    public void logout(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        refreshTokenService.deleteByUser(user);
     }
 
 

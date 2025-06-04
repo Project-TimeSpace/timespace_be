@@ -29,6 +29,7 @@ public class JwtTokenProvider {
     private final Key secretKey;
     private final long tokenValidity = 1000L * 60 * 90 * 4; // 유효시간 60분
     private final long refreshThreshold = 1000L * 60 * 30; // 10분 이하 시 갱신
+    private final long refreshTokenValidityInMs = 3 * 24 * 60 * 60 * 1000L; // 리프레시 토큰 유효 3일
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secret,
@@ -38,7 +39,7 @@ public class JwtTokenProvider {
     }
 
     // JWT 토큰 생성
-    public String createToken(Integer id, String type) {
+    public String createToken(Long id, String type) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + tokenValidity);
 
@@ -48,6 +49,18 @@ public class JwtTokenProvider {
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(secretKey)
+                .compact();
+    }
+    public String createRefreshToken(Long id, String role) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + refreshTokenValidityInMs);
+
+        return Jwts.builder()
+                .setSubject(String.valueOf(id))
+                .claim("type", role)      // RefreshToken에도 동일한 키("type")로 역할 정보 삽입
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -62,14 +75,14 @@ public class JwtTokenProvider {
     }
 
     // 토큰에서 ID 추출
-    public Integer getIdFromToken(String token) {
+    public Long getIdFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+        return Long.valueOf(claims.getSubject());
 
-        return Integer.valueOf(claims.getSubject());
     }
 
     // 토큰에서 User인지 Admin인지 구분

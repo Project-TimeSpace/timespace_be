@@ -3,11 +3,15 @@ package com.backend.Domain.Login;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
+import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,43 +22,64 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/v1/auth")
 @RequiredArgsConstructor
-@Tag(name = "0. AuthController")
+@Tag(name = "1. AuthController")
 public class AuthController {
+
+     /*
+     1. test API 호출: 인증 및 DB 연동 확인용
+     2. 회원가입: 이메일·비밀번호 기반 회원 생성
+     3. 로그인: 이메일·비밀번호 검증 후 AccessToken 및 RefreshToken 발급
+     4. 재발급: RefreshToken 검증 후 새로운 AccessToken 발급
+     5. 로그아웃: 현재 사용자의 RefreshToken 삭제
+     6. 인증코드 발송: 이메일로 인증코드 전송
+     7. 인증코드 확인: 이메일과 코드 일치 여부 검증
+     8. 비밀번호 재설정: 인증코드 검증 후 새로운 비밀번호 저장
+     */
+
     private final AuthService authService;
 
-    @Operation(summary = "test API 호출", description = "test 용입니다.")
+    @Operation(summary = "테스트 API", description = "인증 및 서버 연결 확인용")
     @GetMapping("/test")
     public ResponseEntity<String> test() {
         return ResponseEntity.ok("test success");
     }
 
+    @Operation(summary = "회원가입", description = "이메일과 비밀번호를 받아 새로운 회원을 등록합니다.")
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterRequestDto request) {
         authService.register(request);
         return ResponseEntity.ok("Register Success");
     }
 
-
-    @Operation(summary = "공통 로그인", description = "Manager 또는 User 이메일로 로그인합니다.")
+    @Operation(summary = "로그인", description = "사용자 이메일과 비밀번호를 검증하여 AccessToken과 RefreshToken을 발급합니다.")
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto requestDto) {
-        try {
-            LoginResponseDto response = authService.login(requestDto.getEmail(), requestDto.getPassword());
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException | UsernameNotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("서버 오류");
-        }
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto requestDto) {
+        LoginResponseDto response = authService.login(requestDto.getEmail(), requestDto.getPassword());
+        return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "AccessToken 재발급", description = "유효한 RefreshToken을 받아 새로운 AccessToken을 발급합니다.")
+    @PostMapping("/reissue")
+    public ResponseEntity<TokenResponseDto> reissue(@RequestBody TokenRequestDto requestDto) {
+        String newAccessToken = authService.reissueAccessToken(requestDto.getRefreshToken());
+        return ResponseEntity.ok(new TokenResponseDto(newAccessToken));
+    }
 
+    @Operation(summary = "로그아웃", description = "현재 사용자의 RefreshToken을 삭제하여 세션을 만료시킵니다.")
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@AuthenticationPrincipal UserDetails userDetails) {
+        authService.logout(userDetails.getUsername());
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "인증코드 발송", description = "입력된 이메일로 인증코드를 전송합니다.")
     @PostMapping("/send-verification-code")
     public ResponseEntity<String> sendVerification(@RequestBody EmailRequestDto dto) throws MessagingException {
         authService.sendAuthEmail(dto.getEmail());
         return ResponseEntity.ok("인증코드 발송 완료");
     }
 
+    @Operation(summary = "인증코드 검증", description = "이메일과 인증코드를 받아 일치 여부를 검증합니다.")
     @PostMapping("/verify-code")
     public ResponseEntity<String> verifyCode(@RequestBody EmailVerifyDto dto) {
         boolean result = authService.verifyEmailCode(dto.getEmail(), dto.getCode());
@@ -65,6 +90,7 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "비밀번호 재설정", description = "이메일과 인증코드를 검증한 후 새로운 비밀번호로 업데이트합니다.")
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody PasswordResetRequestDto dto) {
         boolean verified = authService.verifyEmailCode(dto.getEmail(), dto.getCode());
@@ -96,4 +122,15 @@ public class AuthController {
         private String code;
         private String newPassword;
     }
+
+    @Getter @Setter
+    public static class TokenRequestDto {
+        private String refreshToken;
+    }
+
+    @Getter @Setter @AllArgsConstructor
+    public static class TokenResponseDto {
+        private String accessToken;
+    }
+
 }

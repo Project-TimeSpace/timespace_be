@@ -18,13 +18,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
 
         // 2) 일반 사용자 조회
-        User user = userRepository.findById(Integer.parseInt(id))
+        User user = userRepository.findById(Long.parseLong(id))
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 사용자입니다: " + id));
 
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getId().toString())
                 .password(user.getPassword())
-                .roles("User")                     // 권한 부여
+                .roles("User")  // 권한 부여
                 .build();
     }
 }

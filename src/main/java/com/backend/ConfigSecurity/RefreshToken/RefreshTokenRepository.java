@@ -1,6 +1,6 @@
 package com.backend.ConfigSecurity.RefreshToken;
 
-import com.backend.Domain.User.User;
+import com.backend.User.Entity.User;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

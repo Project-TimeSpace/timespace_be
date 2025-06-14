@@ -1,7 +1,7 @@
 package com.backend.ConfigSecurity;
 
-import com.backend.Domain.User.User;
-import com.backend.Domain.User.UserRepository;
+import com.backend.User.Entity.User;
+import com.backend.User.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

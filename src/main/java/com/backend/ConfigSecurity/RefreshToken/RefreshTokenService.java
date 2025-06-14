@@ -1,6 +1,6 @@
 package com.backend.ConfigSecurity.RefreshToken;
 
-import com.backend.Domain.User.User;
+import com.backend.User.Entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

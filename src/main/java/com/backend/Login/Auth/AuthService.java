@@ -1,10 +1,12 @@
-package com.backend.Domain.Login;
+package com.backend.Login.Auth;
 
 import com.backend.ConfigSecurity.JwtTokenProvider;
 import com.backend.ConfigSecurity.RefreshToken.RefreshToken;
 import com.backend.ConfigSecurity.RefreshToken.RefreshTokenService;
-import com.backend.Domain.User.User;
-import com.backend.Domain.User.UserRepository;
+import com.backend.Login.Dto.LoginResponseDto;
+import com.backend.Login.Dto.RegisterRequestDto;
+import com.backend.User.Entity.User;
+import com.backend.User.Repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;

@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS timespace;
+CREATE DATABASE IF NOT EXISTS timespace DEFAULT CHARACTER SET  utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE timespace;
 
 CREATE TABLE `User` (
@@ -9,7 +9,6 @@ CREATE TABLE `User` (
     university    VARCHAR(50),
     major         VARCHAR(50),
     phone_number  VARCHAR(20),
-    kakao_id      VARCHAR(30),
     max_friend    INT          NOT NULL DEFAULT 50,
     max_group     INT          NOT NULL DEFAULT 10,
     self_memo     VARCHAR(100),
@@ -22,7 +21,17 @@ CREATE TABLE RefreshToken (
     token VARCHAR(500) NOT NULL,
     expiry_date DATETIME NOT NULL,
     FOREIGN KEY (user_id) REFERENCES `User`(id) ON DELETE CASCADE
-);
+) ENGINE=InnoDB;
+
+CREATE TABLE SocialAccount (
+    id                 BIGINT       AUTO_INCREMENT PRIMARY KEY,
+    user_id            BIGINT       NOT NULL,
+    provider           VARCHAR(30)  NOT NULL,  -- 'kakao', 'google', 'naver' 등
+    provider_user_id   VARCHAR(100) NOT NULL,  -- 해당 소셜 공급자의 고유 사용자 ID
+    connected_at       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE INDEX uq_social_account (provider, provider_user_id),
+    FOREIGN KEY (user_id) REFERENCES `User`(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
 
 CREATE TABLE SingleSchedule (
     id          BIGINT       AUTO_INCREMENT PRIMARY KEY,
@@ -43,7 +52,7 @@ CREATE TABLE RepeatSchedule (
     color          VARCHAR(7),
     start_date     DATE         NOT NULL,
     end_date       DATE         NOT NULL,
-    repeat_days    TINYINT,
+    repeat_days    TINYINT      NOT NULL,
     start_time     TIME         NOT NULL,
     end_time       TIME         NOT NULL,
     FOREIGN KEY (user_id) REFERENCES `User`(id) ON DELETE CASCADE
@@ -107,14 +116,14 @@ CREATE TABLE `Group` (
 CREATE TABLE GroupRequest (
     id            BIGINT       AUTO_INCREMENT PRIMARY KEY,
     group_id      BIGINT       NOT NULL,
-    inviter_id    BIGINT,
+    inviter_id    BIGINT       NOT NULL,
     receiver_id   BIGINT       NOT NULL,
     status        VARCHAR(30) NOT NULL,
     requested_at  DATETIME     DEFAULT CURRENT_TIMESTAMP,
     responded_at  DATETIME,
     UNIQUE KEY uq_group_receiver (group_id, receiver_id),
     FOREIGN KEY (group_id) REFERENCES `Group`(id) ON DELETE CASCADE,
-    FOREIGN KEY (inviter_id) REFERENCES `User`(id) ON DELETE SET NULL,
+    FOREIGN KEY (inviter_id) REFERENCES `User`(id) ON DELETE CASCADE,
     FOREIGN KEY (receiver_id) REFERENCES `User`(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
@@ -174,6 +183,7 @@ CREATE TABLE VisitLog (
     created_at DATETIME     DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES `User`(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
 
 -- Index Definitions
 CREATE INDEX idx_ss_user_date     ON SingleSchedule (user_id, date);

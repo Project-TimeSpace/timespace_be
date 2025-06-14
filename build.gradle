@@ -25,6 +25,7 @@ dependencies {
 	// 2. Spring Security 관련
 	implementation 'org.springframework.boot:spring-boot-starter-security' // 스프링 시큐리티 기본 설정 (인증/인가)
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // Google, Kakao 등 OAuth2 로그인 클라이언트용
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
 	// 2-1. JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'

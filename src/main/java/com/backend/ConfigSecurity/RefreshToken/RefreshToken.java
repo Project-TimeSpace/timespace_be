@@ -1,6 +1,6 @@
 package com.backend.ConfigSecurity.RefreshToken;
 
-import com.backend.Domain.User.User;
+import com.backend.User.Entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

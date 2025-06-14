@@ -1,4 +1,4 @@
-package com.backend.Domain.User;
+package com.backend.User.Entity;
 
 
 

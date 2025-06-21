@@ -1,4 +1,4 @@
-package com.backend.UserSchedule.Entity;
+package com.backend.User.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,4 +22,5 @@ public class RepeatException {
     @Column(name = "exception_date", nullable = false)
     @Schema(description = "예외 발생 일자", example = "2025-06-07")
     private LocalDate exceptionDate;
+
 }

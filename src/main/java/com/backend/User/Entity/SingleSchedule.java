@@ -1,6 +1,5 @@
-package com.backend.UserSchedule.Entity;
+package com.backend.User.Entity;
 
-import com.backend.User.Entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,17 +24,16 @@ public class SingleSchedule {
     @Schema(description = "일정 제목", example = "회의")
     private String title;
 
-    @Column(length = 7)
-    @Schema(description = "일정 표시 색상(HEX)", example = "#ff0000")
-    private String color;
+    @Schema(description = "일정 표시 색상-정수로 저장하고 Enum으로 매핑", example = "1:RED:HEX")
+    private Integer color;
 
     @Column(nullable = false)
     @Schema(description = "일정 날짜", example = "2025-06-14")
     private LocalDate date;
 
     @Column(nullable = false)
-    @Schema(description = "요일(0=일요일~6=토요일)", example = "0")
-    private Byte day;
+    @Schema(description = "요일(1=월요일~7=일요일)", example = "0")
+    private Integer day;
 
     @Column(name = "start_time", nullable = false)
     @Schema(description = "시작 시간", example = "09:00:00")

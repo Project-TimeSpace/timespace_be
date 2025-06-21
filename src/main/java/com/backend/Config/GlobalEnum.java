@@ -37,6 +37,20 @@ public class GlobalEnum {
         public String getHex() {
             return hex;
         }
+
+        /**
+         * 정수 코드를 받아서 대응되는 ScheduleColor를 반환합니다.
+         * @param code 0=RED, 1=ORANGE, …, 6=PURPLE
+         * @return ScheduleColor
+         * @throws IllegalArgumentException 코드가 0~6 범위를 벗어나면 예외 발생
+         */
+        public static ScheduleColor fromCode(int code) {
+            ScheduleColor[] values = ScheduleColor.values();
+            if (code < 0 || code >= values.length) {
+                throw new IllegalArgumentException("유효하지 않은 color 코드: " + code);
+            }
+            return values[code];
+        }
     }
 
     // 3-2. 요일 (DB에서는 TINYINT로 저장, 1=Monday ~ 7=Sunday)

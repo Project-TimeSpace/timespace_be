@@ -1,5 +1,7 @@
 package com.backend.Friend.Entity;
 
+import com.backend.Config.GlobalEnum;
+import com.backend.Config.GlobalEnum.RequestStatus;
 import com.backend.User.Entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,7 +29,7 @@ public class FriendRequest {
 
     @Column(nullable = false, length = 30)
     @Schema(description = "요청 상태", example = "PENDING")
-    private String status;
+    private GlobalEnum.RequestStatus status;
 
     @Column(name = "requested_at")
     @Schema(description = "요청 일시", example = "2025-06-01T12:00:00")

@@ -1,5 +1,6 @@
 package com.backend.Friend.Entity;
 
+import com.backend.Config.GlobalEnum.Visibility;
 import com.backend.User.Entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,9 +30,11 @@ public class Friend {
     @Schema(description = "즐겨찾기 여부", example = "false")
     private Boolean isFavorite;
 
-    @Column(name = "is_visible", nullable = false)
+
+    @Enumerated(EnumType.STRING)
     @Schema(description = "친구 표시 여부", example = "true")
-    private Boolean isVisible;
+    @Column(name = "visibility", nullable = false, length = 10)
+    private Visibility visibility;
 
     @Column(length = 50)
     @Schema(description = "친구 별칭", example = "길동이")

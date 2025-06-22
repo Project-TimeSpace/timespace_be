@@ -97,5 +97,47 @@ public class GlobalEnum {
         GROUP_SCHEDULE,
         SYSTEM_NOTICE
     }
+
+    public enum ScheduleCategory {
+        NORMAL(1),
+        FRIEND(2),
+        TEAMPLAY(3),
+        CLUB(4),
+        SCHOOL(5);
+
+        private final int code;
+
+        ScheduleCategory(int code) {
+            this.code = code;
+        }
+
+        /**
+         * 숫자 코드 반환
+         */
+        public ScheduleCategory getCode() {
+            return ScheduleCategory.fromCode(code);
+        }
+
+        /** 코드 → enum 매핑 */
+        public static ScheduleCategory fromCode(int code) {
+            for (ScheduleCategory c : values()) {
+                if (c.code == code) return c;
+            }
+            throw new IllegalArgumentException("유효하지 않은 ScheduleCategory 코드: " + code);
+        }
+    }
+
+    public enum Visibility {
+        ALL,     // 전체 일정 공개
+        SIMPLE,  // 날짜와 시간만 간략 공개
+        SECRET   // 비공개
+    }
+
+    public enum SortOption {
+        NAME_ASC,       // 닉네임 가나다순
+        NAME_DESC,      // 닉네임 역순
+        CREATED_ASC,    // 친구 맺은 순서: 오래된 순서
+        CREATED_DESC    // 친구 맺은 순서: 최신 순서
+    }
 }
 

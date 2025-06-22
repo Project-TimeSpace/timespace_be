@@ -7,7 +7,6 @@ import com.backend.User.Service.UserScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,7 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/users/schedules")
+@RequestMapping("/v1/userschedule")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('User')")
 public class UserScheduleController {
@@ -45,8 +44,7 @@ public class UserScheduleController {
             description = "지정된 날짜 범위 내의 단일 및 반복 일정을 조회합니다. YYYY-MM-DD 형식 사용.")
     @GetMapping("/range")
     public ResponseEntity<List<UserScheduleDto>> getSchedulesByPeriod(@AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam String startDate,
-            @RequestParam String endDate) {
+            @RequestParam String startDate, @RequestParam String endDate) {
         Long userId = Long.parseLong(userDetails.getUsername());
 
         // 1) 단일, 반복 일정 조회
@@ -68,7 +66,7 @@ public class UserScheduleController {
     }
 
     // 3. 일정 추가 : 단일 일정 또는 반복 일정을 생성합니다.
-    @Operation(summary = "단일 일정 추가", description = "단일 일정을 생성합니다.")
+    @Operation(summary = "3-1.단일 일정 추가", description = "단일 일정을 생성합니다.")
     @PostMapping("/single")
     public ResponseEntity<String> createSingle(@AuthenticationPrincipal UserDetails userDetails, @RequestBody CreateSingleScheduleDto dto) {
         Long userId = Long.parseLong(userDetails.getUsername());
@@ -93,7 +91,7 @@ public class UserScheduleController {
         return ResponseEntity.ok("단일 일정이 성공적으로 수정되었습니다.");
     }
 
-    @Operation(summary = "단일 일정 삭제", description = "단일 스케줄 ID를 받아 해당 일정을 삭제합니다.")
+    @Operation(summary = "5-1.단일 일정 삭제", description = "단일 스케줄 ID를 받아 해당 일정을 삭제합니다.")
     @DeleteMapping("/single/{id}")
     public ResponseEntity<String> deleteSingle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         Long userId = Long.parseLong(userDetails.getUsername());
@@ -101,7 +99,7 @@ public class UserScheduleController {
         return ResponseEntity.ok("단일 일정이 성공적으로 삭제되었습니다.");
     }
 
-    @Operation(summary = "반복 일정 특정 날짜 삭제", description = "반복 스케줄 ID와 date(YYYY-MM-DD)를 받아 해당 날짜만 예외(삭제) 처리합니다.")
+    @Operation(summary = "5-2.반복 일정 특정 날짜 삭제", description = "반복 스케줄 ID와 date(YYYY-MM-DD)를 받아 해당 날짜만 예외(삭제) 처리합니다.")
     @DeleteMapping("/repeat/{id}/exception")
     public ResponseEntity<String> deleteRepeatException(@AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long id, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
@@ -110,7 +108,7 @@ public class UserScheduleController {
         return ResponseEntity.ok("해당 날짜 일정이 성공적으로 예외 처리되었습니다.");
     }
 
-    @Operation(summary = "반복 일정 전체 삭제", description = "반복 스케줄 ID를 받아 스케줄 자체를 삭제합니다.")
+    @Operation(summary = "5-2반복 일정 전체 삭제", description = "반복 스케줄 ID를 받아 스케줄 자체를 삭제합니다.")
     @DeleteMapping("/repeat/{id}")
     public ResponseEntity<String> deleteRepeat(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         Long userId = Long.parseLong(userDetails.getUsername());

@@ -1,5 +1,6 @@
 package com.backend.User.Entity;
 
+import com.backend.Config.GlobalEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,6 +27,9 @@ public class SingleSchedule {
 
     @Schema(description = "일정 표시 색상-정수로 저장하고 Enum으로 매핑", example = "1:RED:HEX")
     private Integer color;
+
+    @Column(name = "category", nullable = false)
+    private GlobalEnum.ScheduleCategory category;
 
     @Column(nullable = false)
     @Schema(description = "일정 날짜", example = "2025-06-14")

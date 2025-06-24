@@ -24,7 +24,7 @@ public class ScheduleConverge {
 
     //주어진 사용자 멤버들의 일정을 SweepLine 알고리즘으로 병합하여 반환
     public List<ConvergedScheduleDto> convergeSchedules(List<Long> members, String startDate, String endDate) {
-        long teststart = System.nanoTime();
+        //long teststart = System.nanoTime();
         // 1) 초기 배열 설정
         List<ConvergedScheduleDto> initialSchedules = new ArrayList<>();
 
@@ -168,8 +168,8 @@ public class ScheduleConverge {
             System.out.println(sch);
         }
         */
-        long testend   = System.nanoTime();
-        System.out.printf("convergeSchedules took %d μs%n", (testend - teststart) / 1_000);
+        //long testend   = System.nanoTime();
+        //System.out.printf("convergeSchedules took %d μs%n", (testend - teststart) / 1_000);
         // 리턴 할 때 날짜, 시간 순서의 data가 전달됨
         return result;
     }

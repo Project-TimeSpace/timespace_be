@@ -3,6 +3,7 @@ package com.backend.Friend.Controller;
 
 import com.backend.Config.GlobalEnum;
 import com.backend.Config.GlobalEnum.SortOption;
+import com.backend.Converge.ConvergedScheduleDto;
 import com.backend.Friend.Dto.FriendDto;
 import com.backend.Friend.Dto.FriendRequestReceivedDto;
 import com.backend.Friend.Dto.FriendScheduleRequestDto;
@@ -107,7 +108,7 @@ public class FriendController {
     }
 
     // ---------- Friend Schedule Service ----------------
-    @Operation(summary = "1. 친구 캘린더 조회", description = "특정 친구의 일정을 조회합니다.")
+    @Operation(summary = "1. 친구 캘린더 조회(DTO 형태가 2가지라..부가설명 예정)", description = "특정 친구의 일정을 조회합니다.")
     @GetMapping("/{friendId}/calendar")
     public ResponseEntity<?> friendCalendar(@AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long friendId, @RequestParam String startDate, @RequestParam String endDate) {
@@ -115,5 +116,29 @@ public class FriendController {
         return ResponseEntity.ok(friendScheduleService.getFriendCalendar(userId, friendId, startDate, endDate));
     }
 
-    // 2명의 병합 캘린더 GET API를 만들어야 한다.
+    // 2. 본인과 친구의 일정을 병합 조회
+    @Operation(summary = "2. 친구 캘린더 병합 조회", description = "친구와 본인의 일정을 하나로 병합하여 조회합니다.")
+    @GetMapping("/{friendId}/merge")
+    public ResponseEntity<List<ConvergedScheduleDto>> mergedFriendCalendar(@AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long friendId, @RequestParam String startDate, @RequestParam String endDate) {
+
+        Long userId = Long.parseLong(userDetails.getUsername());
+        List<ConvergedScheduleDto> merged =
+                friendScheduleService.getMergedCalendar(userId, friendId, startDate, endDate);
+        return ResponseEntity.ok(merged);
+    }
+
+    @Operation(summary = "3. 친구에게 약속 신청하기", description = "본인(friend_sender)과 친구(friend_receiver) 사이의 일정 요청을 생성합니다.")
+    @PostMapping("/{friendId}/schedule/request")
+    public ResponseEntity<String> sendScheduleRequest(@AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long friendId, @RequestBody FriendScheduleRequestDto dto) {
+
+        Long userId = Long.parseLong(userDetails.getUsername());
+        friendScheduleService.sendScheduleRequest(userId, friendId, dto);
+        return ResponseEntity.ok("약속을 신청했습니다.");
+    }
+
+    // 4. 상대방이 보낸 약속 수락하기
+
+
 }

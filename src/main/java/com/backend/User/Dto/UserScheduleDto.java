@@ -2,6 +2,8 @@ package com.backend.User.Dto;
 
 import com.backend.Config.GlobalEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,6 +12,7 @@ import java.time.LocalTime;
 
 @Getter
 @Builder
+@AllArgsConstructor(access = AccessLevel.PUBLIC)  // ← 생성자를 public 으로
 @Schema(description = "사용자의 일정 정보를 담은 DTO")
 public class UserScheduleDto {
 
@@ -39,4 +42,7 @@ public class UserScheduleDto {
 
     @Schema(description = "종료 시간 (HH:mm:ss)", example = "10:30:00")
     private LocalTime endTime;
+
+    public UserScheduleDto(LocalDate of, int i, LocalTime of1, LocalTime of2) {
+    }
 }

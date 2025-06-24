@@ -25,7 +25,6 @@ import java.util.List;
 public class FriendService {
 
     private final FriendRepository friendRepository;
-    private final UserScheduleService userScheduleService;
 
     /*
     @Transactional(readOnly = true)
@@ -85,54 +84,39 @@ public class FriendService {
                 .collect(Collectors.toList());
     }
 
-
-    public Friend getFriendRelationOrThrow(Long userId, Long friendId) {
-        return friendRepository.findByUserIdAndFriendId(userId, friendId)
-                .orElseThrow(() -> new IllegalArgumentException("친구 관계가 아닙니다."));
-    }
-
     // 2. 친구 즐겨찾기 설정/해제
     @Transactional
-    public void updateFavorite(Long userId, Long friendId, boolean favorite) {
+    public void updateFavorite(Long userId, Long friendId) {
         Friend relation = friendRepository.findByUserIdAndFriendId(userId, friendId)
                 .orElseThrow(() -> new IllegalArgumentException("친구 관계가 아닙니다."));
-        relation.setIsFavorite(favorite);
+
+        if(relation.getIsFavorite() == true){
+            relation.setIsFavorite(false);
+        }else{
+            relation.setIsFavorite(true);
+        }
+
         friendRepository.save(relation);
     }
 
-    // 3. 내 캘린더 공개범위 변경
+    // 3. 캘린더 공개범위 변경
     @Transactional
-    public void updateVisibility(Long userId, Long friendId, Visibility visibility) {
+    public void updateVisibility(Long userId, Long friendId) {
         Friend relation = friendRepository.findByUserIdAndFriendId(userId, friendId)
                 .orElseThrow(() -> new IllegalArgumentException("친구 관계가 아닙니다."));
-        relation.setVisibility(visibility);
+
+        if(relation.getVisibility().equals(Visibility.ALL)){
+            relation.setVisibility(Visibility.SIMPLE);
+        } else if(relation.getVisibility().equals(Visibility.SIMPLE)){
+            relation.setVisibility(Visibility.SECRET);
+        } else if(relation.getVisibility().equals(Visibility.SECRET)){
+            relation.setVisibility(Visibility.ALL);
+        }
+
         friendRepository.save(relation);
     }
 
-    // 4. 친구 캘린더 조회
-    @Transactional(readOnly = true)
-    public Object getFriendCalendar(Long userId, Long friendId, String startDate, String endDate) {
-        Friend relation = getFriendRelationOrThrow(userId, friendId);
-        Visibility visibility = relation.getVisibility();
 
-        if(visibility.equals(Visibility.SECRET)){
-            throw new AccessDeniedException("이 사람의 캘린더는 비공개 설정입니다.");
-        }
-
-        List<UserScheduleDto> combined = userScheduleService.getSingleSchedulesByPeriod(friendId, startDate, endDate);
-        combined.addAll(userScheduleService.getRepeatSchedulesByPeriod(friendId, startDate, endDate));
-        if (visibility.equals(Visibility.SECRET)) {
-            return combined.stream()
-                    .map(s -> SimpleScheduleDto.builder()
-                            .date(s.getDate())
-                            .day(s.getDay())
-                            .startTime(s.getStartTime())
-                            .endTime(s.getEndTime())
-                            .build()
-                    ).collect(Collectors.toList());
-        }
-        return combined;
-    }
 
 
 

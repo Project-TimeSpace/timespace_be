@@ -25,7 +25,7 @@ public class RepeatSchedule {
     @Schema(description = "반복 일정 제목", example = "매주 회의")
     private String title;
 
-    @Schema(description = "일정 표시 색상-정수로 저장하고 Enum으로 매핑", example = "1:RED:HEX")
+    @Schema(description = "일정 표시 색상-정수로 저장하고 Enum으로 매핑", example = "1")
     private int color;
 
     @Column(name = "category", nullable = false)

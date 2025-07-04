@@ -16,7 +16,7 @@ public class CreateSingleScheduleDto {
     @Schema(description = "일정 제목", example = "회의")
     private String title;
 
-    @Schema(description = "일정 표시 색상-정수로 저장하고 Enum으로 매핑", example = "1:RED:HEX")
+    @Schema(description = "일정 표시 색상-정수로 저장하고 Enum으로 매핑", example = "1")
     private Integer color;
 
     @Schema(description = "일정 카테고리 코드 (1=NORMAL, 2=FRIEND, 3=TEAMPLAY, 4=CLUB, 5=SCHOOL)", example = "1")

@@ -3,6 +3,7 @@ package com.backend.User.Service;
 import com.backend.Config.GlobalEnum;
 import com.backend.User.Dto.CreateRepeatScheduleDto;
 import com.backend.User.Dto.CreateSingleScheduleDto;
+import com.backend.User.Dto.UserRepeatScheduleDto;
 import com.backend.User.Dto.UserScheduleDto;
 import com.backend.User.Entity.RepeatException;
 import com.backend.User.Entity.RepeatSchedule;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -170,7 +172,8 @@ public class UserScheduleService {
 
     @Transactional
     public void createSingleSchedule(Long userId, CreateSingleScheduleDto dto) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         LocalDate date      = dto.getDate();
         LocalTime startTime = dto.getStartTime();
@@ -193,6 +196,81 @@ public class UserScheduleService {
         singleScheduleRepository.save(s);
     }
 
+    @Transactional(readOnly = true)
+    public UserScheduleDto getSingleScheduleDetail(Long userId, Long scheduleId) {
+        SingleSchedule s = singleScheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new IllegalArgumentException("단일 일정을 찾을 수 없습니다."));
+
+        if (!s.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
+
+        return UserScheduleDto.builder()
+                .id(s.getId())
+                .isRepeat(false)
+                .title(s.getTitle())
+                .color(s.getColor())
+                .category(s.getCategory())
+                .date(s.getDate())
+                .day(s.getDay())
+                .startTime(s.getStartTime())
+                .endTime(s.getEndTime())
+                .build();
+    }
+
+    // 3-3. Single 일정 업데이트
+    @Transactional
+    public void updateSingleSchedule(Long userId, Long scheduleId,
+            CreateSingleScheduleDto dto) {
+        // 1) 엔티티 로드 및 권한 체크
+        SingleSchedule s = singleScheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new IllegalArgumentException("단일 일정을 찾을 수 없습니다."));
+        if (!s.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("사용자가 해당 일정을 수정할 권한이 없습니다.");
+        }
+
+        // 2) “최종값” 계산: DTO에 null인 경우 기존 값 유지
+        LocalDate finalDate = dto.getDate()      != null ? dto.getDate()      : s.getDate();
+        LocalTime finalStart= dto.getStartTime() != null ? dto.getStartTime() : s.getStartTime();
+        LocalTime finalEnd  = dto.getEndTime()   != null ? dto.getEndTime()   : s.getEndTime();
+
+        // 3) 충돌 검사 (자기 자신을 제외하도록 scheduleId 넘김)
+        validateSingleOverlap(userId, finalDate, finalStart, finalEnd, scheduleId);
+
+        // 4) 실제 업데이트
+        if (dto.getTitle() != null)
+            s.setTitle(dto.getTitle());
+        if (dto.getColor() != 0   )
+            s.setColor(dto.getColor());
+        if (dto.getCategory() != 0) {
+            s.setCategory(GlobalEnum.ScheduleCategory.fromCode(dto.getCategory()));
+        }
+        if (dto.getDate() != null) {
+            s.setDate(finalDate);
+            s.setDay(dto.getDay());  // dto.getDay()도 null 체크 필요 or default→s.getDay()
+        }
+        if (dto.getDay() != 0 ) s.setDay(dto.getDay());
+        // start/end 는 이미 검증했으니 바로 덮어쓰기
+        s.setStartTime(finalStart);
+        s.setEndTime(finalEnd);
+        // JPA 변경 감지로 자동 커밋
+    }
+
+    // 3-4. Single일정 삭제
+    @Transactional
+    public void deleteSingleSchedule(Long userId, Long scheduleId) {
+        SingleSchedule s = singleScheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new IllegalArgumentException("단일 일정을 찾을 수 없습니다."));
+        if (!s.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
+        singleScheduleRepository.delete(s);
+    }
+
+
+    // 4. Repeat Schedule CRUD
+
+    // 4-1
     @Transactional
     public void createRepeatSchedule(Long userId, CreateRepeatScheduleDto dto) {
         User user = userRepository.findById(userId)
@@ -256,57 +334,118 @@ public class UserScheduleService {
         repeatScheduleRepository.save(r);
     }
 
-    // 4. 일정 수정 함수
-    // 4-1. SingleSchedule 수정하기
-    @Transactional
-    public void updateSingleSchedule(Long userId, Long scheduleId,
-            CreateSingleScheduleDto dto) {
-        // 1) 엔티티 로드 및 권한 체크
-        SingleSchedule s = singleScheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new IllegalArgumentException("단일 일정을 찾을 수 없습니다."));
-        if (!s.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("사용자가 해당 일정을 수정할 권한이 없습니다.");
+    // 4-2
+    @Transactional(readOnly = true)
+    public UserRepeatScheduleDto getRepeatScheduleDetail(Long userId, Long scheduleId) {
+        RepeatSchedule r = repeatScheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new IllegalArgumentException("반복 일정을 찾을 수 없습니다."));
+
+        if (!r.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
         }
 
-        // 2) “최종값” 계산: DTO에 null인 경우 기존 값 유지
-        LocalDate finalDate = dto.getDate()      != null ? dto.getDate()      : s.getDate();
-        LocalTime finalStart= dto.getStartTime() != null ? dto.getStartTime() : s.getStartTime();
-        LocalTime finalEnd  = dto.getEndTime()   != null ? dto.getEndTime()   : s.getEndTime();
-
-        // 3) 충돌 검사 (자기 자신을 제외하도록 scheduleId 넘김)
-        validateSingleOverlap(userId, finalDate, finalStart, finalEnd, scheduleId);
-
-        // 4) 실제 업데이트
-        if (dto.getTitle() != null)
-            s.setTitle(dto.getTitle());
-        if (dto.getColor() != 0   )
-            s.setColor(dto.getColor());
-        if (dto.getCategory() != 0) {
-            s.setCategory(GlobalEnum.ScheduleCategory.fromCode(dto.getCategory()));
-        }
-        if (dto.getDate() != null) {
-            s.setDate(finalDate);
-            s.setDay(dto.getDay());  // dto.getDay()도 null 체크 필요 or default→s.getDay()
-        }
-        if (dto.getDay() != 0 ) s.setDay(dto.getDay());
-        // start/end 는 이미 검증했으니 바로 덮어쓰기
-        s.setStartTime(finalStart);
-        s.setEndTime(finalEnd);
-        // JPA 변경 감지로 자동 커밋
+        return UserRepeatScheduleDto.builder()
+                .id(r.getId())
+                .title(r.getTitle())
+                .color(r.getColor())
+                .category(r.getCategory())
+                .startDate(r.getStartDate())
+                .endDate(r.getEndDate())
+                .repeatDays(r.getRepeatDays())
+                .startTime(r.getStartTime())
+                .endTime(r.getEndTime())
+                .build();
     }
 
-
-    // 5. 일정 삭제
+    // 4-3
     @Transactional
-    public void deleteSingleSchedule(Long userId, Long scheduleId) {
-        SingleSchedule s = singleScheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new IllegalArgumentException("단일 일정을 찾을 수 없습니다."));
-        if (!s.getUser().getId().equals(userId)) {
+    public void updateRepeatSchedule(Long userId, Long scheduleId, CreateRepeatScheduleDto dto) {
+        // 1) 조회 & 권한 체크
+        RepeatSchedule r = repeatScheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new IllegalArgumentException("반복 일정을 찾을 수 없습니다."));
+        if (!r.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("권한이 없습니다.");
+        }
+
+        // 2) “최종값” 병합: DTO 값이 기본(default)인 경우 기존 값 유지
+        LocalDate finalStartDate = dto.getStartDate() != null
+                ? dto.getStartDate() : r.getStartDate();
+        LocalDate finalEndDate   = dto.getEndDate()   != null
+                ? dto.getEndDate()   : r.getEndDate();
+        int      finalDow        = dto.getRepeatDays()!= 0
+                ? dto.getRepeatDays(): r.getRepeatDays();
+        LocalTime finalStartTime = dto.getStartTime()  != null
+                ? dto.getStartTime()  : r.getStartTime();
+        LocalTime finalEndTime   = dto.getEndTime()    != null
+                ? dto.getEndTime()    : r.getEndTime();
+
+        // 3) 단일 일정 충돌 검사 (반복 예외 포함) — 이 스케줄 자체는 제외
+        //    각 발생일 계산
+        LocalDate occ = finalStartDate;
+        // 첫 발생일로 이동
+        while (occ.getDayOfWeek().getValue() != finalDow) {
+            occ = occ.plusDays(1);
+        }
+        while (!occ.isAfter(finalEndDate)) {
+            // 자기 자신 제외 검증
+            validateSingleOverlap(userId,
+                    occ,
+                    finalStartTime,
+                    finalEndTime,
+                    scheduleId);
+            occ = occ.plusWeeks(1);
+        }
+
+        // 4) 기존 반복 일정 간 충돌 검사 (같은 요일, 자기 자신 제외)
+        List<RepeatSchedule> existing = repeatScheduleRepository
+                .findAllByUserIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+                        userId, finalEndDate, finalStartDate);
+        for (RepeatSchedule other : existing) {
+            if (other.getId().equals(scheduleId)) continue;
+            if (other.getRepeatDays() != finalDow) continue;
+            // 예외일자면 건너뜀
+            boolean isException = repeatExceptionRepository
+                    .existsByRepeatScheduleAndExceptionDate(other, other.getStartDate());
+            if (isException) continue;
+            // 시간대 충돌 검사
+            if (finalStartTime.isBefore(other.getEndTime()) &&
+                    other.getStartTime().isBefore(finalEndTime)) {
+                throw new IllegalArgumentException(
+                        "기존 반복 일정(id=" + other.getId() + ")과 시간이 겹칩니다: " +
+                                other.getStartTime() + "~" + other.getEndTime()
+                );
+            }
+        }
+
+        // 5) 실제 업데이트
+        if (dto.getTitle() != null)
+            r.setTitle(dto.getTitle());
+        if (dto.getColor() != 0) {
+            r.setColor(dto.getColor());
+        }
+        if (dto.getCategory() != 0) {
+            r.setCategory(GlobalEnum.ScheduleCategory.fromCode(dto.getCategory()));
+        }
+        r.setStartDate(finalStartDate);
+        r.setEndDate(finalEndDate);
+        r.setRepeatDays(finalDow);
+        r.setStartTime(finalStartTime);
+        r.setEndTime(finalEndTime);
+
+    }
+
+    // 4-4
+    @Transactional
+    public void deleteRepeatSchedule(Long userId, Long repeatId) {
+        RepeatSchedule r = repeatScheduleRepository.findById(repeatId)
+                .orElseThrow(() -> new IllegalArgumentException("반복 일정을 찾을 수 없습니다."));
+        if (!r.getUser().getId().equals(userId)) {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
-        singleScheduleRepository.delete(s);
+        repeatScheduleRepository.delete(r);
     }
 
+    // 4-5
     @Transactional
     public void deleteRepeatOccurrence(Long userId, Long repeatId, LocalDate date) {
         RepeatSchedule r = repeatScheduleRepository.findById(repeatId)
@@ -329,13 +468,4 @@ public class UserScheduleService {
         repeatExceptionRepository.save(ex);
     }
 
-    @Transactional
-    public void deleteRepeatSchedule(Long userId, Long repeatId) {
-        RepeatSchedule r = repeatScheduleRepository.findById(repeatId)
-                .orElseThrow(() -> new IllegalArgumentException("반복 일정을 찾을 수 없습니다."));
-        if (!r.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("권한이 없습니다.");
-        }
-        repeatScheduleRepository.delete(r);
-    }
 }

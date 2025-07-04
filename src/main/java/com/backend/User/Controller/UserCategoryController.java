@@ -4,6 +4,7 @@ package com.backend.User.Controller;
 import com.backend.User.Dto.UserCategoryDto;
 import com.backend.User.Service.UserCategoryService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequestMapping("/api/v1/user-category")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('User')")
+@Tag(name = "4. Home에서 카테고리 관련")
 public class UserCategoryController {
 
     private final UserCategoryService userCategoryService;

@@ -30,7 +30,6 @@ public class Friend {
     @Schema(description = "즐겨찾기 여부", example = "false")
     private Boolean isFavorite;
 
-
     @Enumerated(EnumType.STRING)
     @Schema(description = "친구 표시 여부", example = "true")
     @Column(name = "visibility", nullable = false, length = 10)

@@ -43,7 +43,9 @@ public class AuthService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .userName(request.getUsername())
-                .phoneNumber(request.getPhoneNumber())
+                .university(request.getUniversity())
+                .maxFriend(50)
+                .maxGroup(10)
                 .createdAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())
                 .build();
 

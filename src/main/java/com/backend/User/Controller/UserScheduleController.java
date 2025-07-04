@@ -5,6 +5,7 @@ import com.backend.User.Dto.CreateSingleScheduleDto;
 import com.backend.User.Dto.UserScheduleDto;
 import com.backend.User.Service.UserScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/v1/userschedule")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('User')")
+@Tag(name = "3. 유저 개인의 스케쥴 관련 api")
 public class UserScheduleController {
 
     private final UserScheduleService scheduleService;

@@ -33,6 +33,17 @@ CREATE TABLE SocialAccount (
     FOREIGN KEY (user_id) REFERENCES `User`(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+CREATE TABLE UserCategory (
+    id         BIGINT       AUTO_INCREMENT PRIMARY KEY,
+    user_id    BIGINT       NOT NULL,
+    category_id INT         NOT NULL, -- 예: 1~8
+    category_name VARCHAR(50) NOT NULL,
+    color VARCHAR(20) NOT NULL,
+    UNIQUE KEY uq_user_category (user_id, category_id),
+    FOREIGN KEY (user_id) REFERENCES `User`(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+
 CREATE TABLE SingleSchedule (
     id          BIGINT       AUTO_INCREMENT PRIMARY KEY,
     user_id     BIGINT       NOT NULL,
@@ -110,7 +121,7 @@ CREATE TABLE `Group` (
     master_id    BIGINT,
     group_name   VARCHAR(100) NOT NULL,
     group_type   VARCHAR(100) NOT NULL,
-    max_member   INT          NOT NULL DEFAULT 20,
+    max_member   INT          NOT NULL DEFAULT 10,
     created_at   DATETIME     DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (master_id) REFERENCES `User`(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;

@@ -1,18 +1,17 @@
-package com.backend.User.Dto;
+package com.backend.Group.Dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-
-@Getter @Setter
-@Schema(description = "단일 스케쥴 생성 요청 DTO")
+@Getter
+@Setter
+@Schema(description = "그룹 스케쥴 생성 요청 DTO")
 @Builder
-public class CreateSingleScheduleDto {
-
+public class GroupScheduleCreateRequest {
     @Schema(description = "일정 제목", example = "회의")
     private String title;
 
@@ -34,4 +33,3 @@ public class CreateSingleScheduleDto {
     @Schema(description = "종료 시간 (HH:mm:ss)", example = "10:00:00")
     private LocalTime endTime;
 }
-

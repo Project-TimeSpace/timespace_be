@@ -66,6 +66,4 @@ public class User {
     @Schema(description = "가입일시", example = "2025-06-01T11:00:00")
     private LocalDateTime createdAt;
 
-    public User(long l, String alice, String mail) {
-    }
 }

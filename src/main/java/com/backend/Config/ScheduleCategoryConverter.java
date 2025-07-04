@@ -9,7 +9,7 @@ public class ScheduleCategoryConverter
 
     @Override
     public Integer convertToDatabaseColumn(GlobalEnum.ScheduleCategory attribute) {
-        return attribute == null ? null : attribute.getCode().ordinal();
+        return attribute == null ? null : attribute.getCode();
     }
 
     @Override

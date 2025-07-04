@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GroupRequestRepository extends JpaRepository<GroupRequest, Long> {
 
+    boolean existsByGroupIdAndReceiverId(Long groupId, Long id);
 }

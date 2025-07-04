@@ -25,7 +25,9 @@ public class SecurityConfig {
     private static final List<String> ALLOWED_ORIGINS = List.of(
             "http://localhost:3000",
             "http://localhost:5173",
-            "http://localhost:8080"
+            "http://localhost:8080",
+            "http://49.50.128.96:8080",
+            "https://wouldyoupt.store"
     );
 
     // API endponit 허용할거 작성.

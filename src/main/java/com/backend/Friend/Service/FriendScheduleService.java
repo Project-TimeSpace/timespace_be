@@ -1,7 +1,9 @@
 package com.backend.Friend.Service;
 
 
+import com.backend.Config.GlobalEnum;
 import com.backend.Config.GlobalEnum.RequestStatus;
+import com.backend.Config.GlobalEnum.ScheduleCategory;
 import com.backend.Config.GlobalEnum.Visibility;
 import com.backend.Converge.ConvergedScheduleDto;
 import com.backend.Converge.ScheduleConverge;
@@ -11,6 +13,7 @@ import com.backend.Friend.Entity.Friend;
 import com.backend.Friend.Entity.FriendScheduleRequest;
 import com.backend.Friend.Repository.FriendRepository;
 import com.backend.Friend.Repository.FriendScheduleRequestRepository;
+import com.backend.User.Dto.CreateSingleScheduleDto;
 import com.backend.User.Dto.UserScheduleDto;
 import com.backend.User.Entity.User;
 import com.backend.User.Repository.UserRepository;
@@ -135,5 +138,62 @@ public class FriendScheduleService {
                 throw new IllegalArgumentException(errMsg);
             }
         }
+    }
+
+    @Transactional
+    public void acceptScheduleRequest(Long userId, Long requestId) {
+        // 1) 요청 조회
+        FriendScheduleRequest req = scheduleRequestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 요청입니다."));
+
+        // 2) 수신자 검증
+        if (!req.getReceiver().getId().equals(userId)) {
+            throw new AccessDeniedException("본인이 수신자가 아닙니다.");
+        }
+        if (!RequestStatus.PENDING.name().equals(req.getStatus())) {
+            throw new IllegalStateException("이미 처리된 요청입니다.");
+        }
+
+        // 3) DTO 생성 (색상·카테고리 기본값 사용)
+        CreateSingleScheduleDto dto = CreateSingleScheduleDto.builder()
+                .title(req.getTitle())
+                .color(1)
+                .category(ScheduleCategory.FRIEND.getCode())
+                .date(req.getDate())
+                .day(req.getDate().getDayOfWeek().getValue())
+                .startTime(req.getStartTime())
+                .endTime(req.getEndTime())
+                .build();
+
+        Long senderId   = req.getSender().getId();
+        Long receiverId = req.getReceiver().getId();
+
+        // 4) 양쪽 일정으로 저장
+        userScheduleService.createSingleSchedule(senderId, dto);
+        userScheduleService.createSingleSchedule(receiverId, dto);
+
+        // 5) 요청 상태 업데이트
+        req.setStatus(RequestStatus.ACCEPTED.name());
+        scheduleRequestRepository.save(req);
+    }
+
+    @Transactional
+    public void rejectScheduleRequest(Long userId, Long requestId) {
+        // 1) 요청 조회
+        FriendScheduleRequest req = scheduleRequestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 요청입니다."));
+
+        // 2) 수신자 검증
+        if (!req.getReceiver().getId().equals(userId)) {
+            throw new AccessDeniedException("본인이 수신자가 아닙니다.");
+        }
+        // 3) 상태 확인
+        if (!RequestStatus.PENDING.name().equals(req.getStatus())) {
+            throw new IllegalStateException("이미 처리된 요청입니다.");
+        }
+
+        // 4) 상태 REJECTED로 변경 후 저장
+        req.setStatus(RequestStatus.REJECTED.name());
+        scheduleRequestRepository.save(req);
     }
 }

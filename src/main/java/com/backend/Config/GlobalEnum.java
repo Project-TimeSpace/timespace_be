@@ -111,11 +111,8 @@ public class GlobalEnum {
             this.code = code;
         }
 
-        /**
-         * 숫자 코드 반환
-         */
-        public ScheduleCategory getCode() {
-            return ScheduleCategory.fromCode(code);
+        public int getCode() {
+            return code;
         }
 
         /** 코드 → enum 매핑 */
@@ -139,5 +136,6 @@ public class GlobalEnum {
         CREATED_ASC,    // 친구 맺은 순서: 오래된 순서
         CREATED_DESC    // 친구 맺은 순서: 최신 순서
     }
+
 }
 

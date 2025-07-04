@@ -3,6 +3,7 @@ package com.backend.User.Controller;
 import com.backend.User.Dto.UserInfoDto;
 import com.backend.User.Service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('User')")    // = @PreAuthorize("hasAuthority('ROLE_User')")
+@Tag(name = "2.마이페이지 api")
 public class UserController {
     private final UserService userService;
 

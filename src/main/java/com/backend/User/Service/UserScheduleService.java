@@ -54,7 +54,7 @@ public class UserScheduleService {
                         .isRepeat(false)
                         .title(s.getTitle())
                         .color(s.getColor())
-                        .category(s.getCategory().getCode())
+                        .category(s.getCategory())
                         .date(s.getDate())
                         .day(s.getDay())
                         .startTime(s.getStartTime())
@@ -112,7 +112,7 @@ public class UserScheduleService {
                             .isRepeat(true)
                             .title(r.getTitle())
                             .color(r.getColor())
-                            .category(r.getCategory().getCode())
+                            .category(r.getCategory())
                             .date(occurrence)
                             .day(r.getRepeatDays())
                             .startTime(r.getStartTime())
@@ -163,10 +163,7 @@ public class UserScheduleService {
 
             // 2-4) 시간 충돌 검사
             if (newStart.isBefore(r.getEndTime()) && r.getStartTime().isBefore(newEnd)) {
-                throw new IllegalArgumentException(
-                        "반복 일정(id=" + r.getId() + ")과 시간이 겹칩니다: " +
-                                r.getStartTime() + "~" + r.getEndTime()
-                );
+                throw new IllegalArgumentException("반복 일정(id=" + r.getId() + ")과 시간이 겹칩니다: " + r.getStartTime() + "~" + r.getEndTime());
             }
         }
     }

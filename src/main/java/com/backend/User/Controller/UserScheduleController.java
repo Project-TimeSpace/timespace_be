@@ -4,7 +4,8 @@ import com.backend.User.Dto.CreateRepeatScheduleDto;
 import com.backend.User.Dto.CreateSingleScheduleDto;
 import com.backend.User.Dto.UserRepeatScheduleDto;
 import com.backend.User.Dto.UserScheduleDto;
-import com.backend.User.Service.UserScheduleService;
+import com.backend.User.Service.UserRepeatScheduleService;
+import com.backend.User.Service.UserSingleScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
@@ -25,7 +26,8 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "3. 유저 개인의 스케쥴 관련 api")
 public class UserScheduleController {
 
-    private final UserScheduleService scheduleService;
+    private final UserSingleScheduleService userSingleScheduleService;
+    private final UserRepeatScheduleService userRepeatScheduleService;
 
     /*
     1. 전체 일정 조회 : 사용자 본인의 전체 일정(단일 + 반복)을 모두 조회합니다.
@@ -39,7 +41,7 @@ public class UserScheduleController {
     @GetMapping("/all")
     public Object getAllSchedules(@AuthenticationPrincipal UserDetails userDetails) {
         Long userId = Long.parseLong(userDetails.getUsername());
-        return scheduleService.getAllSchedules(userId);
+        return userSingleScheduleService.getAllSchedules(userId);
     }
 
     @Operation(summary = "2. 기간별 일정 조회",
@@ -50,8 +52,8 @@ public class UserScheduleController {
         Long userId = Long.parseLong(userDetails.getUsername());
 
         // 1) 단일, 반복 일정 조회
-        List<UserScheduleDto> singles = scheduleService.getSingleSchedulesByPeriod(userId, startDate, endDate);
-        List<UserScheduleDto> repeats = scheduleService.getRepeatSchedulesByPeriod(userId, startDate, endDate);
+        List<UserScheduleDto> singles = userSingleScheduleService.getSingleSchedulesByPeriod(userId, startDate, endDate);
+        List<UserScheduleDto> repeats = userRepeatScheduleService.getRepeatSchedulesByPeriod(userId, startDate, endDate);
 
         // 2) 합치고 정렬
         List<UserScheduleDto> combined = new ArrayList<>();
@@ -74,17 +76,17 @@ public class UserScheduleController {
     public ResponseEntity<String> createSingle(@AuthenticationPrincipal UserDetails userDetails,
             @RequestBody CreateSingleScheduleDto dto) {
         Long userId = Long.parseLong(userDetails.getUsername());
-        scheduleService.createSingleSchedule(userId, dto);
+        userSingleScheduleService.createSingleSchedule(userId, dto);
         return ResponseEntity.ok("단일 일정이 성공적으로 생성되었습니다.");
     }
 
-    @Operation(summary     = "3-2. 단일 일정 상세 조회",
+    @Operation(summary = "3-2. 단일 일정 상세 조회",
             description = "단일 일정의 ID를 받아 해당 일정의 상세 정보를 반환합니다.")
     @GetMapping("/single/{id}")
     public ResponseEntity<UserScheduleDto> getSingleDetail(@AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long id) {
         Long userId = Long.parseLong(userDetails.getUsername());
-        UserScheduleDto dto = scheduleService.getSingleScheduleDetail(userId, id);
+        UserScheduleDto dto = userSingleScheduleService.getSingleScheduleDetail(userId, id);
         return ResponseEntity.ok(dto);
     }
 
@@ -93,7 +95,7 @@ public class UserScheduleController {
     public ResponseEntity<String> updateSingle(@AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long id, @RequestBody CreateSingleScheduleDto dto) {
         Long userId = Long.parseLong(userDetails.getUsername());
-        scheduleService.updateSingleSchedule(userId, id, dto);
+        userSingleScheduleService.updateSingleSchedule(userId, id, dto);
         return ResponseEntity.ok("단일 일정이 성공적으로 수정되었습니다.");
     }
 
@@ -101,7 +103,7 @@ public class UserScheduleController {
     @DeleteMapping("/single/{id}")
     public ResponseEntity<String> deleteSingle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         Long userId = Long.parseLong(userDetails.getUsername());
-        scheduleService.deleteSingleSchedule(userId, id);
+        userSingleScheduleService.deleteSingleSchedule(userId, id);
         return ResponseEntity.ok("단일 일정이 성공적으로 삭제되었습니다.");
     }
 
@@ -112,17 +114,17 @@ public class UserScheduleController {
     public ResponseEntity<String> createRepeat(@AuthenticationPrincipal UserDetails userDetails,
             @RequestBody CreateRepeatScheduleDto dto) {
         Long userId = Long.parseLong(userDetails.getUsername());
-        scheduleService.createRepeatSchedule(userId, dto);
+        userRepeatScheduleService.createRepeatSchedule(userId, dto);
         return ResponseEntity.ok("반복 일정이 성공적으로 생성되었습니다.");
     }
 
-    @Operation(summary     = "4-2. 반복 일정 상세 조회",
+    @Operation(summary = "4-2. 반복 일정 상세 조회",
             description = "반복 일정의 ID를 받아 해당 일정의 정의(시작일, 종료일, 요일 등) 정보를 반환합니다.")
     @GetMapping("/repeat/{id}")
     public ResponseEntity<UserRepeatScheduleDto> getRepeatDetail(@AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long id) {
         Long userId = Long.parseLong(userDetails.getUsername());
-        UserRepeatScheduleDto dto = scheduleService.getRepeatScheduleDetail(userId, id);
+        UserRepeatScheduleDto dto = userRepeatScheduleService.getRepeatScheduleDetail(userId, id);
         return ResponseEntity.ok(dto);
     }
 
@@ -132,7 +134,7 @@ public class UserScheduleController {
     public ResponseEntity<String> updateRepeat(@AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long id, @RequestBody CreateRepeatScheduleDto dto) {
         Long userId = Long.parseLong(userDetails.getUsername());
-        scheduleService.updateRepeatSchedule(userId, id, dto);
+        userRepeatScheduleService.updateRepeatSchedule(userId, id, dto);
         return ResponseEntity.ok("반복 일정이 성공적으로 수정되었습니다.");
     }
 
@@ -140,7 +142,7 @@ public class UserScheduleController {
     @DeleteMapping("/repeat/{id}")
     public ResponseEntity<String> deleteRepeat(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         Long userId = Long.parseLong(userDetails.getUsername());
-        scheduleService.deleteRepeatSchedule(userId, id);
+        userRepeatScheduleService.deleteRepeatSchedule(userId, id);
         return ResponseEntity.ok("반복 일정이 성공적으로 삭제되었습니다.");
     }
 
@@ -149,7 +151,7 @@ public class UserScheduleController {
     public ResponseEntity<String> deleteRepeatException(@AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long id, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         Long userId = Long.parseLong(userDetails.getUsername());
-        scheduleService.deleteRepeatOccurrence(userId, id, date);
+        userRepeatScheduleService.deleteRepeatOccurrence(userId, id, date);
         return ResponseEntity.ok("해당 날짜 일정이 성공적으로 예외 처리되었습니다.");
     }
 }

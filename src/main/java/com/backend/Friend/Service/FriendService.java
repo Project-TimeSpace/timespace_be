@@ -1,20 +1,15 @@
 package com.backend.Friend.Service;
 
-import com.backend.Config.GlobalEnum;
 import com.backend.Config.GlobalEnum.SortOption;
 import com.backend.Config.GlobalEnum.Visibility;
 import com.backend.Friend.Dto.FriendDto;
-import com.backend.Friend.Dto.SimpleScheduleDto;
 import com.backend.Friend.Entity.Friend;
-import com.backend.User.Dto.UserScheduleDto;
 import com.backend.Friend.Repository.FriendRepository;
-import com.backend.User.Service.UserScheduleService;
 import java.text.Collator;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

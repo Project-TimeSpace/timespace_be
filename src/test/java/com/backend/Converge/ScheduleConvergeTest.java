@@ -3,7 +3,8 @@ package com.backend.Converge;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.backend.User.Service.UserScheduleService;
+import com.backend.User.Service.UserRepeatScheduleService;
+import com.backend.User.Service.UserSingleScheduleService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -29,7 +30,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ScheduleConvergeTest {
 
     @Mock
-    private UserScheduleService scheduleService;
+    private UserSingleScheduleService scheduleService;
+    private UserRepeatScheduleService userRepeatScheduleService;
 
     @Mock
     private UserRepository userRepository;
@@ -102,11 +104,11 @@ class ScheduleConvergeTest {
         // 3) scheduleService 스텁 설정
         when(scheduleService.getSingleSchedulesByPeriod(1L, START, END))
                 .thenReturn(List.of(aliceDto));
-        when(scheduleService.getRepeatSchedulesByPeriod(1L, START, END))
+        when(userRepeatScheduleService.getRepeatSchedulesByPeriod(1L, START, END))
                 .thenReturn(List.of());
         when(scheduleService.getSingleSchedulesByPeriod(2L, START, END))
                 .thenReturn(List.of(bobDto));
-        when(scheduleService.getRepeatSchedulesByPeriod(2L, START, END))
+        when(userRepeatScheduleService.getRepeatSchedulesByPeriod(2L, START, END))
                 .thenReturn(List.of());
 
         // 4) 알고리즘 실행
@@ -186,7 +188,7 @@ class ScheduleConvergeTest {
         for (long userId = 1; userId <= 5; userId++) {
             when(scheduleService.getSingleSchedulesByPeriod(userId, START, END))
                     .thenReturn(schedules);
-            when(scheduleService.getRepeatSchedulesByPeriod(userId, START, END))
+            when(userRepeatScheduleService.getRepeatSchedulesByPeriod(userId, START, END))
                     .thenReturn(List.of());
         }
 
@@ -266,7 +268,7 @@ class ScheduleConvergeTest {
         for (long userId = 1; userId <= 5; userId++) {
             when(scheduleService.getSingleSchedulesByPeriod(userId, START, END))
                     .thenReturn(schedulesByUser.get(userId));
-            when(scheduleService.getRepeatSchedulesByPeriod(userId, START, END))
+            when(userRepeatScheduleService.getRepeatSchedulesByPeriod(userId, START, END))
                     .thenReturn(List.of());
         }
 

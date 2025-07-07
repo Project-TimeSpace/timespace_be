@@ -3,7 +3,8 @@ package com.backend.Converge;
 import com.backend.User.Dto.UserScheduleDto;
 import com.backend.User.Entity.User;
 import com.backend.User.Repository.UserRepository;
-import com.backend.User.Service.UserScheduleService;
+import com.backend.User.Service.UserRepeatScheduleService;
+import com.backend.User.Service.UserSingleScheduleService;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -19,8 +20,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ScheduleConverge {
 
-    private final UserScheduleService userScheduleService;
+    private final UserSingleScheduleService userSingleScheduleService;
     private final UserRepository userRepository;
+    private final UserRepeatScheduleService userRepeatScheduleService;
 
     //주어진 사용자 멤버들의 일정을 SweepLine 알고리즘으로 병합하여 반환
     public List<ConvergedScheduleDto> convergeSchedules(List<Long> members, String startDate, String endDate) {
@@ -38,8 +40,8 @@ public class ScheduleConverge {
                     .email(user.getEmail())
                     .build();
 
-            List<UserScheduleDto> singles = userScheduleService.getSingleSchedulesByPeriod(memberId, startDate, endDate);
-            List<UserScheduleDto> repeats = userScheduleService.getRepeatSchedulesByPeriod(memberId, startDate, endDate);
+            List<UserScheduleDto> singles = userSingleScheduleService.getSingleSchedulesByPeriod(memberId, startDate, endDate);
+            List<UserScheduleDto> repeats = userRepeatScheduleService.getRepeatSchedulesByPeriod(memberId, startDate, endDate);
 
             // 단일 일정 추가
             for (UserScheduleDto s : singles) {

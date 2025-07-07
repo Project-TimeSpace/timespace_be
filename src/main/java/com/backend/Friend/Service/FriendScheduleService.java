@@ -1,7 +1,6 @@
 package com.backend.Friend.Service;
 
 
-import com.backend.Config.GlobalEnum;
 import com.backend.Config.GlobalEnum.RequestStatus;
 import com.backend.Config.GlobalEnum.ScheduleCategory;
 import com.backend.Config.GlobalEnum.Visibility;
@@ -17,7 +16,8 @@ import com.backend.User.Dto.CreateSingleScheduleDto;
 import com.backend.User.Dto.UserScheduleDto;
 import com.backend.User.Entity.User;
 import com.backend.User.Repository.UserRepository;
-import com.backend.User.Service.UserScheduleService;
+import com.backend.User.Service.UserRepeatScheduleService;
+import com.backend.User.Service.UserSingleScheduleService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,9 +32,10 @@ public class FriendScheduleService {
 
     private final UserRepository userRepository;
     private final FriendScheduleRequestRepository scheduleRequestRepository;
-    private final UserScheduleService userScheduleService;
+    private final UserSingleScheduleService userSingleScheduleService;
     private final FriendRepository friendRepository;
     private final ScheduleConverge scheduleConverge;
+    private final UserRepeatScheduleService userRepeatScheduleService;
 
     public Friend getFriendRelationOrThrow(Long userId, Long friendId) {
         return friendRepository.findByUserIdAndFriendId(userId, friendId)
@@ -51,8 +52,9 @@ public class FriendScheduleService {
             throw new AccessDeniedException("이 사람의 캘린더는 비공개 설정입니다.");
         }
 
-        List<UserScheduleDto> combined = userScheduleService.getSingleSchedulesByPeriod(friendId, startDate, endDate);
-        combined.addAll(userScheduleService.getRepeatSchedulesByPeriod(friendId, startDate, endDate));
+        List<UserScheduleDto> combined = userSingleScheduleService.getSingleSchedulesByPeriod(friendId, startDate, endDate);
+        combined.addAll(
+                userRepeatScheduleService.getRepeatSchedulesByPeriod(friendId, startDate, endDate));
         if (visibility.equals(Visibility.SECRET)) {
             return combined.stream()
                     .map(s -> SimpleScheduleDto.builder()
@@ -95,17 +97,17 @@ public class FriendScheduleService {
                 .orElseThrow(() -> new IllegalArgumentException("친구 관계가 아닙니다."));
 
         // 3) 일정 충돌 검사: 본인
-        List<UserScheduleDto> mySingles = userScheduleService.getSingleSchedulesByPeriod(
+        List<UserScheduleDto> mySingles = userSingleScheduleService.getSingleSchedulesByPeriod(
                 userId, dto.getDate().toString(), dto.getDate().toString());
-        List<UserScheduleDto> myRepeats = userScheduleService.getRepeatSchedulesByPeriod(
+        List<UserScheduleDto> myRepeats = userRepeatScheduleService.getRepeatSchedulesByPeriod(
                 userId, dto.getDate().toString(), dto.getDate().toString());
         checkOverlap(mySingles, dto, "이미 일정이 있습니다!");
         checkOverlap(myRepeats, dto, "이미 일정이 있습니다!");
 
         // 4) 일정 충돌 검사: 친구
-        List<UserScheduleDto> frSingles = userScheduleService.getSingleSchedulesByPeriod(
+        List<UserScheduleDto> frSingles = userSingleScheduleService.getSingleSchedulesByPeriod(
                 friendId, dto.getDate().toString(), dto.getDate().toString());
-        List<UserScheduleDto> frRepeats = userScheduleService.getRepeatSchedulesByPeriod(
+        List<UserScheduleDto> frRepeats = userRepeatScheduleService.getRepeatSchedulesByPeriod(
                 friendId, dto.getDate().toString(), dto.getDate().toString());
         checkOverlap(frSingles, dto, "친구는 해당 시간대에 일정이 있습니다.");
         checkOverlap(frRepeats, dto, "친구는 해당 시간대에 일정이 있습니다.");
@@ -169,8 +171,8 @@ public class FriendScheduleService {
         Long receiverId = req.getReceiver().getId();
 
         // 4) 양쪽 일정으로 저장
-        userScheduleService.createSingleSchedule(senderId, dto);
-        userScheduleService.createSingleSchedule(receiverId, dto);
+        userSingleScheduleService.createSingleSchedule(senderId, dto);
+        userSingleScheduleService.createSingleSchedule(receiverId, dto);
 
         // 5) 요청 상태 업데이트
         req.setStatus(RequestStatus.ACCEPTED.name());

@@ -10,7 +10,7 @@ import com.backend.User.Repository.UserRepository;
 import com.backend.Friend.Repository.FriendRepository;
 import com.backend.Friend.Repository.FriendRequestRepository;
 import com.backend.Friend.Repository.FriendScheduleRequestRepository;
-import com.backend.User.Service.UserScheduleService;
+import com.backend.User.Service.UserSingleScheduleService;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class FriendRequestService {
     private final FriendRepository friendRepository;
     private final FriendRequestRepository friendRequestRepository;
     private final FriendScheduleRequestRepository scheduleRequestRepository;
-    private final UserScheduleService userScheduleService;
+    private final UserSingleScheduleService userSingleScheduleService;
 
 
     @Transactional

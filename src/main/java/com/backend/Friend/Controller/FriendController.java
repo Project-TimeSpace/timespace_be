@@ -1,8 +1,7 @@
 package com.backend.Friend.Controller;
 
 
-import com.backend.Config.GlobalEnum;
-import com.backend.Config.GlobalEnum.SortOption;
+import com.backend.ConfigEnum.GlobalEnum.SortOption;
 import com.backend.Converge.ConvergedScheduleDto;
 import com.backend.Friend.Dto.FriendDto;
 import com.backend.Friend.Dto.FriendRequestReceivedDto;

@@ -1,10 +1,10 @@
 package com.backend.Friend.Service;
 
-import com.backend.Config.GlobalEnum.Visibility;
+import com.backend.ConfigEnum.GlobalEnum.Visibility;
 import com.backend.Friend.Dto.FriendRequestReceivedDto;
 import com.backend.Friend.Entity.FriendRequest;
 import com.backend.Friend.Entity.Friend;
-import com.backend.Config.GlobalEnum.RequestStatus;
+import com.backend.ConfigEnum.GlobalEnum.RequestStatus;
 import com.backend.User.Entity.User;
 import com.backend.User.Repository.UserRepository;
 import com.backend.Friend.Repository.FriendRepository;

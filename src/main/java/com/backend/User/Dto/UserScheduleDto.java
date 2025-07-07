@@ -1,6 +1,6 @@
 package com.backend.User.Dto;
 
-import com.backend.Config.GlobalEnum;
+import com.backend.ConfigEnum.GlobalEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

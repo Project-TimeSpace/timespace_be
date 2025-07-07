@@ -1,9 +1,9 @@
 package com.backend.Friend.Service;
 
 
-import com.backend.Config.GlobalEnum.RequestStatus;
-import com.backend.Config.GlobalEnum.ScheduleCategory;
-import com.backend.Config.GlobalEnum.Visibility;
+import com.backend.ConfigEnum.GlobalEnum.RequestStatus;
+import com.backend.ConfigEnum.GlobalEnum.ScheduleCategory;
+import com.backend.ConfigEnum.GlobalEnum.Visibility;
 import com.backend.Converge.ConvergedScheduleDto;
 import com.backend.Converge.ScheduleConverge;
 import com.backend.Friend.Dto.FriendScheduleRequestDto;

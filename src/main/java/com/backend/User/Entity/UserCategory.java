@@ -1,6 +1,6 @@
 package com.backend.User.Entity;
 
-import com.backend.Config.GlobalEnum.ScheduleColor;
+import com.backend.ConfigEnum.GlobalEnum.ScheduleColor;
 import jakarta.persistence.*;
 import lombok.*;
 

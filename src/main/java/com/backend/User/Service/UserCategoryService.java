@@ -1,7 +1,7 @@
 package com.backend.User.Service;
 
 
-import com.backend.Config.GlobalEnum.ScheduleColor;
+import com.backend.ConfigEnum.GlobalEnum.ScheduleColor;
 import com.backend.User.Dto.UserCategoryDto;
 import com.backend.User.Entity.User;
 import com.backend.User.Entity.UserCategory;

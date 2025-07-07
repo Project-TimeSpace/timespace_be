@@ -1,7 +1,7 @@
 package com.backend.Friend.Service;
 
-import com.backend.Config.GlobalEnum.SortOption;
-import com.backend.Config.GlobalEnum.Visibility;
+import com.backend.ConfigEnum.GlobalEnum.SortOption;
+import com.backend.ConfigEnum.GlobalEnum.Visibility;
 import com.backend.Friend.Dto.FriendDto;
 import com.backend.Friend.Entity.Friend;
 import com.backend.Friend.Repository.FriendRepository;

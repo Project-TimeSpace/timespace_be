@@ -1,6 +1,6 @@
 package com.backend.Friend.Repository;
 
-import com.backend.Config.GlobalEnum.RequestStatus;
+import com.backend.ConfigEnum.GlobalEnum.RequestStatus;
 import com.backend.Friend.Entity.FriendRequest;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

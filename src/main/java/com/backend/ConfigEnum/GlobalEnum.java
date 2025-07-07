@@ -1,14 +1,40 @@
-package com.backend.Config;
+package com.backend.ConfigEnum;
 
 public class GlobalEnum {
 
     // 1. 사용자 소속 대학교 (예시 5개)
     public enum University {
-        SEOUL_NATIONAL,
-        KOREA_UNIVERSITY,
-        YONSEI_UNIVERSITY,
-        HANYANG_UNIVERSITY,
-        POSTECH
+        SEOUL_NATIONAL(1, "서울대학교"),
+        YONSEI(2, "연세대학교"),
+        KOREA(3, "고려대학교"),
+        HANYANG(4, "한양대학교"),
+        SUNGKYUNKWAN(5, "성균관대학교");
+
+        private final int code;
+        private final String displayName;
+
+        University(int code, String displayName) {
+            this.code = code;
+            this.displayName = displayName;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        // Code로 University 조회
+        public static University fromCode(int code) {
+            for (University university : University.values()) {
+                if (university.getCode() == code) {
+                    return university;
+                }
+            }
+            throw new IllegalArgumentException("유효하지 않은 대학 코드: " + code);
+        }
     }
 
     // 2. 소셜 로그인 공급자

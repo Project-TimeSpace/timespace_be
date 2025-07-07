@@ -1,7 +1,6 @@
 package com.backend.Friend.Entity;
 
-import com.backend.Config.GlobalEnum;
-import com.backend.Config.GlobalEnum.RequestStatus;
+import com.backend.ConfigEnum.GlobalEnum;
 import com.backend.User.Entity.User;
 import jakarta.persistence.*;
 import lombok.*;

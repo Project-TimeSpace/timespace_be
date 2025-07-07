@@ -1,6 +1,6 @@
 package com.backend.Group.Service;
 
-import com.backend.Config.GlobalEnum.RequestStatus;
+import com.backend.ConfigEnum.GlobalEnum.RequestStatus;
 import com.backend.Friend.Repository.FriendRepository;
 import com.backend.Group.Dto.GroupMemberDto;
 import com.backend.Group.Entity.Group;

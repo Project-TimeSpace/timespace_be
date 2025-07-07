@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.backend.Config.GlobalEnum.ScheduleCategory;
+import com.backend.ConfigEnum.GlobalEnum.ScheduleCategory;
 import com.backend.User.Dto.UserScheduleDto;
 import com.backend.User.Entity.User;
 import com.backend.User.Repository.UserRepository;

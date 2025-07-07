@@ -1,6 +1,6 @@
 package com.backend.User.Entity;
 
-import com.backend.Config.GlobalEnum;
+import com.backend.ConfigEnum.GlobalEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;

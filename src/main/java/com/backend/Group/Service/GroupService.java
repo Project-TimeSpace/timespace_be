@@ -1,23 +1,15 @@
 package com.backend.Group.Service;
 
-import com.backend.Config.GlobalEnum;
-import com.backend.Config.GlobalEnum.RequestStatus;
-import com.backend.Friend.Repository.FriendRepository;
 import com.backend.Group.Dto.GroupCreateRequestDto;
-import com.backend.Group.Dto.GroupDto;
 import com.backend.Group.Dto.GroupInfoDto;
 import com.backend.Group.Dto.GroupMemberDto;
 import com.backend.Group.Dto.GroupSummaryDto;
 import com.backend.Group.Entity.Group;
 import com.backend.Group.Entity.GroupMembers;
-import com.backend.Group.Entity.GroupRequest;
 import com.backend.Group.Repository.GroupMembersRepository;
 import com.backend.Group.Repository.GroupRepository;
-import com.backend.Group.Repository.GroupRequestRepository;
 import com.backend.User.Entity.User;
-import com.backend.User.Repository.UserRepository;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;

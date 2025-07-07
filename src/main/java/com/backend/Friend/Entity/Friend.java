@@ -1,6 +1,6 @@
 package com.backend.Friend.Entity;
 
-import com.backend.Config.GlobalEnum.Visibility;
+import com.backend.ConfigEnum.GlobalEnum.Visibility;
 import com.backend.User.Entity.User;
 import jakarta.persistence.*;
 import lombok.*;

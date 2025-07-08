@@ -1,6 +1,6 @@
 package com.backend.User.Service;
 
-import com.backend.ConfigEnum.GlobalEnum;
+import com.backend.SharedFunction.SharedFunction;
 import com.backend.User.Dto.CreateRepeatScheduleDto;
 import com.backend.User.Dto.UserRepeatScheduleDto;
 import com.backend.User.Dto.UserScheduleDto;

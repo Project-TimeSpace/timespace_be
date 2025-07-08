@@ -3,6 +3,8 @@ package com.backend.Converge;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.backend.SharedFunction.Converge.ConvergedScheduleDto;
+import com.backend.SharedFunction.Converge.ScheduleConverge;
 import com.backend.User.Service.UserRepeatScheduleService;
 import com.backend.User.Service.UserSingleScheduleService;
 import java.time.LocalDate;
@@ -84,7 +86,6 @@ class ScheduleConvergeTest {
                 .isRepeat(false)
                 .title("AliceSchedule")
                 .day(1)
-                .category(ScheduleCategory.NORMAL)
                 .date(LocalDate.of(2025, 6, 1))
                 .startTime(LocalTime.of(0, 0))
                 .endTime(LocalTime.of(0, 20))
@@ -95,7 +96,6 @@ class ScheduleConvergeTest {
                 .isRepeat(false)
                 .title("BobSchedule")
                 .day(1)
-                .category(ScheduleCategory.NORMAL)
                 .date(LocalDate.of(2025, 6, 1))
                 .startTime(LocalTime.of(0, 10))
                 .endTime(LocalTime.of(0, 30))
@@ -176,7 +176,6 @@ class ScheduleConvergeTest {
                     .isRepeat(false)
                     .title("Schedule" + k)
                     .day(1)
-                    .category(ScheduleCategory.NORMAL)
                     .date(LocalDate.of(2025, 6, 1))
                     .startTime(LocalTime.of(k * 2, 0))
                     .endTime(LocalTime.of(k * 2 + 1, 0))
@@ -254,7 +253,6 @@ class ScheduleConvergeTest {
                         .isRepeat(false)
                         .title("U" + userId + "_S" + i)
                         .day(date.getDayOfWeek().getValue())
-                        .category(ScheduleCategory.NORMAL)
                         .date(date)
                         .startTime(start)
                         .endTime(end)

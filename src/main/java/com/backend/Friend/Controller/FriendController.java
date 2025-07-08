@@ -2,7 +2,7 @@ package com.backend.Friend.Controller;
 
 
 import com.backend.ConfigEnum.GlobalEnum.SortOption;
-import com.backend.Converge.ConvergedScheduleDto;
+import com.backend.SharedFunction.Converge.ConvergedScheduleDto;
 import com.backend.Friend.Dto.FriendDto;
 import com.backend.Friend.Dto.FriendRequestReceivedDto;
 import com.backend.Friend.Dto.FriendScheduleRequestDto;

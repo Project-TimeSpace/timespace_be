@@ -1,4 +1,4 @@
-package com.backend.User.Service;
+package com.backend.SharedFunction;
 
 import com.backend.User.Entity.RepeatException;
 import com.backend.User.Entity.RepeatSchedule;

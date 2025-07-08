@@ -1,17 +1,19 @@
 package com.backend.Friend.Service;
 
 
+import com.backend.ConfigEnum.GlobalEnum.NotificationType;
 import com.backend.ConfigEnum.GlobalEnum.RequestStatus;
-import com.backend.ConfigEnum.GlobalEnum.ScheduleCategory;
 import com.backend.ConfigEnum.GlobalEnum.Visibility;
-import com.backend.Converge.ConvergedScheduleDto;
-import com.backend.Converge.ScheduleConverge;
+import com.backend.SharedFunction.Converge.ConvergedScheduleDto;
+import com.backend.SharedFunction.Converge.ScheduleConverge;
 import com.backend.Friend.Dto.FriendScheduleRequestDto;
 import com.backend.Friend.Dto.SimpleScheduleDto;
 import com.backend.Friend.Entity.Friend;
 import com.backend.Friend.Entity.FriendScheduleRequest;
 import com.backend.Friend.Repository.FriendRepository;
 import com.backend.Friend.Repository.FriendScheduleRequestRepository;
+import com.backend.Notification.Service.NotificationService;
+import com.backend.SharedFunction.SharedFunction;
 import com.backend.User.Dto.CreateSingleScheduleDto;
 import com.backend.User.Dto.UserScheduleDto;
 import com.backend.User.Entity.User;
@@ -36,6 +38,8 @@ public class FriendScheduleService {
     private final FriendRepository friendRepository;
     private final ScheduleConverge scheduleConverge;
     private final UserRepeatScheduleService userRepeatScheduleService;
+    private final NotificationService notificationService;
+    private final SharedFunction sharedFunction;
 
     public Friend getFriendRelationOrThrow(Long userId, Long friendId) {
         return friendRepository.findByUserIdAndFriendId(userId, friendId)
@@ -95,24 +99,12 @@ public class FriendScheduleService {
         friendRepository.findByUserIdAndFriendId(userId, friendId)
                 .orElseThrow(() -> new IllegalArgumentException("친구 관계가 아닙니다."));
 
-        // 3) 일정 충돌 검사: 본인
-        List<UserScheduleDto> mySingles = userSingleScheduleService.getSingleSchedulesByPeriod(
-                userId, dto.getDate().toString(), dto.getDate().toString());
-        List<UserScheduleDto> myRepeats = userRepeatScheduleService.getRepeatSchedulesByPeriod(
-                userId, dto.getDate().toString(), dto.getDate().toString());
-        checkOverlap(mySingles, dto, "이미 일정이 있습니다!");
-        checkOverlap(myRepeats, dto, "이미 일정이 있습니다!");
+        // 3) 일정 충돌 검사: 본인, 친구 -> SharedFunction으로 해결하게 리팩토링
+        // validateSingleScheduleOverlap 내부에서 단일&반복 일정 충돌을 모두 처리
+        sharedFunction.validateSingleScheduleOverlap(userId, dto.getDate(), dto.getStartTime(), dto.getEndTime(), 0L);
+        sharedFunction.validateSingleScheduleOverlap(friendId, dto.getDate(), dto.getStartTime(), dto.getEndTime(), 0L);
 
-        // 4) 일정 충돌 검사: 친구
-        List<UserScheduleDto> frSingles = userSingleScheduleService.getSingleSchedulesByPeriod(
-                friendId, dto.getDate().toString(), dto.getDate().toString());
-        List<UserScheduleDto> frRepeats = userRepeatScheduleService.getRepeatSchedulesByPeriod(
-                friendId, dto.getDate().toString(), dto.getDate().toString());
-        checkOverlap(frSingles, dto, "친구는 해당 시간대에 일정이 있습니다.");
-        checkOverlap(frRepeats, dto, "친구는 해당 시간대에 일정이 있습니다.");
-
-
-        // 5) 엔티티 생성 및 저장
+        // 4) 엔티티 생성 및 저장
         FriendScheduleRequest req = FriendScheduleRequest.builder()
                 .sender(sender)
                 .receiver(receiver)
@@ -124,21 +116,12 @@ public class FriendScheduleService {
                 .build();
 
         scheduleRequestRepository.save(req);
-    }
 
-    // 공통 충돌 검사 헬퍼
-    private void checkOverlap(
-            List<UserScheduleDto> schedules,
-            FriendScheduleRequestDto req,
-            String errMsg) {
-
-        for (UserScheduleDto s : schedules) {
-            // 두 구간이 겹치는 조건: req.start < s.end && s.start < req.end
-            if (req.getStartTime().isBefore(s.getEndTime()) &&
-                    s.getStartTime().isBefore(req.getEndTime())) {
-                throw new IllegalArgumentException(errMsg);
-            }
-        }
+        // 5) 알림 생성
+        String content = String.format("%s님이 %s에 \"%s\" 약속을 신청했습니다.",
+                sender.getUserName(), dto.getDate().toString(), dto.getTitle());
+        notificationService.createNotification(
+                userId, friendId, NotificationType.FRIEND_SCHEDULE, content);
     }
 
     @Transactional

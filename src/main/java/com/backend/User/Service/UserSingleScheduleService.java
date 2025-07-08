@@ -1,6 +1,6 @@
 package com.backend.User.Service;
 
-import com.backend.ConfigEnum.GlobalEnum;
+import com.backend.SharedFunction.SharedFunction;
 import com.backend.User.Dto.CreateSingleScheduleDto;
 import com.backend.User.Dto.UserScheduleDto;
 import com.backend.User.Entity.SingleSchedule;

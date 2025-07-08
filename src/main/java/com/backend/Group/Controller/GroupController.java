@@ -1,12 +1,10 @@
 package com.backend.Group.Controller;
 
-import com.backend.Converge.ConvergedScheduleDto;
-import com.backend.Converge.ScheduleConverge;
+import com.backend.SharedFunction.Converge.ConvergedScheduleDto;
+import com.backend.SharedFunction.Converge.ScheduleConverge;
 import com.backend.Group.Dto.GroupCreateRequestDto;
-import com.backend.Group.Dto.GroupDto;
 import com.backend.Group.Dto.GroupInfoDto;
 import com.backend.Group.Dto.GroupMemberDto;
-import com.backend.Group.Dto.GroupScheduleDto;
 import com.backend.Group.Dto.GroupSummaryDto;
 import com.backend.Group.Service.GroupMemberService;
 import com.backend.Group.Service.GroupScheduleService;

@@ -25,7 +25,7 @@ public class UserCategoryService {
     public List<UserCategoryDto> getUserCategories(Long userId) {
         return userCategoryRepository.findByUserId(userId).stream()
                 .map(category -> UserCategoryDto.builder()
-                        .categoryId(category.getCategoryId())  // categoryId 추가
+                        .categoryId(category.getCategoryNumber())  // categoryId 추가
                         .categoryName(category.getCategoryName())
                         .color(category.getColor().name())
                         .build())
@@ -50,7 +50,7 @@ public class UserCategoryService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         // 다음 categoryId 계산 (1부터 시작)
-        int nextId = existing.isEmpty() ? 1 : existing.get(existing.size() - 1).getCategoryId() + 1;
+        int nextId = existing.isEmpty() ? 1 : existing.get(existing.size() - 1).getCategoryNumber() + 1;
 
         UserCategory category = UserCategory.builder()
                 .user(user)
@@ -84,7 +84,7 @@ public class UserCategoryService {
         List<UserCategory> list = userCategoryRepository.findByUserIdOrderByCategoryId(userId);
 
         UserCategory target = list.stream()
-                .filter(c -> c.getCategoryId().equals(categoryId))
+                .filter(c -> c.getCategoryNumber().equals(categoryId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 카테고리를 찾을 수 없습니다."));
 
@@ -92,7 +92,7 @@ public class UserCategoryService {
 
         // 삭제된 뒤의 카테고리들은 ID -1
         list.stream()
-                .filter(c -> c.getCategoryId() > categoryId)
-                .forEach(c -> c.setCategoryId(c.getCategoryId() - 1));
+                .filter(c -> c.getCategoryNumber() > categoryId)
+                .forEach(c -> c.setCategoryNumber(c.getCategoryNumber() - 1));
     }
 }

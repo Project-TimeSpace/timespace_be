@@ -53,8 +53,7 @@ public class FriendScheduleService {
         }
 
         List<UserScheduleDto> combined = userSingleScheduleService.getSingleSchedulesByPeriod(friendId, startDate, endDate);
-        combined.addAll(
-                userRepeatScheduleService.getRepeatSchedulesByPeriod(friendId, startDate, endDate));
+        combined.addAll(userRepeatScheduleService.getRepeatSchedulesByPeriod(friendId, startDate, endDate));
         if (visibility.equals(Visibility.SECRET)) {
             return combined.stream()
                     .map(s -> SimpleScheduleDto.builder()

@@ -7,8 +7,10 @@ import com.backend.User.Dto.UserScheduleDto;
 import com.backend.User.Entity.RepeatException;
 import com.backend.User.Entity.RepeatSchedule;
 import com.backend.User.Entity.User;
+import com.backend.User.Entity.UserCategory;
 import com.backend.User.Repository.RepeatExceptionRepository;
 import com.backend.User.Repository.RepeatScheduleRepository;
+import com.backend.User.Repository.UserCategoryRepository;
 import com.backend.User.Repository.UserRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -31,6 +33,7 @@ public class UserRepeatScheduleService {
     private final RepeatExceptionRepository repeatExceptionRepository;
     private final UserRepository userRepository;
     private final SharedFunction sharedFunction;
+    private final UserCategoryRepository userCategoryRepository;
 
 
     // 2-2. 특정기간의 반복 일정 조회
@@ -99,6 +102,7 @@ public class UserRepeatScheduleService {
     // 4. Repeat Schedule CRUD
 
     // 4-1
+    /*
     @Transactional
     public void createRepeatSchedule(Long userId, CreateRepeatScheduleDto dto) {
         User user = userRepository.findById(userId)
@@ -124,8 +128,8 @@ public class UserRepeatScheduleService {
 
         // 2) 각 발생일에 단일 일정 충돌 검사 (예외일 제외 되도록 했음.)
         for (LocalDate date : occurrences) {
-            //sharedFunction.validateSingleScheduleOverlap(userId, date, startTime, endTime, 0L);
-            sharedFunction.validateRepeatScheduleOverlap(userId, dow, startTime, endTime, startDate, endDate, null);
+            sharedFunction.validateSingleScheduleOverlap(userId, date, startTime, endTime, 0L);
+            //sharedFunction.validateRepeatScheduleOverlap(userId, dow, startTime, endTime, startDate, endDate, null);
         }
 
         // 3) 기존 반복 스케줄 간 충돌 검사 (같은 요일)
@@ -162,6 +166,41 @@ public class UserRepeatScheduleService {
 
         repeatScheduleRepository.save(r);
     }
+     */
+
+    @Transactional
+    public void createRepeatSchedule(Long userId, CreateRepeatScheduleDto dto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        LocalDate startDate = dto.getStartDate();
+        LocalDate endDate   = dto.getEndDate();
+        int      dow        = dto.getRepeatDays();
+        LocalTime startTime = dto.getStartTime();
+        LocalTime endTime   = dto.getEndTime();
+
+        // 1) 전체 기간중 반복일정 추가 요일에 대한 충돌 검사 — 단일+반복 모두 1회 검사
+        sharedFunction.validateRepeatScheduleOverlap(userId, dow, startTime, endTime, startDate, endDate, 0L);
+
+        UserCategory category = userCategoryRepository.findById(dto.getCategory())
+                .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
+
+        // 2) 저장
+        RepeatSchedule r = RepeatSchedule.builder()
+                .user(user)
+                .title(dto.getTitle())
+                .color(dto.getColor())
+                .category(category)
+                .startDate(startDate)
+                .endDate(endDate)
+                .repeatDays(dow)
+                .startTime(startTime)
+                .endTime(endTime)
+                .build();
+
+        repeatScheduleRepository.save(r);
+    }
+
 
     // 4-2
     @Transactional(readOnly = true)
@@ -172,7 +211,8 @@ public class UserRepeatScheduleService {
         if (!r.getUser().getId().equals(userId)) {
             throw new AccessDeniedException("접근 권한이 없습니다.");
         }
-
+        UserCategory category = userCategoryRepository.findById(r.getCategory().getId())
+                .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
         return UserRepeatScheduleDto.builder()
                 .id(r.getId())
                 .title(r.getTitle())
@@ -196,72 +236,45 @@ public class UserRepeatScheduleService {
             throw new AccessDeniedException("권한이 없습니다.");
         }
 
-        // 2) “최종값” 병합: DTO 값이 기본(default)인 경우 기존 값 유지
-        LocalDate finalStartDate = dto.getStartDate() != null
-                ? dto.getStartDate() : r.getStartDate();
-        LocalDate finalEndDate   = dto.getEndDate()   != null
-                ? dto.getEndDate()   : r.getEndDate();
-        int      finalDow        = dto.getRepeatDays()!= 0
-                ? dto.getRepeatDays(): r.getRepeatDays();
-        LocalTime finalStartTime = dto.getStartTime()  != null
-                ? dto.getStartTime()  : r.getStartTime();
-        LocalTime finalEndTime   = dto.getEndTime()    != null
-                ? dto.getEndTime()    : r.getEndTime();
+        // 2) 최종값 병합
+        LocalDate finalStartDate = dto.getStartDate()   != null ? dto.getStartDate()   : r.getStartDate();
+        LocalDate finalEndDate   = dto.getEndDate()     != null ? dto.getEndDate()     : r.getEndDate();
+        int      finalDow        = dto.getRepeatDays()  != 0    ? dto.getRepeatDays()    : r.getRepeatDays();
+        LocalTime finalStartTime = dto.getStartTime()   != null ? dto.getStartTime()   : r.getStartTime();
+        LocalTime finalEndTime   = dto.getEndTime()     != null ? dto.getEndTime()     : r.getEndTime();
 
-        // 3) 단일 일정 충돌 검사 (반복 예외 포함) — 이 스케줄 자체는 제외
-        //    각 발생일 계산
-        LocalDate occ = finalStartDate;
-        // 첫 발생일로 이동
-        while (occ.getDayOfWeek().getValue() != finalDow) {
-            occ = occ.plusDays(1);
-        }
-        while (!occ.isAfter(finalEndDate)) {
-            // 자기 자신 제외 검증
-            sharedFunction.validateSingleScheduleOverlap(userId,
-                    occ,
+        // 3) 패턴 변경 여부 판단
+        boolean patternChanged =
+                dto.getStartDate()!= null || dto.getEndDate()!= null ||
+                        dto.getRepeatDays()!= 0 || dto.getStartTime()!= null || dto.getEndTime() != null;
+
+        if (patternChanged) {
+            // 기존 일정과 충돌 검증 (자기 자신 제외)
+            sharedFunction.validateRepeatScheduleOverlap(
+                    userId,
+                    finalDow,
                     finalStartTime,
                     finalEndTime,
-                    scheduleId);
-            occ = occ.plusWeeks(1);
+                    finalStartDate,
+                    finalEndDate,
+                    scheduleId
+            );
         }
 
-        // 4) 기존 반복 일정 간 충돌 검사 (같은 요일, 자기 자신 제외)
-        List<RepeatSchedule> existing = repeatScheduleRepository
-                .findAllByUserIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
-                        userId, finalEndDate, finalStartDate);
-        for (RepeatSchedule other : existing) {
-            if (other.getId().equals(scheduleId)) continue;
-            if (other.getRepeatDays() != finalDow) continue;
-            // 예외일자면 건너뜀
-            boolean isException = repeatExceptionRepository
-                    .existsByRepeatScheduleAndExceptionDate(other, other.getStartDate());
-            if (isException) continue;
-            // 시간대 충돌 검사
-            if (finalStartTime.isBefore(other.getEndTime()) &&
-                    other.getStartTime().isBefore(finalEndTime)) {
-                throw new IllegalArgumentException(
-                        "기존 반복 일정(id=" + other.getId() + ")과 시간이 겹칩니다: " +
-                                other.getStartTime() + "~" + other.getEndTime()
-                );
-            }
-        }
+        // 4) 나머지 필드 업데이트
+        if (dto.getTitle()    != null) r.setTitle(dto.getTitle());
+        if (dto.getColor()    != 0)    r.setColor(dto.getColor());
+        if (dto.getCategory() != 0)    r.setCategory(GlobalEnum.ScheduleCategory.fromCode(dto.getCategory()));
 
-        // 5) 실제 업데이트
-        if (dto.getTitle() != null)
-            r.setTitle(dto.getTitle());
-        if (dto.getColor() != 0) {
-            r.setColor(dto.getColor());
+        if (patternChanged) {
+            r.setStartDate(finalStartDate);
+            r.setEndDate(finalEndDate);
+            r.setRepeatDays(finalDow);
+            r.setStartTime(finalStartTime);
+            r.setEndTime(finalEndTime);
         }
-        if (dto.getCategory() != 0) {
-            r.setCategory(GlobalEnum.ScheduleCategory.fromCode(dto.getCategory()));
-        }
-        r.setStartDate(finalStartDate);
-        r.setEndDate(finalEndDate);
-        r.setRepeatDays(finalDow);
-        r.setStartTime(finalStartTime);
-        r.setEndTime(finalEndTime);
-
     }
+
 
     // 4-4
     @Transactional

@@ -76,7 +76,7 @@ public class UserSingleScheduleService {
                 .user(user)
                 .title(dto.getTitle())
                 .color(dto.getColor())
-                .category(GlobalEnum.ScheduleCategory.fromCode(dto.getCategory()))
+                .category(dto.getCategory())
                 .date(date)
                 .day(dto.getDay())
                 .startTime(startTime)

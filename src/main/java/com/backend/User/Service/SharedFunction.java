@@ -1,5 +1,6 @@
 package com.backend.User.Service;
 
+import com.backend.User.Entity.RepeatException;
 import com.backend.User.Entity.RepeatSchedule;
 import com.backend.User.Entity.SingleSchedule;
 import com.backend.User.Repository.RepeatExceptionRepository;
@@ -7,7 +8,12 @@ import com.backend.User.Repository.RepeatScheduleRepository;
 import com.backend.User.Repository.SingleScheduleRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +25,7 @@ public class SharedFunction {
     private final RepeatScheduleRepository repeatScheduleRepository;
     private final RepeatExceptionRepository repeatExceptionRepository;
 
+    // Long scheduleId가 0L 일때는 새로 등록하는 일정일 때, 수정하는 상황에서는 id 넣어주고
     public void validateSingleScheduleOverlap(Long userId, LocalDate date,
             LocalTime newStart, LocalTime newEnd, Long scheduleId) {
 
@@ -57,14 +64,16 @@ public class SharedFunction {
         }
     }
 
+    // Long RepeatId 0L 일때는 새로 등록하는 일정일 때, 수정하는 상황에서는 id 넣어주고
+    /*
     public void validateRepeatScheduleOverlap(Long userId, int repeatDay, LocalTime newStart, LocalTime newEnd,
-            LocalDate startDate, LocalDate endDate, Long excludeRepeatId) {
+            LocalDate startDate, LocalDate endDate, Long RepeatId) {
 
         List<RepeatSchedule> repeats = repeatScheduleRepository
                 .findAllByUserIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(userId, endDate, startDate);
 
         for (RepeatSchedule r : repeats) {
-            if (excludeRepeatId != null && r.getId().equals(excludeRepeatId)) continue;
+            if (RepeatId != null && r.getId().equals(RepeatId)) continue;
             if (r.getRepeatDays() != repeatDay) continue;
 
             // 반복 예외는 고려하지 않음 (정의 상 반복 일정 전체 충돌 체크)
@@ -84,5 +93,71 @@ public class SharedFunction {
             occurrence = occurrence.plusWeeks(1);
         }
     }
+    */
+
+    public void validateRepeatScheduleOverlap(Long userId, int repeatDay,
+            LocalTime newStart, LocalTime newEnd, LocalDate startDate, LocalDate endDate, Long excludeRepeatId) {
+
+        // 1) 발생일 리스트 계산
+        List<LocalDate> occurrences = new ArrayList<>();
+        LocalDate occ = startDate;
+        while (occ.getDayOfWeek().getValue() != repeatDay) {
+            occ = occ.plusDays(1);
+        }
+        while (!occ.isAfter(endDate)) {
+            occurrences.add(occ);
+            occ = occ.plusWeeks(1);
+        }
+        if (occurrences.isEmpty())
+            return;
+
+        // 2) 기존 단일 일정 한 번에 조회 & 날짜별 그룹핑
+        List<SingleSchedule> singleList = singleScheduleRepository.findAllByUserIdAndDateIn(userId, occurrences);
+        Map<LocalDate, List<SingleSchedule>> singleMap = singleList.stream()
+                .collect(Collectors.groupingBy(SingleSchedule::getDate));
+
+        // 3) 기존 반복 일정 전체 조회
+        List<RepeatSchedule> repeats = repeatScheduleRepository
+                        .findAllByUserIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(userId, endDate, startDate);
+
+        // 4) 반복 예외일 한 번에 조회
+        List<Long> repeatIds = repeats.stream().map(RepeatSchedule::getId).collect(Collectors.toList());
+        Map<Long, Set<LocalDate>> exMap = repeatIds.isEmpty() ? Collections.emptyMap()
+                : repeatExceptionRepository
+                        .findAllByRepeatScheduleIdInAndExceptionDateBetween(repeatIds, startDate, endDate)
+                        .stream().collect(Collectors.groupingBy(ex -> ex.getRepeatSchedule().getId(),
+                                Collectors.mapping(RepeatException::getExceptionDate, Collectors.toSet())));
+
+        // 5) 충돌 검사
+        for (LocalDate date : occurrences) {
+            // 5-1) 단일 일정 충돌
+            for (SingleSchedule s : singleMap.getOrDefault(date, List.of())) {
+                if (newStart.isBefore(s.getEndTime()) &&
+                        s.getStartTime().isBefore(newEnd)) {
+                    throw new IllegalArgumentException(
+                            "단일 일정(id=" + s.getId() + ")과 시간이 겹칩니다: " +
+                                    s.getStartTime() + "~" + s.getEndTime()
+                    );
+                }
+            }
+            // 5-2) 반복 일정 충돌
+            for (RepeatSchedule r : repeats) {
+                if (r.getId().equals(excludeRepeatId)) continue;
+                if (r.getRepeatDays() != repeatDay) continue;
+
+                Set<LocalDate> exceptions = exMap.getOrDefault(r.getId(), Set.of());
+                if (exceptions.contains(date)) continue;
+
+                if (newStart.isBefore(r.getEndTime()) &&
+                        r.getStartTime().isBefore(newEnd)) {
+                    throw new IllegalArgumentException(
+                            "반복 일정(id=" + r.getId() + ")과 시간이 겹칩니다: " +
+                                    r.getStartTime() + "~" + r.getEndTime()
+                    );
+                }
+            }
+        }
+    }
+
 
 }

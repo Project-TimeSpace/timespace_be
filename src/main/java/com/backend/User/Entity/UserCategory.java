@@ -22,8 +22,8 @@ public class UserCategory {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "category_id", nullable = false)
-    private Integer categoryId;
+    @Column(name = "category_number", nullable = false)
+    private Integer categoryNumber;
 
     @Column(name = "category_name", nullable = false, length = 50)
     private String categoryName;

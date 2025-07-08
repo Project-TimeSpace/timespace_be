@@ -20,7 +20,7 @@ public class CreateSingleScheduleDto {
     private Integer color;
 
     @Schema(description = "일정 카테고리 코드 (1=NORMAL, 2=FRIEND, 3=TEAMPLAY, 4=CLUB, 5=SCHOOL)", example = "1")
-    private int category;
+    private Long category;
 
     @Schema(description = "일정 날짜(YYYY-MM-DD)", example = "2025-07-01")
     private LocalDate date;

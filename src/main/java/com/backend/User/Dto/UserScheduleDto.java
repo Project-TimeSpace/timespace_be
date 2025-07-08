@@ -1,7 +1,11 @@
 package com.backend.User.Dto;
 
 import com.backend.ConfigEnum.GlobalEnum;
+import com.backend.User.Entity.UserCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +33,9 @@ public class UserScheduleDto {
     private int color;
 
     @Schema(description = "일정 카테고리 코드 (1=NORMAL, 2=FRIEND, 3=TEAMPLAY, 4=CLUB, 5=SCHOOL)", example = "1")
-    private GlobalEnum.ScheduleCategory category;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private UserCategory category;
 
     @Schema(description = "일정 발생 날짜(YYYY-MM-DD)", example = "2025-07-01")
     private LocalDate date;

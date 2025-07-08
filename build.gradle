@@ -47,6 +47,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test' // JUnit5 + Mockito 포함된 스프링 테스트 설정
 	testImplementation 'org.springframework.security:spring-security-test' // 시큐리티 테스트 (Mock 인증 등 지원)
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // JUnit 플랫폼 런처
+	testImplementation 'org.mockito:mockito-core:4.8.0'
+	testImplementation 'org.mockito:mockito-junit-jupiter:4.8.0'
+	testRuntimeOnly 'com.h2database:h2'  // test할 때 인메모리 방식이라 가볍고 좋은 H2
 
 	// 6. email 보내기 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
@@ -73,8 +76,7 @@ dependencies {
 	// 12. Redis Refresh Token <-> DB에 저장하는 방식인 경우 필요없음
 	// implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-	testImplementation 'org.mockito:mockito-core:4.8.0'
-	testImplementation 'org.mockito:mockito-junit-jupiter:4.8.0'
+
 
 }
 

@@ -47,9 +47,9 @@ public class FriendController {
     }*/
 
 
-    // ------------------ Friend Service
+    // ------------------ Friend Service --------------------
     @Operation(summary = "1. 친구 목록 조회", description = "로그인한 사용자의 모든 친구 목록 반환. ")
-    @GetMapping("/{sort}")
+    @GetMapping("/list/{sort}")
     public ResponseEntity<List<FriendDto>> friendsList(@AuthenticationPrincipal UserDetails userDetails,
             @PathVariable("sort") SortOption sortOption) {
         Long userId = Long.parseLong(userDetails.getUsername());
@@ -148,7 +148,7 @@ public class FriendController {
     }
 
     // 5. 약속 거절하기
-    @Operation(summary = "5. 약속 거절하기", description = "친구가 보낸 일정 요청을 거절하고 상태를 REJECTED로 업데이트합니다.")
+    @Operation(summary = "5. 약속 거절하기", description = "친구가 보낸 일정 요청을 거절하고 상태를 REJECTED로 업데이트합니다.->이거 그냥 알림 보내고 삭제로 할까..")
     @PostMapping("/schedules/requests/{requestId}/reject")
     public ResponseEntity<String> rejectScheduleRequest(
             @AuthenticationPrincipal UserDetails userDetails, @PathVariable Long requestId) {

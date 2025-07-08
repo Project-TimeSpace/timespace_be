@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('User')")    // = @PreAuthorize("hasAuthority('ROLE_User')")
-@Tag(name = "2.마이페이지 api")
+@Tag(name = "1.마이페이지 api")
 public class UserController {
     private final UserService userService;
 

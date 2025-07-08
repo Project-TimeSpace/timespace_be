@@ -10,6 +10,7 @@ import com.backend.Friend.Service.FriendRequestService;
 import com.backend.Friend.Service.FriendScheduleService;
 import com.backend.Friend.Service.FriendService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,9 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/friends")
+@RequestMapping("/api/v1/friends")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('User')")
+@Tag(name = "3. 친구 기능 관련 api")
 public class FriendController {
 
     /*

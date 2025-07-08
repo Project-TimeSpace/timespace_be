@@ -28,8 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/group")
-@Tag(name = "Group", description = "그룹 관련 API")
+@RequestMapping("/api/v1/group")
+@Tag(name = "4. 그룹 관련 api")
 public class GroupController {
 
     private final GroupService groupService;

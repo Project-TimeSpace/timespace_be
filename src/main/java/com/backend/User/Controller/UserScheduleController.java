@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/user-schedule")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('User')")
-@Tag(name = "3. 유저 개인의 스케쥴 관련 api")
+@Tag(name = "2. 유저 개인의 스케쥴 관련 api")
 public class UserScheduleController {
 
     private final UserSingleScheduleService userSingleScheduleService;

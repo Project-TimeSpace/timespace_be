@@ -159,7 +159,6 @@ public class FriendScheduleService {
         CreateSingleScheduleDto dto = CreateSingleScheduleDto.builder()
                 .title(req.getTitle())
                 .color(1)
-                .category(ScheduleCategory.FRIEND.getCode())
                 .date(req.getDate())
                 .day(req.getDate().getDayOfWeek().getValue())
                 .startTime(req.getStartTime())

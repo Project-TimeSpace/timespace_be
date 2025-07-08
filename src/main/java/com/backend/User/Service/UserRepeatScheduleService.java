@@ -7,10 +7,8 @@ import com.backend.User.Dto.UserScheduleDto;
 import com.backend.User.Entity.RepeatException;
 import com.backend.User.Entity.RepeatSchedule;
 import com.backend.User.Entity.User;
-import com.backend.User.Entity.UserCategory;
 import com.backend.User.Repository.RepeatExceptionRepository;
 import com.backend.User.Repository.RepeatScheduleRepository;
-import com.backend.User.Repository.UserCategoryRepository;
 import com.backend.User.Repository.UserRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -33,8 +31,6 @@ public class UserRepeatScheduleService {
     private final RepeatExceptionRepository repeatExceptionRepository;
     private final UserRepository userRepository;
     private final SharedFunction sharedFunction;
-    private final UserCategoryRepository userCategoryRepository;
-
 
     // 2-2. 특정기간의 반복 일정 조회
     @Transactional(readOnly = true)
@@ -85,7 +81,6 @@ public class UserRepeatScheduleService {
                             .isRepeat(true)
                             .title(r.getTitle())
                             .color(r.getColor())
-                            .category(r.getCategory())
                             .date(occurrence)
                             .day(r.getRepeatDays())
                             .startTime(r.getStartTime())
@@ -182,15 +177,11 @@ public class UserRepeatScheduleService {
         // 1) 전체 기간중 반복일정 추가 요일에 대한 충돌 검사 — 단일+반복 모두 1회 검사
         sharedFunction.validateRepeatScheduleOverlap(userId, dow, startTime, endTime, startDate, endDate, 0L);
 
-        UserCategory category = userCategoryRepository.findById(dto.getCategory())
-                .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
-
         // 2) 저장
         RepeatSchedule r = RepeatSchedule.builder()
                 .user(user)
                 .title(dto.getTitle())
                 .color(dto.getColor())
-                .category(category)
                 .startDate(startDate)
                 .endDate(endDate)
                 .repeatDays(dow)
@@ -211,13 +202,11 @@ public class UserRepeatScheduleService {
         if (!r.getUser().getId().equals(userId)) {
             throw new AccessDeniedException("접근 권한이 없습니다.");
         }
-        UserCategory category = userCategoryRepository.findById(r.getCategory().getId())
-                .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
+
         return UserRepeatScheduleDto.builder()
                 .id(r.getId())
                 .title(r.getTitle())
                 .color(r.getColor())
-                .category(r.getCategory())
                 .startDate(r.getStartDate())
                 .endDate(r.getEndDate())
                 .repeatDays(r.getRepeatDays())
@@ -264,8 +253,6 @@ public class UserRepeatScheduleService {
         // 4) 나머지 필드 업데이트
         if (dto.getTitle()    != null) r.setTitle(dto.getTitle());
         if (dto.getColor()    != 0)    r.setColor(dto.getColor());
-        if (dto.getCategory() != 0)    r.setCategory(GlobalEnum.ScheduleCategory.fromCode(dto.getCategory()));
-
         if (patternChanged) {
             r.setStartDate(finalStartDate);
             r.setEndDate(finalEndDate);

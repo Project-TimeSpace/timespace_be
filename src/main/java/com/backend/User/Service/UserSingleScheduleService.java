@@ -45,7 +45,6 @@ public class UserSingleScheduleService {
                         .isRepeat(false)
                         .title(s.getTitle())
                         .color(s.getColor())
-                        .category(s.getCategory())
                         .date(s.getDate())
                         .day(s.getDay())
                         .startTime(s.getStartTime())
@@ -76,7 +75,6 @@ public class UserSingleScheduleService {
                 .user(user)
                 .title(dto.getTitle())
                 .color(dto.getColor())
-                .category(dto.getCategory())
                 .date(date)
                 .day(dto.getDay())
                 .startTime(startTime)
@@ -101,7 +99,6 @@ public class UserSingleScheduleService {
                 .isRepeat(false)
                 .title(s.getTitle())
                 .color(s.getColor())
-                .category(s.getCategory())
                 .date(s.getDate())
                 .day(s.getDay())
                 .startTime(s.getStartTime())
@@ -133,9 +130,6 @@ public class UserSingleScheduleService {
             s.setTitle(dto.getTitle());
         if (dto.getColor() != 0   )
             s.setColor(dto.getColor());
-        if (dto.getCategory() != 0) {
-            s.setCategory(GlobalEnum.ScheduleCategory.fromCode(dto.getCategory()));
-        }
         if (dto.getDate() != null) {
             s.setDate(finalDate);
             s.setDay(dto.getDay());  // dto.getDay()도 null 체크 필요 or default→s.getDay()

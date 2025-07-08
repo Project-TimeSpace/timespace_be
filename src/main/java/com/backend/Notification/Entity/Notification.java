@@ -1,5 +1,7 @@
 package com.backend.Notification.Entity;
 
+import com.backend.ConfigEnum.GlobalEnum;
+import com.backend.ConfigEnum.GlobalEnum.NotificationType;
 import com.backend.User.Entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,9 +27,10 @@ public class Notification {
     @Schema(description = "알림 수신자")
     private User user;
 
-    @Column(length = 30)
-    @Schema(description = "알림 종류", example = "FRIEND_REQUEST")
-    private String type;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", length = 30, nullable = false)
+    @Schema(description = "알림 종류 (GlobalEnum.NotificationType 참조)", example = "FRIEND_REQUEST")
+    private NotificationType type;
 
     @Column(columnDefinition = "TEXT")
     @Schema(description = "알림 내용", example = "홍길동님이 친구 요청을 보냈습니다.")

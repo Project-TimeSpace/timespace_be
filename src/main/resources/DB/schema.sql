@@ -33,17 +33,6 @@ CREATE TABLE SocialAccount (
     FOREIGN KEY (user_id) REFERENCES `User`(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-CREATE TABLE UserCategory (
-    id         BIGINT       AUTO_INCREMENT PRIMARY KEY,
-    user_id    BIGINT       NOT NULL,
-    category_number INT         NOT NULL, -- 예: 1~8
-    category_name VARCHAR(50) NOT NULL,
-    color VARCHAR(20) NOT NULL,
-    UNIQUE KEY uq_user_category (user_id, category_number),
-    FOREIGN KEY (user_id) REFERENCES `User`(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
-
 CREATE TABLE SingleSchedule (
     id          BIGINT       AUTO_INCREMENT PRIMARY KEY,
     user_id     BIGINT       NOT NULL,

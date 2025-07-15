@@ -111,8 +111,14 @@ public class FriendService {
         friendRepository.save(relation);
     }
 
-
-
-
-
+    @Transactional
+    public void deleteFriend(Long userId, Long friendId) {
+        // 친구 관계 찾기
+        Friend rel = friendRepository.findByUserIdAndFriendId(userId, friendId)
+                .orElseThrow(() -> new IllegalArgumentException("친구 관계가 아닙니다."));
+        Friend urel = friendRepository.findByUserIdAndFriendId(friendId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("친구삭제. 이 오류는 발생하면 안됩니다."));
+        friendRepository.delete(rel);
+        friendRepository.delete(urel);
+    }
 }

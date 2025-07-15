@@ -36,7 +36,7 @@ public class UserScheduleController {
     4. 반복일정 CRUD + 반복일정 예외날짜 처리
     */
 
-    @Operation(summary = "1. user 개인의 전체 일정(모든 것) 조회",
+    @Operation(summary = "1. user 개인의 전체 일정(모든 것) 조회    ",
             description = "로그인한 사용자의 개인 전체 일정(단일 + 반복)을 모두 조회합니다.")
     @GetMapping("/all")
     public Object getAllSchedules(@AuthenticationPrincipal UserDetails userDetails) {

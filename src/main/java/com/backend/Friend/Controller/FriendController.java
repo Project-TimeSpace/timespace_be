@@ -2,6 +2,7 @@ package com.backend.Friend.Controller;
 
 
 import com.backend.ConfigEnum.GlobalEnum.SortOption;
+import com.backend.Friend.Dto.ScheduleRequestDto;
 import com.backend.SharedFunction.Converge.ConvergedScheduleDto;
 import com.backend.Friend.Dto.FriendDto;
 import com.backend.Friend.Dto.FriendRequestReceivedDto;
@@ -74,6 +75,16 @@ public class FriendController {
         Long userId = Long.parseLong(userDetails.getUsername());
         friendService.updateVisibility(userId, friendId);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "4. 친구 삭제", description = "특정 친구 관계를 삭제합니다.")
+    @DeleteMapping("/{friendId}")
+    public ResponseEntity<Void> removeFriend(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long friendId) {
+        Long userId = Long.parseLong(userDetails.getUsername());
+        friendService.deleteFriend(userId, friendId);
+        return ResponseEntity.noContent().build();
     }
 
     // ---------- Friend Request Service ----------------
@@ -160,5 +171,14 @@ public class FriendController {
         return ResponseEntity.ok("약속을 거절했습니다.");
     }
 
+    @Operation(summary = "6. 받은 약속 신청 조회", description = "친구들이 보낸 약속 신청 목록을 확인합니다.")
+    @GetMapping("/schedules/requests")
+    public ResponseEntity<List<ScheduleRequestDto>> getReceivedScheduleRequests(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Long userId = Long.parseLong(userDetails.getUsername());
+        List<ScheduleRequestDto> dtoList = friendScheduleService.getReceivedScheduleRequests(userId);
+        return ResponseEntity.ok(dtoList);
+    }
 
 }

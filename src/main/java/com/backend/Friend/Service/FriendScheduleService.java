@@ -4,6 +4,7 @@ package com.backend.Friend.Service;
 import com.backend.ConfigEnum.GlobalEnum.NotificationType;
 import com.backend.ConfigEnum.GlobalEnum.RequestStatus;
 import com.backend.ConfigEnum.GlobalEnum.Visibility;
+import com.backend.Friend.Dto.ScheduleRequestDto;
 import com.backend.SharedFunction.Converge.ConvergedScheduleDto;
 import com.backend.SharedFunction.Converge.ScheduleConverge;
 import com.backend.Friend.Dto.FriendScheduleRequestDto;
@@ -22,6 +23,7 @@ import com.backend.User.Service.UserRepeatScheduleService;
 import com.backend.User.Service.UserSingleScheduleService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -121,7 +123,24 @@ public class FriendScheduleService {
         String content = String.format("%s님이 %s에 \"%s\" 약속을 신청했습니다.",
                 sender.getUserName(), dto.getDate().toString(), dto.getTitle());
         notificationService.createNotification(
-                userId, friendId, NotificationType.FRIEND_SCHEDULE, content);
+                userId, friendId, NotificationType.FRIEND_SCHEDULE_REQUEST, content);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ScheduleRequestDto> getReceivedScheduleRequests(Long recipientId) {
+        return scheduleRequestRepository.findByReceiver_Id(recipientId).stream()
+                .map(req -> ScheduleRequestDto.builder()
+                        .requestId(req.getId())
+                        .senderId(req.getSender().getId())
+                        .senderName(req.getSender().getUserName())
+                        .scheduleDate(req.getDate())
+                        .startTime(req.getStartTime())
+                        .endTime(req.getEndTime())
+                        .status(req.getStatus())
+                        .requestedAt(req.getRequestedAt())
+                        .build()
+                )
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -158,13 +177,19 @@ public class FriendScheduleService {
         // 5) 요청 상태 업데이트
         req.setStatus(RequestStatus.ACCEPTED.name());
         scheduleRequestRepository.save(req);
+
+        // 6) 알림 생성 (요청자에게 수락 알림)
+        String content = String.format("%s님이 %s에 \"%s\" 약속 요청을 수락했습니다.",
+                req.getReceiver().getUserName(), req.getDate(), req.getTitle());
+        notificationService.createNotification(receiverId, senderId,
+                NotificationType.FRIEND_SCHEDULE_ACCEPTED, content);
     }
 
     @Transactional
     public void rejectScheduleRequest(Long userId, Long requestId) {
         // 1) 요청 조회
         FriendScheduleRequest req = scheduleRequestRepository.findById(requestId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 요청입니다."));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 요청입니다."));
 
         // 2) 수신자 검증
         if (!req.getReceiver().getId().equals(userId)) {
@@ -175,8 +200,21 @@ public class FriendScheduleService {
             throw new IllegalStateException("이미 처리된 요청입니다.");
         }
 
+        Long senderId   = req.getSender().getId();
+        Long receiverId = req.getReceiver().getId();
+
         // 4) 상태 REJECTED로 변경 후 저장
         req.setStatus(RequestStatus.REJECTED.name());
         scheduleRequestRepository.save(req);
+
+        // 5) 알림 생성 (요청자에게 거절 알림)
+        String content = String.format(
+                "%s님이 %s에 \"%s\" 약속 요청을 거절했습니다.",
+                req.getReceiver().getUserName(),
+                req.getDate(),
+                req.getTitle()
+        );
+        notificationService.createNotification(receiverId, senderId,
+                NotificationType.FRIEND_SCHEDULE_REJECTED, content);
     }
 }

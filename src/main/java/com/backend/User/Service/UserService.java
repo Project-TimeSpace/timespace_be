@@ -17,12 +17,13 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         return UserInfoDto.builder()
+                .id(user.getId())
                 .userName(user.getUserName())
                 .email(user.getEmail())
                 .university(user.getUniversity())
-                .major(user.getMajor())
                 .phoneNumber(user.getPhoneNumber())
-                .selfMemo(user.getSelfMemo())
+                .birthDate(user.getBirthDate())
+                .profileImageUrl(user.getProfileImageUrl())
                 .build();
     }
 
@@ -36,17 +37,15 @@ public class UserService {
         if (dto.getUniversity() != null) {
             user.setUniversity(dto.getUniversity());
         }
-        if (dto.getMajor() != null) {
-            user.setMajor(dto.getMajor());
-        }
         if (dto.getPhoneNumber() != null) {
             user.setPhoneNumber(dto.getPhoneNumber());
         }
-        if (dto.getSelfMemo() != null) {
-            user.setSelfMemo(dto.getSelfMemo());
+        if (dto.getBirthDate() != null) {
+            user.setBirthDate(dto.getBirthDate());
         }
 
         userRepository.save(user);
     }
+
 
 }

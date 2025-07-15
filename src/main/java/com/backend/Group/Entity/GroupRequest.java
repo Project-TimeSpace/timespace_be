@@ -1,5 +1,6 @@
 package com.backend.Group.Entity;
 
+import com.backend.ConfigEnum.GlobalEnum.RequestStatus;
 import com.backend.User.Entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,9 +31,10 @@ public class GroupRequest {
     @Schema(description = "초대받은 사용자")
     private User receiver;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    @Schema(description = "요청 상태", example = "PENDING")
-    private String status;
+    @Schema(description = "요청 상태 (GlobalEnum.RequestStatus)", example = "PENDING")
+    private RequestStatus status;
 
     @Column(name = "requested_at")
     @Schema(description = "요청 일시", example = "2025-06-01T16:00:00")

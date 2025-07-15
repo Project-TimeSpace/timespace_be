@@ -118,7 +118,9 @@ public class GlobalEnum {
     // 5. 알림 유형
     public enum NotificationType {
         FRIEND_REQUEST,
-        FRIEND_SCHEDULE,
+        FRIEND_SCHEDULE_REQUEST,
+        FRIEND_SCHEDULE_ACCEPTED,
+        FRIEND_SCHEDULE_REJECTED,
         GROUP_INVITE,
         GROUP_SCHEDULE,
         SYSTEM_NOTICE
@@ -163,5 +165,24 @@ public class GlobalEnum {
         CREATED_DESC    // 친구 맺은 순서: 최신 순서
     }
 
+    // 2. 그룹 타입 (String 매핑)
+    public enum GroupType {
+        NORMAL("일반"),
+        FRIEND("친구"),
+        PROJECT("프로젝트"),
+        CLUB("동아리");
+
+        private final String displayName;
+
+        GroupType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+
+    }
 }
 

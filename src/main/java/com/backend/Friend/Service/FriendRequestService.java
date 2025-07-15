@@ -1,10 +1,12 @@
 package com.backend.Friend.Service;
 
+import com.backend.ConfigEnum.GlobalEnum.NotificationType;
 import com.backend.ConfigEnum.GlobalEnum.Visibility;
 import com.backend.Friend.Dto.FriendRequestReceivedDto;
 import com.backend.Friend.Entity.FriendRequest;
 import com.backend.Friend.Entity.Friend;
 import com.backend.ConfigEnum.GlobalEnum.RequestStatus;
+import com.backend.Notification.Service.NotificationService;
 import com.backend.User.Entity.User;
 import com.backend.User.Repository.UserRepository;
 import com.backend.Friend.Repository.FriendRepository;
@@ -27,8 +29,7 @@ public class FriendRequestService {
     private final UserRepository userRepository;
     private final FriendRepository friendRepository;
     private final FriendRequestRepository friendRequestRepository;
-    private final FriendScheduleRequestRepository scheduleRequestRepository;
-    private final UserSingleScheduleService userSingleScheduleService;
+    private final NotificationService notificationService;
 
 
     @Transactional
@@ -57,6 +58,11 @@ public class FriendRequestService {
                 .requestedAt(LocalDateTime.now())
                 .build();
         friendRequestRepository.save(req);
+
+        // 6) 알림 전송
+        String content = String.format("%s(%s)님이 친구 요청을 보냈습니다.", sender.getUserName(), sender.getEmail());
+        notificationService.createNotification(
+                userId, receiver.getId(), NotificationType.FRIEND_REQUEST, content);
     }
 
     @Transactional(readOnly = true)

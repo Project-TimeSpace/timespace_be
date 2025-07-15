@@ -7,11 +7,12 @@ CREATE TABLE `User` (
     email         VARCHAR(50)  NOT NULL UNIQUE,
     password      VARCHAR(100) NOT NULL,
     university    VARCHAR(50),
-    major         VARCHAR(50),
     phone_number  VARCHAR(20),
     max_friend    INT          NOT NULL DEFAULT 50,
     max_group     INT          NOT NULL DEFAULT 10,
     self_memo     VARCHAR(100),
+    birth_date    DATE,
+    profile_image_url   VARCHAR(255),
     created_at    DATETIME     DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
@@ -112,6 +113,7 @@ CREATE TABLE `Group` (
     group_type   VARCHAR(100) NOT NULL,
     max_member   INT          NOT NULL DEFAULT 10,
     created_at   DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    category     INT NOT NULL,
     FOREIGN KEY (master_id) REFERENCES `User`(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 

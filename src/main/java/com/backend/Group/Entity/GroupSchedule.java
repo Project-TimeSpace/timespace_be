@@ -27,7 +27,7 @@ public class GroupSchedule {
 
     @Column(length = 7)
     @Schema(description = "일정 색상(HEX)", example = "#0000ff")
-    private String color;
+    private Integer color;
 
     @Column(nullable = false)
     @Schema(description = "일정 날짜", example = "2025-06-20")
@@ -35,7 +35,7 @@ public class GroupSchedule {
 
     @Column(nullable = false)
     @Schema(description = "요일(0=일요일~6=토요일)", example = "5")
-    private Byte day;
+    private Integer day;
 
     @Column(name = "start_time", nullable = false)
     @Schema(description = "시작 시간", example = "14:00:00")

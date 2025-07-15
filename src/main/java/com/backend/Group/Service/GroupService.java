@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,13 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final GroupMembersRepository groupMembersRepository;
 
+    public void validateGroupMaster(Long groupId, Long userId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("그룹이 존재하지 않습니다."));
+        if (!group.getMaster().getId().equals(userId)) {
+            throw new AccessDeniedException("마스터만 사용할 수 있는 기능입니다.");
+        }
+    }
 
     /**유저가 속한 그룹 리스트 조회
     public List<GroupSummaryDto> getGroupsByUserId(Long userId) {
@@ -49,34 +57,13 @@ public class GroupService {
 
         return result;
     }*/
+
     // 이게 1 join으로 해결하는 조금더 빠른 방법
     public List<GroupSummaryDto> getGroupsByUserId(Long userId) {
-        // return groupMembersRepository.findGroupSummariesByUserId(userId);
-        return null;
+        return groupMembersRepository.findGroupSummariesByUserId(userId);
     }
 
-
-    public void createGroup(Long userId, GroupCreateRequestDto request) {
-        // 1. 그룹 생성
-        Group group = Group.builder()
-                .groupName(request.getGroupName())
-                .groupType(request.getGroupType())
-                .maxMember(request.getMaxMember())
-                .master(User.builder().id(userId).build())
-                .createdAt(LocalDateTime.now())
-                .build();
-        groupRepository.save(group);
-
-        // 2. 그룹 생성자는 기본이 그룹 멤버로 추가
-        GroupMembers member = GroupMembers.builder()
-                .group(group)
-                .user(User.builder().id(userId).build())
-                .isFavorite(false)
-                .build();
-        groupMembersRepository.save(member);
-    }
-
-
+    @Transactional
     public GroupInfoDto getGroupInfo(Long userId, Long groupId) {
         // 1. 그룹 소속 여부 확인
         boolean isMember = groupMembersRepository.existsByGroupIdAndUserId(groupId, userId);
@@ -115,7 +102,38 @@ public class GroupService {
 
     }
 
+    @Transactional
+    public void createGroup(Long userId, GroupCreateRequestDto request) {
+        // 1. 그룹 생성
+        Group group = Group.builder()
+                .groupName(request.getGroupName())
+                .groupType(request.getGroupType())
+                .maxMember(request.getMaxMember())
+                .master(User.builder().id(userId).build())
+                .createdAt(LocalDateTime.now())
+                .build();
+        groupRepository.save(group);
 
+        // 2. 그룹 생성자는 기본이 그룹 멤버로 추가
+        GroupMembers member = GroupMembers.builder()
+                .group(group)
+                .user(User.builder().id(userId).build())
+                .isFavorite(false)
+                .build();
+        groupMembersRepository.save(member);
+    }
 
+    @Transactional
+    public void changeMaster(Long groupId, Long newMasterId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("그룹이 존재하지 않습니다."));
+        // 새로운 마스터가 그룹 멤버인지 확인
+        GroupMembers membership = groupMembersRepository
+                .findByGroupIdAndUserId(groupId, newMasterId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자는 그룹 멤버가 아닙니다."));
+        // 방장 변경
+        group.setMaster(membership.getUser());
+        groupRepository.save(group);
+    }
 }
 

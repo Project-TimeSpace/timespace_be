@@ -1,5 +1,6 @@
 package com.backend.User.Service;
 
+import com.backend.ConfigEnum.GlobalEnum.ScheduleColor;
 import com.backend.SharedFunction.SharedFunction;
 import com.backend.User.Dto.CreateSingleScheduleDto;
 import com.backend.User.Dto.UserScheduleDto;
@@ -37,14 +38,13 @@ public class UserSingleScheduleService {
         LocalDate start = LocalDate.parse(startDate);
         LocalDate end   = LocalDate.parse(endDate);
 
-        return singleScheduleRepository
-                .findAllByUserIdAndDateBetween(userId, start, end)
+        return singleScheduleRepository.findAllByUserIdAndDateBetween(userId, start, end)
                 .stream()
                 .map(s -> UserScheduleDto.builder()
                         .id(s.getId())
                         .isRepeat(false)
                         .title(s.getTitle())
-                        .color(s.getColor())
+                        .color(s.getColor().getCode())
                         .date(s.getDate())
                         .day(s.getDay())
                         .startTime(s.getStartTime())
@@ -56,7 +56,6 @@ public class UserSingleScheduleService {
     // 3. 일정 추가
     // 일정 추가시 기존 일정과 겹치는지 확인하는 로직
     // ** 추후에 그룹 일정이랑 겹치는지도 확인해야함..... 복잡한데
-
 
     // 3-1
     @Transactional
@@ -74,7 +73,7 @@ public class UserSingleScheduleService {
         SingleSchedule s = SingleSchedule.builder()
                 .user(user)
                 .title(dto.getTitle())
-                .color(dto.getColor())
+                .color(ScheduleColor.fromCode(dto.getColor()))
                 .date(date)
                 .day(dto.getDay())
                 .startTime(startTime)
@@ -98,7 +97,7 @@ public class UserSingleScheduleService {
                 .id(s.getId())
                 .isRepeat(false)
                 .title(s.getTitle())
-                .color(s.getColor())
+                .color(s.getColor().getCode())
                 .date(s.getDate())
                 .day(s.getDay())
                 .startTime(s.getStartTime())
@@ -108,8 +107,7 @@ public class UserSingleScheduleService {
 
     // 3-3. Single 일정 업데이트
     @Transactional
-    public void updateSingleSchedule(Long userId, Long scheduleId,
-            CreateSingleScheduleDto dto) {
+    public void updateSingleSchedule(Long userId, Long scheduleId, CreateSingleScheduleDto dto) {
         // 1) 엔티티 로드 및 권한 체크
         SingleSchedule s = singleScheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new IllegalArgumentException("단일 일정을 찾을 수 없습니다."));
@@ -129,7 +127,7 @@ public class UserSingleScheduleService {
         if (dto.getTitle() != null)
             s.setTitle(dto.getTitle());
         if (dto.getColor() != 0   )
-            s.setColor(dto.getColor());
+            s.setColor(ScheduleColor.fromCode(dto.getColor()));
         if (dto.getDate() != null) {
             s.setDate(finalDate);
             s.setDay(dto.getDay());  // dto.getDay()도 null 체크 필요 or default→s.getDay()
@@ -151,8 +149,6 @@ public class UserSingleScheduleService {
         }
         singleScheduleRepository.delete(s);
     }
-
-
 
 
 }

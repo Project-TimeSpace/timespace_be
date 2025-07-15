@@ -1,16 +1,16 @@
 package com.backend.User.Entity;
 
-
-
+import com.backend.ConfigEnum.Converter.UniversityConverter;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-
-import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
+import com.backend.ConfigEnum.GlobalEnum.University;
 
 @Entity
-@Table(name = "`User`")  // 예약어이므로 백틱 사용
+@Table(name = "`User`")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -35,17 +35,14 @@ public class User {
     @Schema(description = "비밀번호 (암호화 저장)", example = "$2a$10$...")
     private String password;
 
-    @Column(length = 50)
-    @Schema(description = "대학교 이름", example = "한양대학교")
-    private String university;
+    @Convert(converter = UniversityConverter.class)
+    @Column(nullable = false)
+    @Schema(description = "대학교 코드", example = "1")
+    private University university;
 
     @Column(name = "phone_number", length = 20)
     @Schema(description = "전화번호", example = "010-1234-5678")
     private String phoneNumber;
-
-    @Column(name = "kakao_id", length = 30)
-    @Schema(description = "카카오톡 ID", example = "hong_kakao")
-    private String kakaoId;
 
     @Column(name = "max_friend", nullable = false)
     @Schema(description = "최대 친구 수", example = "50")
@@ -55,20 +52,16 @@ public class User {
     @Schema(description = "최대 그룹 수", example = "10")
     private Integer maxGroup = 10;
 
-    @Column(name = "self_memo", length = 100)
-    @Schema(description = "자기 메모", example = "자기소개 간단 메모")
-    private String selfMemo;
-
     @Column(name = "birth_date")
-    @Schema(description = "생년월일", example = "1990-01-01")
+    @Schema(description = "생년월일", example = "2000-01-01")
     private LocalDate birthDate;
 
     @Column(name = "profile_image_url", length = 255)
     @Schema(description = "프로필 이미지 URL", example = "https://example.com/profile.jpg")
     private String profileImageUrl;
 
-    @Column(name = "created_at", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     @Schema(description = "가입일시", example = "2025-06-01T11:00:00")
     private LocalDateTime createdAt;
-
 }

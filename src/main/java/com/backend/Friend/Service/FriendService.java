@@ -21,25 +21,6 @@ public class FriendService {
 
     private final FriendRepository friendRepository;
 
-    /*
-    @Transactional(readOnly = true)
-    public List<FriendDto> getFriends(Long userId) {
-        List<Friend> friends = friendRepository.findAllByUserId(userId);
-
-        return friends.stream()
-                .map(f -> FriendDto.builder()
-                        .id(f.getId())
-                        .friendId(f.getFriend().getId())
-                        .name(f.getFriend().getUserName())
-                        .email(f.getFriend().getEmail())
-                        .isFavorite(f.getIsFavorite())
-                        .visibility(f.getVisibility())
-                        .nickname(f.getNickname())
-                        .createdAt(f.getCreatedAt())
-                        .build()
-                )
-                .collect(Collectors.toList());
-    }*/
 
     @Transactional(readOnly = true)
     public List<FriendDto> getFriends(Long userId, SortOption sort) {

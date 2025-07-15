@@ -1,5 +1,6 @@
 package com.backend.Notification.Entity;
 
+import com.backend.ConfigEnum.Converter.NotificationTypeConverter;
 import com.backend.ConfigEnum.GlobalEnum;
 import com.backend.ConfigEnum.GlobalEnum.NotificationType;
 import com.backend.User.Entity.User;
@@ -27,9 +28,9 @@ public class Notification {
     @Schema(description = "알림 수신자")
     private User user;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", length = 30, nullable = false)
-    @Schema(description = "알림 종류 (GlobalEnum.NotificationType 참조)", example = "FRIEND_REQUEST")
+    @Convert(converter = NotificationTypeConverter.class)
+    @Column(name = "type", nullable = false)
+    @Schema(description = "알림 종류 코드 (GlobalEnum.NotificationType)", example = "1")
     private NotificationType type;
 
     @Column(columnDefinition = "TEXT")

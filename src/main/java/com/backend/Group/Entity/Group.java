@@ -1,9 +1,12 @@
 package com.backend.Group.Entity;
 
+import com.backend.ConfigEnum.Converter.GroupCategoryConverter;
+import com.backend.ConfigEnum.GlobalEnum.GroupCategory;
 import com.backend.User.Entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -11,7 +14,8 @@ import java.time.LocalDateTime;
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 @Schema(description = "그룹 정보를 저장하는 엔티티")
 public class Group {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "그룹 고유 ID", example = "1")
     private Long id;
 
@@ -25,14 +29,24 @@ public class Group {
     private String groupName;
 
     @Column(name = "group_type", nullable = false, length = 100)
-    @Schema(description = "그룹 유형", example = "STUDY")
+    @Schema(description = "그룹 타입", example = "NORMAL")
     private String groupType;
 
     @Column(name = "max_member", nullable = false)
     @Schema(description = "최대 그룹 멤버 수", example = "20")
     private Integer maxMember;
 
-    @Column(name = "created_at")
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     @Schema(description = "그룹 생성 일시", example = "2025-06-01T15:00:00")
     private LocalDateTime createdAt;
+
+    @Convert(converter = GroupCategoryConverter.class)
+    @Column(name = "category", nullable = false)
+    @Schema(description = "그룹 카테고리 코드", example = "1")
+    private GroupCategory category;
+
+    @Column(name = "unique_code", length = 100, unique = true)
+    @Schema(description = "그룹 참여용 고유 코드", example = "abc123xyz")
+    private String uniqueCode;
 }

@@ -1,5 +1,6 @@
 package com.backend.User.Service;
 
+import com.backend.ConfigEnum.GlobalEnum.University;
 import com.backend.User.Dto.UserInfoDto;
 import com.backend.User.Entity.User;
 import com.backend.User.Repository.UserRepository;
@@ -20,7 +21,8 @@ public class UserService {
                 .id(user.getId())
                 .userName(user.getUserName())
                 .email(user.getEmail())
-                .university(user.getUniversity())
+                .univCode(user.getUniversity().getCode())
+                .univName(user.getUniversity().getDisplayName())
                 .phoneNumber(user.getPhoneNumber())
                 .birthDate(user.getBirthDate())
                 .profileImageUrl(user.getProfileImageUrl())
@@ -34,8 +36,8 @@ public class UserService {
         if (dto.getUserName() != null) {
             user.setUserName(dto.getUserName());
         }
-        if (dto.getUniversity() != null) {
-            user.setUniversity(dto.getUniversity());
+        if (dto.getUnivCode() != null) {
+            user.setUniversity(University.fromCode(dto.getUnivCode()));
         }
         if (dto.getPhoneNumber() != null) {
             user.setPhoneNumber(dto.getPhoneNumber());

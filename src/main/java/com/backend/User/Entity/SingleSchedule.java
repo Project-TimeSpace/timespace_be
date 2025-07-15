@@ -1,6 +1,8 @@
 package com.backend.User.Entity;
 
+import com.backend.ConfigEnum.Converter.ScheduleColorConverter;
 import com.backend.ConfigEnum.GlobalEnum;
+import com.backend.ConfigEnum.GlobalEnum.ScheduleColor;
 import jakarta.persistence.*;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,8 +27,9 @@ public class SingleSchedule {
     @Schema(description = "일정 제목", example = "회의")
     private String title;
 
-    @Schema(description = "일정 표시 색상-정수로 저장하고 Enum으로 매핑", example = "1:RED:HEX")
-    private Integer color;
+    @Convert(converter = ScheduleColorConverter.class)
+    @Schema(description = "일정 표시 색상 (hex)", example = "#FF0000")
+    private ScheduleColor color;
 
     @Column(nullable = false)
     @Schema(description = "일정 날짜", example = "2025-06-14")

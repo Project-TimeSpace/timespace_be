@@ -1,5 +1,9 @@
 package com.backend.Group.Entity;
 
+import com.backend.ConfigEnum.Converter.DayOfWeekConverter;
+import com.backend.ConfigEnum.Converter.ScheduleColorConverter;
+import com.backend.ConfigEnum.GlobalEnum.DayOfWeek;
+import com.backend.ConfigEnum.GlobalEnum.ScheduleColor;
 import jakarta.persistence.*;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,17 +29,19 @@ public class GroupSchedule {
     @Schema(description = "일정 제목", example = "그룹 회의")
     private String title;
 
-    @Column(length = 7)
-    @Schema(description = "일정 색상(HEX)", example = "#0000ff")
-    private Integer color;
+    @Convert(converter = ScheduleColorConverter.class)
+    @Column(nullable = false)
+    @Schema(description = "일정 표시 색상 (hex)", example = "#0000ff")
+    private ScheduleColor color;
 
     @Column(nullable = false)
     @Schema(description = "일정 날짜", example = "2025-06-20")
     private LocalDate date;
 
+    @Convert(converter = DayOfWeekConverter.class)
     @Column(nullable = false)
-    @Schema(description = "요일(0=일요일~6=토요일)", example = "5")
-    private Integer day;
+    @Schema(description = "요일(1=월, 7=일요일)", example = "5")
+    private DayOfWeek day;
 
     @Column(name = "start_time", nullable = false)
     @Schema(description = "시작 시간", example = "14:00:00")

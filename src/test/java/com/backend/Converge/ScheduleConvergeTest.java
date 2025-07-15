@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.backend.ConfigEnum.GlobalEnum.ScheduleCategory;
 import com.backend.User.Dto.UserScheduleDto;
 import com.backend.User.Entity.User;
 import com.backend.User.Repository.UserRepository;
@@ -54,7 +53,6 @@ class ScheduleConvergeTest {
                         .email("alice@x.com")
                         .password("pass")
                         .university("Univ")
-                        .major("CS")
                         .phoneNumber("010-0000-0001")
                         .kakaoId("alice_kakao")
                         .maxFriend(100)
@@ -70,7 +68,6 @@ class ScheduleConvergeTest {
                         .email("bob@x.com")
                         .password("pass")
                         .university("Univ")
-                        .major("CS")
                         .phoneNumber("010-0000-0002")
                         .kakaoId("bob_kakao")
                         .maxFriend(100)
@@ -157,7 +154,6 @@ class ScheduleConvergeTest {
                             .email("user" + userId + "@x.com")
                             .password("pass")
                             .university("Univ")
-                            .major("Major")
                             .phoneNumber("010-0000-000" + userId)
                             .kakaoId("kakao" + userId)
                             .maxFriend(100)
@@ -223,7 +219,6 @@ class ScheduleConvergeTest {
                             .email("user" + userId + "@x.com")
                             .password("pass")
                             .university("Univ")
-                            .major("Major")
                             .phoneNumber("010-0000-000" + userId)
                             .kakaoId("kakao" + userId)
                             .maxFriend(100)

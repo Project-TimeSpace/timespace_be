@@ -1,8 +1,13 @@
 package com.backend.ConfigEnum;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 public class GlobalEnum {
 
     // 1. 사용자 소속 대학교 (예시 5개)
+    @Getter
+    @AllArgsConstructor
     public enum University {
         SEOUL_NATIONAL(1, "서울대학교"),
         YONSEI(2, "연세대학교"),
@@ -12,19 +17,6 @@ public class GlobalEnum {
 
         private final int code;
         private final String displayName;
-
-        University(int code, String displayName) {
-            this.code = code;
-            this.displayName = displayName;
-        }
-
-        public int getCode() {
-            return code;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
 
         // Code로 University 조회
         public static University fromCode(int code) {
@@ -37,49 +29,34 @@ public class GlobalEnum {
         }
     }
 
-    // 2. 소셜 로그인 공급자
-    public enum SocialProvider {
-        KAKAO,
-        GOOGLE,
-        NAVER
-    }
-
-    // 3-1. 색상 (일정에서 사용하는 기본 색상)
+    // 2. 색상 (일정에서 사용하는 기본 색상)
+    @Getter
+    @AllArgsConstructor
     public enum ScheduleColor {
-        RED("#FF0000"),
-        ORANGE("#FFA500"),
-        YELLOW("#FFFF00"),
-        GREEN("#008000"),
-        BLUE("#0000FF"),
-        INDIGO("#4B0082"),
-        PURPLE("#800080");
+        RED    (1, "#FF0000"),
+        ORANGE (2, "#FFA500"),
+        YELLOW (3, "#FFFF00"),
+        GREEN  (4, "#008000"),
+        BLUE   (5, "#0000FF"),
+        INDIGO (6, "#4B0082"),
+        PURPLE (7, "#800080");
 
+        private final int code;
         private final String hex;
 
-        ScheduleColor(String hex) {
-            this.hex = hex;
-        }
-
-        public String getHex() {
-            return hex;
-        }
-
-        /**
-         * 정수 코드를 받아서 대응되는 ScheduleColor를 반환합니다.
-         * @param code 0=RED, 1=ORANGE, …, 6=PURPLE
-         * @return ScheduleColor
-         * @throws IllegalArgumentException 코드가 0~6 범위를 벗어나면 예외 발생
-         */
         public static ScheduleColor fromCode(int code) {
-            ScheduleColor[] values = ScheduleColor.values();
-            if (code < 0 || code >= values.length) {
-                throw new IllegalArgumentException("유효하지 않은 color 코드: " + code);
+            for (ScheduleColor c : values()) {
+                if (c.getCode() == code) {
+                    return c;
+                }
             }
-            return values[code];
+            throw new IllegalArgumentException("유효하지 않은 color 코드: " + code);
         }
     }
 
-    // 3-2. 요일 (DB에서는 TINYINT로 저장, 1=Monday ~ 7=Sunday)
+    // 3 요일 (DB에서는 TINYINT로 저장, 1=Monday ~ 7=Sunday)
+    @Getter
+    @AllArgsConstructor
     public enum DayOfWeek {
         MONDAY(1),
         TUESDAY(2),
@@ -91,14 +68,6 @@ public class GlobalEnum {
 
         private final int value;
 
-        DayOfWeek(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-
         // 예: 1 -> MONDAY
         public static DayOfWeek fromValue(int value) {
             for (DayOfWeek day : values()) {
@@ -108,49 +77,87 @@ public class GlobalEnum {
         }
     }
 
+    // 4. 그룹 타입 (String 매핑)
+    @Getter
+    @AllArgsConstructor
+    public enum GroupCategory {
+        NORMAL (1, "일반"),
+        FRIEND (2, "친구"),
+        PROJECT(3, "프로젝트"),
+        CLUB   (4, "동아리");
+
+        private final int code;
+        private final String displayName;
+
+        public static GroupCategory fromCode(int code) {
+            for (GroupCategory c : values()) {
+                if (c.getCode() == code) {
+                    return c;
+                }
+            }
+            throw new IllegalArgumentException("유효하지 않은 GroupCategory 코드: " + code);
+        }
+    }
+
+    // 2. 소셜 로그인 공급자
+    public enum SocialProvider {
+        KAKAO,
+        GOOGLE,
+        NAVER
+    }
     // 4. 요청 상태 (Friend, Group, Schedule 모두 사용)
+    @Getter
+    @AllArgsConstructor
     public enum RequestStatus {
-        PENDING,
-        ACCEPTED,
-        REJECTED
+        PENDING (1, "대기"),
+        ACCEPTED(2, "수락"),
+        REJECTED(3, "거절");
+
+        private final int code;
+        private final String displayName;
+
+        /** DB의 int 코드를 받아서 대응되는 RequestStatus를 반환 */
+        public static RequestStatus fromCode(int code) {
+            for (RequestStatus s : values()) {
+                if (s.getCode() == code) return s;
+            }
+            throw new IllegalArgumentException("유효하지 않은 RequestStatus 코드: " + code);
+        }
     }
 
     // 5. 알림 유형
+    @Getter
+    @AllArgsConstructor
     public enum NotificationType {
-        FRIEND_REQUEST,
-        FRIEND_SCHEDULE_REQUEST,
-        FRIEND_SCHEDULE_ACCEPTED,
-        FRIEND_SCHEDULE_REJECTED,
-        GROUP_INVITE,
-        GROUP_SCHEDULE,
-        SYSTEM_NOTICE
-    }
-
-    public enum ScheduleCategory {
-        NORMAL(1),
-        FRIEND(2),
-        TEAMPLAY(3),
-        CLUB(4),
-        SCHOOL(5);
+        FRIEND_REQUEST           (1, "FRIEND_REQUEST"),
+        FRIEND_SCHEDULE_REQUEST  (2, "FRIEND_SCHEDULE_REQUEST"),
+        FRIEND_SCHEDULE_ACCEPTED (3, "FRIEND_SCHEDULE_ACCEPTED"),
+        FRIEND_SCHEDULE_REJECTED (4, "FRIEND_SCHEDULE_REJECTED"),
+        GROUP_INVITE             (5, "GROUP_INVITE"),
+        GROUP_SCHEDULE           (6, "GROUP_SCHEDULE"),
+        SYSTEM_NOTICE            (7, "SYSTEM_NOTICE"),
+        GROUP_MASTER             (8, "GRUOP_MASTER");
 
         private final int code;
+        private final String name;
 
-        ScheduleCategory(int code) {
-            this.code = code;
-        }
-
-        public int getCode() {
-            return code;
-        }
-
-        /** 코드 → enum 매핑 */
-        public static ScheduleCategory fromCode(int code) {
-            for (ScheduleCategory c : values()) {
-                if (c.code == code) return c;
+        /** DB int → enum */
+        public static NotificationType fromCode(int code) {
+            for (NotificationType t : values()) {
+                if (t.getCode() == code) return t;
             }
-            throw new IllegalArgumentException("유효하지 않은 ScheduleCategory 코드: " + code);
+            throw new IllegalArgumentException("유효하지 않은 NotificationType 코드: " + code);
+        }
+
+        /** 문자열 name → enum */
+        public static NotificationType fromName(String name) {
+            for (NotificationType t : values()) {
+                if (t.getName().equalsIgnoreCase(name)) return t;
+            }
+            throw new IllegalArgumentException("유효하지 않은 NotificationType name: " + name);
         }
     }
+
 
     public enum Visibility {
         ALL,     // 전체 일정 공개
@@ -163,26 +170,6 @@ public class GlobalEnum {
         NAME_DESC,      // 닉네임 역순
         CREATED_ASC,    // 친구 맺은 순서: 오래된 순서
         CREATED_DESC    // 친구 맺은 순서: 최신 순서
-    }
-
-    // 2. 그룹 타입 (String 매핑)
-    public enum GroupType {
-        NORMAL("일반"),
-        FRIEND("친구"),
-        PROJECT("프로젝트"),
-        CLUB("동아리");
-
-        private final String displayName;
-
-        GroupType(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-
-
     }
 }
 

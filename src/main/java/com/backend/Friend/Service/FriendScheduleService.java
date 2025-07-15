@@ -111,10 +111,11 @@ public class FriendScheduleService {
                 .sender(sender)
                 .receiver(receiver)
                 .title(dto.getTitle())
+                .requestMemo(dto.getRequestMemo())
                 .date(dto.getDate())
                 .startTime(dto.getStartTime())
                 .endTime(dto.getEndTime())
-                .status(RequestStatus.PENDING.name())   // 초기 상태는 PENDING
+                .status(RequestStatus.PENDING)   // 초기 상태는 PENDING
                 .build();
 
         scheduleRequestRepository.save(req);
@@ -133,10 +134,12 @@ public class FriendScheduleService {
                         .requestId(req.getId())
                         .senderId(req.getSender().getId())
                         .senderName(req.getSender().getUserName())
+                        .title(req.getTitle())
+                        .requestMemo(req.getRequestMemo())
                         .scheduleDate(req.getDate())
                         .startTime(req.getStartTime())
                         .endTime(req.getEndTime())
-                        .status(req.getStatus())
+                        .status(String.valueOf(req.getStatus()))
                         .requestedAt(req.getRequestedAt())
                         .build()
                 )
@@ -175,7 +178,7 @@ public class FriendScheduleService {
         userSingleScheduleService.createSingleSchedule(receiverId, dto);
 
         // 5) 요청 상태 업데이트
-        req.setStatus(RequestStatus.ACCEPTED.name());
+        req.setStatus(RequestStatus.ACCEPTED);
         scheduleRequestRepository.save(req);
 
         // 6) 알림 생성 (요청자에게 수락 알림)
@@ -204,7 +207,7 @@ public class FriendScheduleService {
         Long receiverId = req.getReceiver().getId();
 
         // 4) 상태 REJECTED로 변경 후 저장
-        req.setStatus(RequestStatus.REJECTED.name());
+        req.setStatus(RequestStatus.REJECTED);
         scheduleRequestRepository.save(req);
 
         // 5) 알림 생성 (요청자에게 거절 알림)

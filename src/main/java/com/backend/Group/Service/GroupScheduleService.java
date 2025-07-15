@@ -1,5 +1,6 @@
 package com.backend.Group.Service;
 
+import com.backend.ConfigEnum.GlobalEnum.DayOfWeek;
 import com.backend.ConfigEnum.GlobalEnum.ScheduleColor;
 import com.backend.Group.Dto.GroupScheduleCreateRequest;
 import com.backend.Group.Dto.GroupScheduleDto;
@@ -32,9 +33,9 @@ public class GroupScheduleService {
         GroupSchedule schedule = GroupSchedule.builder()
                 .group(group)
                 .title(request.getTitle())
-                .color(request.getColor())
+                .color(ScheduleColor.fromCode(request.getColor()))
                 .date(request.getDate())
-                .day(request.getDay())
+                .day(DayOfWeek.fromValue(request.getDay()))
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime())
                 .build();
@@ -46,9 +47,9 @@ public class GroupScheduleService {
         return GroupScheduleDto.builder()
                 .scheduleId(saved.getId())
                 .title(saved.getTitle())
-                .color(saved.getColor())
+                .color(saved.getColor().getCode())
                 .date(saved.getDate())
-                .day(saved.getDay())
+                .day(saved.getDay().getValue())
                 .startTime(saved.getStartTime())
                 .endTime(saved.getEndTime())
                 .build();
@@ -63,9 +64,9 @@ public class GroupScheduleService {
         }
 
         schedule.setTitle(request.getTitle());
-        schedule.setColor(request.getColor());
+        schedule.setColor(ScheduleColor.fromCode(request.getColor()));
         schedule.setDate(request.getDate());
-        schedule.setDay(request.getDay());
+        schedule.setDay(DayOfWeek.fromValue(request.getDay()));
         schedule.setStartTime(request.getStartTime());
         schedule.setEndTime(request.getEndTime());
         GroupSchedule updated = groupScheduleRepository.save(schedule);
@@ -73,9 +74,9 @@ public class GroupScheduleService {
         return GroupScheduleDto.builder()
                 .scheduleId(updated.getId())
                 .title(updated.getTitle())
-                .color(updated.getColor())
+                .color(updated.getColor().getCode())
                 .date(updated.getDate())
-                .day(updated.getDay())
+                .day(updated.getDay().getValue())
                 .startTime(updated.getStartTime())
                 .endTime(updated.getEndTime())
                 .build();

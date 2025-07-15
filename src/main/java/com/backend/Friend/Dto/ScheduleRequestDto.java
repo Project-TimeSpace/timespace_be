@@ -22,6 +22,12 @@ public class ScheduleRequestDto {
     @Schema(description = "보낸 사람 이름", example = "박철수")
     private String senderName;
 
+    @Schema(description = "일정 제목", example = "함께 점심")
+    private String title;
+
+    @Schema(description = "요청 메모", example = "점심 먹고 쇼핑해요")
+    private String requestMemo;
+
     @Schema(description = "약속 날짜", example = "2025-07-15")
     private LocalDate scheduleDate;
 

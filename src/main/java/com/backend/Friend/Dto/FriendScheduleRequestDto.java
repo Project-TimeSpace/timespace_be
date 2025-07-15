@@ -15,6 +15,9 @@ public class FriendScheduleRequestDto {
     @Schema(description = "약속 제목", example = "점심 식사")
     private String title;
 
+    @Schema(description = "약속 내용", example = "이날 이거 먹으러 갈래?")
+    private String requestMemo;
+
     @Schema(description = "약속 날짜 (YYYY-MM-DD)", example = "2025-06-15")
     private LocalDate date;
 

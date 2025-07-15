@@ -50,6 +50,14 @@ public class SecurityConfig {
             "/v1/auth/send-verification-code",
             "/v1/auth/verify-code",
             "/v1/auth/reset-password",
+
+            // Enum for FE
+            "/v1/enum/univ-list",
+            "/v1/enum/color-list",
+            "/v1/enum/days-of-week",
+            "/v1/enum/group-categories",
+            "/v1/enum/notification-types"
+
     };
 
     @Bean

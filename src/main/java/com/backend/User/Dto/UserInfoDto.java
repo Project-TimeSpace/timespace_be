@@ -19,8 +19,10 @@ public class UserInfoDto {
     @Schema(description = "이메일 주소", example = "hong@example.com")
     private String email;
 
+    @Schema(description = "대학교 코드", example = "1")
+    private Integer univCode;
     @Schema(description = "대학교 이름", example = "한양대학교")
-    private String university;
+    private String univName;
 
     @Schema(description = "전화번호", example = "010-1234-5678")
     private String phoneNumber;

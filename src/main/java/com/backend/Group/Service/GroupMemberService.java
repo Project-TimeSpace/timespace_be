@@ -151,8 +151,30 @@ public class GroupMemberService {
     // 이거는 로직 업데이트 필요
     @Transactional
     public void leaveGroup(Long groupId, Long userId) {
+        // 1) 멤버십 조회
         GroupMembers membership = groupMembersRepository.findByGroupIdAndUserId(groupId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("그룹 멤버십이 존재하지 않습니다."));
+
+        Group group = membership.getGroup();
+
+        // 2) 현재 그룹 멤버 수 확인
+        long memberCount = groupMembersRepository.countByGroupId(groupId);
+
+        // 3) 마스터가 나갈 때
+        if (group.getMaster().getId().equals(userId)) {
+            if (memberCount == 1) {
+                // 3-1) 혼자 남은 마스터라면, 그룹 삭제
+                groupMembersRepository.delete(membership);
+                groupRepository.delete(group);
+                return;
+            } else {
+                // 3-2) 멤버가 더 있으면, 마스터는 탈퇴 불가
+                throw new IllegalStateException("그룹 마스터는 그룹을 탈퇴할 수 없습니다. 먼저 방장을 변경하세요.");
+            }
+        }
+
+        // 4) 일반 멤버는 그냥 탈퇴
         groupMembersRepository.delete(membership);
     }
+
 }

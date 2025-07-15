@@ -1,5 +1,6 @@
 package com.backend.Group.Service;
 
+import com.backend.ConfigEnum.GlobalEnum.NotificationType;
 import com.backend.Group.Dto.GroupCreateRequestDto;
 import com.backend.Group.Dto.GroupInfoDto;
 import com.backend.Group.Dto.GroupMemberDto;
@@ -8,6 +9,7 @@ import com.backend.Group.Entity.Group;
 import com.backend.Group.Entity.GroupMembers;
 import com.backend.Group.Repository.GroupMembersRepository;
 import com.backend.Group.Repository.GroupRepository;
+import com.backend.Notification.Service.NotificationService;
 import com.backend.User.Entity.User;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,6 +25,7 @@ public class GroupService {
 
     private final GroupRepository groupRepository;
     private final GroupMembersRepository groupMembersRepository;
+    private final NotificationService notificationService;
 
     public void validateGroupMaster(Long groupId, Long userId) {
         Group group = groupRepository.findById(groupId)
@@ -65,19 +68,24 @@ public class GroupService {
 
     @Transactional
     public GroupInfoDto getGroupInfo(Long userId, Long groupId) {
-        // 1. 그룹 소속 여부 확인
-        boolean isMember = groupMembersRepository.existsByGroupIdAndUserId(groupId, userId);
+        // 2. 그룹 정보 조회
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("그룹이 존재하지 않습니다."));
+
+        if(group.getId() != groupId){
+            throw  new IllegalArgumentException("");
+        }
+        // 3. 멤버 목록 조회
+        List<GroupMembers> groupMembers = groupMembersRepository.findByGroupId(groupId);
+        int memberCount = groupMembers.size();
+
+        // 3) 조회된 리스트로 소속 여부 검사
+        boolean isMember = groupMembers.stream()
+                .anyMatch(gm -> gm.getUser().getId().equals(userId));
         if (!isMember) {
             throw new AccessDeniedException("해당 그룹에 대한 접근 권한이 없습니다.");
         }
 
-        // 2. 그룹 정보 조회
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new RuntimeException("그룹이 존재하지 않습니다."));
-        int memberCount = groupMembersRepository.countByGroupId(groupId);
-
-        // 3. 멤버 목록 조회
-        List<GroupMembers> groupMembers = groupMembersRepository.findByGroupId(groupId);
         List<GroupMemberDto> memberDtos = groupMembers.stream()
                 .map(gm -> {
                     User user = gm.getUser();
@@ -124,16 +132,24 @@ public class GroupService {
     }
 
     @Transactional
-    public void changeMaster(Long groupId, Long newMasterId) {
+    public void changeMaster(Long userId,Long groupId, Long newMasterId) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("그룹이 존재하지 않습니다."));
         // 새로운 마스터가 그룹 멤버인지 확인
-        GroupMembers membership = groupMembersRepository
-                .findByGroupIdAndUserId(groupId, newMasterId)
+        GroupMembers membership = groupMembersRepository.findByGroupIdAndUserId(groupId, newMasterId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자는 그룹 멤버가 아닙니다."));
         // 방장 변경
         group.setMaster(membership.getUser());
         groupRepository.save(group);
+
+        // 5) 새로운 방장에게 알림 전송
+        String content = String.format("그룹 ‘%s’의 새로운 방장으로 지정되었습니다.", group.getGroupName());
+        notificationService.createNotification(
+                userId,                        // 발신자: 기존 방장
+                newMasterId,                       // 수신자: 새로운 방장
+                NotificationType.GROUP_MASTER,  // 알림 타입: SYSTEM_NOTICE 사용
+                content
+        );
     }
 }
 

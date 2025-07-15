@@ -41,14 +41,6 @@ public class FriendController {
     private final FriendRequestService friendRequestService;
     private final FriendScheduleService friendScheduleService;
 
-    /*
-    @Operation(summary = "1. 친구 목록 조회", description = "로그인한 사용자의 모든 친구 목록(이름, 즐겨찾기 여부, 별칭 등)을 반환합니다.")
-    @GetMapping
-    public ResponseEntity<List<FriendDto>> listFriends(@AuthenticationPrincipal UserDetails userDetails) {
-        Long userId = Long.parseLong(userDetails.getUsername());
-        return ResponseEntity.ok(friendService.getFriends(userId));
-    }*/
-
 
     // ------------------ Friend Service --------------------
     @Operation(summary = "1. 친구 목록 조회", description = "로그인한 사용자의 모든 친구 목록 반환. ")
@@ -59,7 +51,7 @@ public class FriendController {
         return ResponseEntity.ok(friendService.getFriends(userId, sortOption));
     }
 
-    // 즐겨찾기 토글
+
     @Operation(summary = "2. 친구 즐겨찾기 설정", description = "상태 변경True->False , False->True.")
     @PatchMapping("/{friendId}/favorite")
     public ResponseEntity<Void> setFavorite(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long friendId) {

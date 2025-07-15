@@ -1,5 +1,6 @@
 package com.backend.User.Service;
 
+import com.backend.ConfigEnum.GlobalEnum.ScheduleColor;
 import com.backend.SharedFunction.SharedFunction;
 import com.backend.User.Dto.CreateRepeatScheduleDto;
 import com.backend.User.Dto.UserRepeatScheduleDto;
@@ -42,7 +43,7 @@ public class UserRepeatScheduleService {
         List<RepeatSchedule> repeats = repeatScheduleRepository
                 .findAllByUserIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(userId, end, start);
 
-        // 2) 관련 예외일자만 DB에서 얻기
+        // 2) 관련 일자만 DB에서 얻기
         List<Long> repeatIds = repeats.stream()
                 .map(RepeatSchedule::getId)
                 .collect(Collectors.toList());
@@ -80,7 +81,7 @@ public class UserRepeatScheduleService {
                             .id(r.getId())
                             .isRepeat(true)
                             .title(r.getTitle())
-                            .color(r.getColor())
+                            .color(r.getColor().getCode())
                             .date(occurrence)
                             .day(r.getRepeatDays())
                             .startTime(r.getStartTime())
@@ -95,7 +96,6 @@ public class UserRepeatScheduleService {
     }
 
     // 4. Repeat Schedule CRUD
-
     // 4-1
     /*
     @Transactional
@@ -181,7 +181,7 @@ public class UserRepeatScheduleService {
         RepeatSchedule r = RepeatSchedule.builder()
                 .user(user)
                 .title(dto.getTitle())
-                .color(dto.getColor())
+                .color(ScheduleColor.fromCode(dto.getColor()))
                 .startDate(startDate)
                 .endDate(endDate)
                 .repeatDays(dow)
@@ -206,7 +206,7 @@ public class UserRepeatScheduleService {
         return UserRepeatScheduleDto.builder()
                 .id(r.getId())
                 .title(r.getTitle())
-                .color(r.getColor())
+                .color(r.getColor().getCode())
                 .startDate(r.getStartDate())
                 .endDate(r.getEndDate())
                 .repeatDays(r.getRepeatDays())
@@ -233,8 +233,7 @@ public class UserRepeatScheduleService {
         LocalTime finalEndTime   = dto.getEndTime()     != null ? dto.getEndTime()     : r.getEndTime();
 
         // 3) 패턴 변경 여부 판단
-        boolean patternChanged =
-                dto.getStartDate()!= null || dto.getEndDate()!= null ||
+        boolean patternChanged = dto.getStartDate()!= null || dto.getEndDate()!= null ||
                         dto.getRepeatDays()!= 0 || dto.getStartTime()!= null || dto.getEndTime() != null;
 
         if (patternChanged) {
@@ -252,7 +251,7 @@ public class UserRepeatScheduleService {
 
         // 4) 나머지 필드 업데이트
         if (dto.getTitle()    != null) r.setTitle(dto.getTitle());
-        if (dto.getColor()    != 0)    r.setColor(dto.getColor());
+        if (dto.getColor()    != 0)    r.setColor(ScheduleColor.fromCode(dto.getColor()));
         if (patternChanged) {
             r.setStartDate(finalStartDate);
             r.setEndDate(finalEndDate);

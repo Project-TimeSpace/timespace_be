@@ -1,4 +1,4 @@
-package com.backend.ConfigEnum;
+package com.backend.ConfigEnum.Dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

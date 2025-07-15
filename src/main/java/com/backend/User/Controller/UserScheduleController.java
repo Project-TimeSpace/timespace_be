@@ -36,7 +36,7 @@ public class UserScheduleController {
     4. 반복일정 CRUD + 반복일정 예외날짜 처리
     */
 
-    @Operation(summary = "1. user 개인의 전체 일정(모든 것) 조회    ",
+    @Operation(summary = "1. user 개인의 전체 일정(모든 것) 조회->근데 이거 안쓸거 같음.",
             description = "로그인한 사용자의 개인 전체 일정(단일 + 반복)을 모두 조회합니다.")
     @GetMapping("/all")
     public Object getAllSchedules(@AuthenticationPrincipal UserDetails userDetails) {
@@ -44,8 +44,7 @@ public class UserScheduleController {
         return userSingleScheduleService.getAllSchedules(userId);
     }
 
-    @Operation(summary = "2. 기간별 일정 조회",
-            description = "지정된 날짜 범위 내의 단일 및 반복 일정을 조회합니다. YYYY-MM-DD 형식 사용.")
+    @Operation(summary = "2. 기간별 일정 조회", description = "지정된 날짜 범위 내의 단일 및 반복 일정을 조회합니다. YYYY-MM-DD 형식 사용.")
     @GetMapping("/range")
     public ResponseEntity<List<UserScheduleDto>> getSchedulesByPeriod(@AuthenticationPrincipal UserDetails userDetails,
             @RequestParam String startDate, @RequestParam String endDate) {

@@ -1,5 +1,6 @@
 package com.backend.Login.Auth;
 
+import com.backend.ConfigEnum.GlobalEnum.University;
 import com.backend.ConfigSecurity.JwtTokenProvider;
 import com.backend.ConfigSecurity.RefreshToken.RefreshToken;
 import com.backend.ConfigSecurity.RefreshToken.RefreshTokenService;
@@ -43,7 +44,7 @@ public class AuthService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .userName(request.getUsername())
-                .university(request.getUniversity())
+                .university(University.fromCode(request.getUnivCode()))
                 .maxFriend(50)
                 .maxGroup(10)
                 .createdAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime())

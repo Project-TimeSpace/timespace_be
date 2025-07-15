@@ -1,4 +1,4 @@
-package com.backend.ConfigEnum;
+package com.backend.ConfigEnum.Dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

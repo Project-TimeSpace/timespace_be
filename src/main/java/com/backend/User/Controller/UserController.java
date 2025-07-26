@@ -5,6 +5,8 @@ import com.backend.User.Service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,10 +40,17 @@ public class UserController {
     @Operation(summary = "내 정보 수정",
             description = "사용자의 프로필 정보를 수정합니다. null 값으로 전달된 항목은 기존 값을 유지합니다.")
     @PatchMapping("/me")
-    public void updateMyInfo(@AuthenticationPrincipal UserDetails userDetails,
+    public ResponseEntity<String> updateMyInfo(@AuthenticationPrincipal UserDetails userDetails,
             @RequestBody UserInfoDto dto) {
         Long userId = Long.parseLong(userDetails.getUsername());
+
+        // 본인확인 필요
+        if(userId != dto.getId()){
+            throw new AccessDeniedException("본인의 정보만 수정 가능합니다");
+        }
         userService.updateMyInfo(userId, dto);
+
+        return ResponseEntity.ok("정보 수정 성공");
     }
 
 }

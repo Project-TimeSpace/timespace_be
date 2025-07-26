@@ -44,19 +44,19 @@ public class SecurityConfig {
             "/webjars/**",
 
             // Auth
-            "/v1/auth/test",
-            "/v1/auth/login",
-            "/v1/auth/register",
-            "/v1/auth/send-verification-code",
-            "/v1/auth/verify-code",
-            "/v1/auth/reset-password",
+            "/api/v1/auth/test",
+            "/api/v1/auth/login",
+            "/api/v1/auth/register",
+            "/api/v1/auth/send-verification-code",
+            "/api/v1/auth/verify-code",
+            "/api/v1/auth/reset-password",
 
             // Enum for FE
-            "/v1/enum/univ-list",
-            "/v1/enum/color-list",
-            "/v1/enum/days-of-week",
-            "/v1/enum/group-categories",
-            "/v1/enum/notification-types"
+            "/api/v1/enum/univ-list",
+            "/api/v1/enum/color-list",
+            "/api/v1/enum/days-of-week",
+            "/api/v1/enum/group-categories",
+            "/api/v1/enum/notification-types"
 
     };
 

@@ -1,5 +1,6 @@
 package com.backend.Group.Service;
 
+import com.backend.ConfigEnum.GlobalEnum.GroupCategory;
 import com.backend.ConfigEnum.GlobalEnum.NotificationType;
 import com.backend.Group.Dto.GroupCreateRequestDto;
 import com.backend.Group.Dto.GroupInfoDto;
@@ -11,8 +12,11 @@ import com.backend.Group.Repository.GroupMembersRepository;
 import com.backend.Group.Repository.GroupRepository;
 import com.backend.Notification.Service.NotificationService;
 import com.backend.User.Entity.User;
+import com.backend.User.Repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -26,6 +30,7 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final GroupMembersRepository groupMembersRepository;
     private final NotificationService notificationService;
+    private final UserRepository userRepository;
 
     public void validateGroupMaster(Long groupId, Long userId) {
         Group group = groupRepository.findById(groupId)
@@ -34,6 +39,14 @@ public class GroupService {
             throw new AccessDeniedException("마스터만 사용할 수 있는 기능입니다.");
         }
     }
+    public String generateUniqueGroupCode() {
+        String code;
+        do {
+            code = UUID.randomUUID().toString().substring(0, 16); // 예: 16자리
+        } while (groupRepository.existsByUniqueCode(code));
+        return code;
+    }
+
 
     /**유저가 속한 그룹 리스트 조회
     public List<GroupSummaryDto> getGroupsByUserId(Long userId) {
@@ -112,13 +125,18 @@ public class GroupService {
 
     @Transactional
     public void createGroup(Long userId, GroupCreateRequestDto request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다. id=" + userId));
+
         // 1. 그룹 생성
         Group group = Group.builder()
                 .groupName(request.getGroupName())
+                .category(GroupCategory.fromCode(request.getCategory()))
                 .groupType(request.getGroupType())
                 .maxMember(request.getMaxMember())
-                .master(User.builder().id(userId).build())
+                .master(user)
                 .createdAt(LocalDateTime.now())
+                .uniqueCode(generateUniqueGroupCode())
                 .build();
         groupRepository.save(group);
 
@@ -150,6 +168,22 @@ public class GroupService {
                 NotificationType.GROUP_MASTER,  // 알림 타입: SYSTEM_NOTICE 사용
                 content
         );
+    }
+
+    public String getGroupCode(Long groupId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(()->new IllegalArgumentException("코드 오류"));
+
+        return group.getUniqueCode();
+    }
+
+    public String resetGroupCode(Long groupId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(()->new IllegalArgumentException("코드 오류"));
+
+        group.setUniqueCode(generateUniqueGroupCode());
+
+        return group.getUniqueCode();
     }
 }
 

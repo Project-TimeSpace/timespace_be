@@ -22,6 +22,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -81,6 +82,28 @@ public class GroupController {
         Long userId = Long.parseLong(userDetails.getUsername());
         groupService.createGroup(userId, request);
         return ResponseEntity.ok("그룹이 생성되었습니다");
+    }
+
+    @Operation(summary = "4. 그룹 참여 코드", description = "그룹의 참여코드 반환")
+    @GetMapping("/code")
+    public ResponseEntity<String> getGroupUniqueCode(@AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long groupId) {
+        Long userId = Long.parseLong(userDetails.getUsername());
+        groupService.validateGroupMaster(groupId, userId);
+        String code = groupService.getGroupCode(groupId);
+
+        return ResponseEntity.ok(code);
+    }
+
+    @Operation(summary = "4. 그룹 참여 코드", description = "그룹의 참여코드 반환")
+    @PatchMapping("/reset-code")
+    public ResponseEntity<String> resetGroupUniqueCode(@AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long groupId) {
+        Long userId = Long.parseLong(userDetails.getUsername());
+        groupService.validateGroupMaster(groupId, userId);
+        String code = groupService.resetGroupCode(groupId);
+
+        return ResponseEntity.ok("코드가 변경되었습니다: "+code);
     }
 
     //----------------- Group Member Service -----------------

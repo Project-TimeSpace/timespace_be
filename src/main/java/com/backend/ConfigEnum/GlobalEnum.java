@@ -33,13 +33,18 @@ public class GlobalEnum {
     @Getter
     @AllArgsConstructor
     public enum ScheduleColor {
-        RED    (1, "#FF0000"),
-        ORANGE (2, "#FFA500"),
-        YELLOW (3, "#FFFF00"),
-        GREEN  (4, "#008000"),
-        BLUE   (5, "#0000FF"),
-        INDIGO (6, "#4B0082"),
-        PURPLE (7, "#800080");
+        BLUE    (5,  "#4286F5"),
+        RED     (1,  "#D44245"),
+        PINK    (8,  "#F27198"),
+        ORANGE  (2,  "#EB9E5A"),
+        YELLOW  (3,  "#FCCB05"),
+        GREEN   (4,  "#69B054"),
+        SEIGE     (9,  "#5FC59D"),
+        SKYBLUE  (10, "#63D1D2"),
+        INDIGO    (6,  "#80AAE8"),
+        DARKBLUE (11, "#4D7ADF"),
+        PURPLE    (7,  "#800080"),
+        GRAY     (12, "#A9A9A9");
 
         private final int code;
         private final String hex;
@@ -84,7 +89,8 @@ public class GlobalEnum {
         NORMAL (1, "일반"),
         FRIEND (2, "친구"),
         PROJECT(3, "프로젝트"),
-        CLUB   (4, "동아리");
+        CLUB   (4, "동아리"),
+        MEETING(5, "회의");
 
         private final int code;
         private final String displayName;

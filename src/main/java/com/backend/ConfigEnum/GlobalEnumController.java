@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v1/enum")
+@RequestMapping("/api/v1/enum")
 @RequiredArgsConstructor
 @Tag(name = "0. Enum List")
 public class GlobalEnumController {

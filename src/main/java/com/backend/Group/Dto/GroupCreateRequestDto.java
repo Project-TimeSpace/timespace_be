@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 public class GroupCreateRequestDto {
     private String groupName;
     private String groupType;
+    private int category;
     private int maxMember;
 }

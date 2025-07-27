@@ -41,7 +41,7 @@ public class GlobalEnumController {
     @GetMapping("/color-list")
     public ResponseEntity<List<ColorDto>> getScheduleColors() {
         List<ColorDto> colors = Arrays.stream(ScheduleColor.values())
-                .map(c -> new ColorDto(c.ordinal(), c.name(), c.getHex()))
+                .map(c -> new ColorDto(c.getCode(), c.name(), c.getHex()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(colors);
     }

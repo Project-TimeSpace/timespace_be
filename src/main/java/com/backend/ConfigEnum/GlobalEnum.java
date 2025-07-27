@@ -33,17 +33,17 @@ public class GlobalEnum {
     @Getter
     @AllArgsConstructor
     public enum ScheduleColor {
-        BLUE    (5,  "#4286F5"),
-        RED     (1,  "#D44245"),
-        PINK    (8,  "#F27198"),
-        ORANGE  (2,  "#EB9E5A"),
-        YELLOW  (3,  "#FCCB05"),
-        GREEN   (4,  "#69B054"),
-        SEIGE     (9,  "#5FC59D"),
-        SKYBLUE  (10, "#63D1D2"),
-        INDIGO    (6,  "#80AAE8"),
-        DARKBLUE (11, "#4D7ADF"),
-        PURPLE    (7,  "#800080"),
+        BLUE    (1,  "#4286F5"),
+        RED     (2,  "#D44245"),
+        PINK    (3,  "#F27198"),
+        ORANGE  (4,  "#EB9E5A"),
+        YELLOW  (5,  "#FCCB05"),
+        GREEN   (6,  "#69B054"),
+        SEIGE     (7,  "#5FC59D"),
+        SKYBLUE  (8, "#63D1D2"),
+        INDIGO    (9,  "#80AAE8"),
+        DARKBLUE (10, "#4D7ADF"),
+        PURPLE    (11,  "#800080"),
         GRAY     (12, "#A9A9A9");
 
         private final int code;

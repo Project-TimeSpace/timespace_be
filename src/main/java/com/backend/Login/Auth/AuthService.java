@@ -1,5 +1,7 @@
 package com.backend.Login.Auth;
 
+import com.backend.Admin.Entity.Admin;
+import com.backend.Admin.Repository.AdminRepository;
 import com.backend.ConfigEnum.GlobalEnum.University;
 import com.backend.ConfigSecurity.JwtTokenProvider;
 import com.backend.ConfigSecurity.RefreshToken.RefreshToken;
@@ -34,6 +36,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
+    private final AdminRepository adminRepository;
+    private final VisitLogService visitLogService;
 
     public void register(RegisterRequestDto request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -55,8 +59,8 @@ public class AuthService {
 
     public LoginResponseDto login(String email, String password) {
         // 1) Admin 먼저 조회
-        /*
-        Admin admin = adminRepository.findByEmail(email).orElse(null);
+
+        Admin admin = adminRepository.findByEmail(email);
         if (admin != null) {
             if (!passwordEncoder.matches(password, admin.getPassword())) {
                 throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
@@ -64,7 +68,6 @@ public class AuthService {
             String token = jwtTokenProvider.createToken(admin.getId(), "admin");
             return new LoginResponseDto(token, "admin");
         }
-        */
 
         // 2. User 조회
         User user = userRepository.findByEmail(email)
@@ -74,7 +77,7 @@ public class AuthService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        //visitLogService.logVisit(user.getId());
+        visitLogService.logVisit(user.getId());
         String token = jwtTokenProvider.createToken(user.getId(), "user");
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(), "user");
 

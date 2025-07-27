@@ -8,6 +8,8 @@ import com.backend.Group.Entity.Group;
 import com.backend.Group.Entity.GroupSchedule;
 import com.backend.Group.Repository.GroupRepository;
 import com.backend.Group.Repository.GroupScheduleRepository;
+import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ public class GroupScheduleService {
 
     private final GroupScheduleRepository groupScheduleRepository;
     private final GroupRepository groupRepository;
+    private final GroupMemberService groupMemberService;
 
 
     @Transactional
@@ -91,4 +94,47 @@ public class GroupScheduleService {
         }
         groupScheduleRepository.delete(schedule);
     }
+
+    public List<GroupScheduleDto> getGroupSchedules(Long groupId, Long userId) {
+        List<GroupSchedule> schedules = groupScheduleRepository.findByGroupId(groupId);
+
+        return schedules.stream()
+                .map(schedule -> GroupScheduleDto.builder()
+                        .scheduleId(schedule.getId())
+                        .title(schedule.getTitle())
+                        .color(schedule.getColor().getCode())
+                        .date(schedule.getDate())
+                        .day(schedule.getDay().getValue())  // 이미 int 값으로 저장되어 있다면 그대로 사용
+                        .startTime(schedule.getStartTime())
+                        .endTime(schedule.getEndTime())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    public List<GroupScheduleDto> getGroupSchedulesByPeriod(Long userId, String startDateStr, String endDateStr) {
+        LocalDate start = LocalDate.parse(startDateStr);
+        LocalDate end = LocalDate.parse(endDateStr);
+
+        // 1. 유저가 속한 그룹 ID 목록 조회
+        List<Long> groupIds = groupMemberService.getGroupIdsByUserId(userId); // List<Long>
+
+        if (groupIds.isEmpty()) return Collections.emptyList();
+
+        // 2. 기간 내의 그룹 일정 조회
+        List<GroupSchedule> schedules = groupScheduleRepository.findByGroupIdInAndDateBetween(groupIds, start, end);
+
+        // 3. DTO로 변환
+        return schedules.stream()
+                .map(schedule -> GroupScheduleDto.builder()
+                        .scheduleId(schedule.getId())
+                        .title(schedule.getTitle())
+                        .color(schedule.getColor().getCode())
+                        .date(schedule.getDate())
+                        .day(schedule.getDay().getValue())
+                        .startTime(schedule.getStartTime())
+                        .endTime(schedule.getEndTime())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 }

@@ -2,6 +2,7 @@ package com.backend.User.Service;
 
 import com.backend.ConfigEnum.GlobalEnum.University;
 import com.backend.User.Dto.UserInfoDto;
+import com.backend.User.Dto.UserUpdateRequestDto;
 import com.backend.User.Entity.User;
 import com.backend.User.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class UserService {
                 .build();
     }
 
-    public void updateMyInfo(Long userId, UserInfoDto dto) {
+    public void updateMyInfo(Long userId, UserUpdateRequestDto dto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 

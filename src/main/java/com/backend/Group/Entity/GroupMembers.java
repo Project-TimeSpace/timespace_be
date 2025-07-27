@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @Table(name = "GroupMembers", uniqueConstraints = @UniqueConstraint(columnNames = {"group_id","user_id"}))
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter @NoArgsConstructor @AllArgsConstructor @Builder
 @Schema(description = "그룹 멤버 정보를 저장하는 엔티티")
 public class GroupMembers {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

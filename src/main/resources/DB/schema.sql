@@ -184,10 +184,10 @@ CREATE TABLE VisitLog (
     id         BIGINT       AUTO_INCREMENT PRIMARY KEY,
     user_id    BIGINT       NOT NULL,
     visit_date DATE         NOT NULL,
+    count INT         NOT NULL DEFAULT 1,
     created_at DATETIME     DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES `User`(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
-
 
 -- Index Definitions
 CREATE INDEX idx_ss_user_date     ON SingleSchedule (user_id, date);

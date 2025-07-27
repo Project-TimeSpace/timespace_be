@@ -71,8 +71,7 @@ public class FriendController {
 
     @Operation(summary = "4. 친구 삭제", description = "특정 친구 관계를 삭제합니다.")
     @DeleteMapping("/{friendId}")
-    public ResponseEntity<Void> removeFriend(
-            @AuthenticationPrincipal UserDetails userDetails,
+    public ResponseEntity<Void> removeFriend(@AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long friendId) {
         Long userId = Long.parseLong(userDetails.getUsername());
         friendService.deleteFriend(userId, friendId);

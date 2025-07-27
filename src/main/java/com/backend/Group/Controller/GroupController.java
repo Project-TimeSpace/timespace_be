@@ -18,6 +18,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/group")
 @Tag(name = "4. 그룹 관련 api")
+@PreAuthorize("hasRole('User')")
 public class GroupController {
 
     private final GroupService groupService;
@@ -85,7 +87,7 @@ public class GroupController {
     }
 
     @Operation(summary = "4. 그룹 참여 코드", description = "그룹의 참여코드 반환")
-    @GetMapping("/code")
+    @GetMapping("/{groupId}/code")
     public ResponseEntity<String> getGroupUniqueCode(@AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long groupId) {
         Long userId = Long.parseLong(userDetails.getUsername());
@@ -96,7 +98,7 @@ public class GroupController {
     }
 
     @Operation(summary = "4. 그룹 참여 코드", description = "그룹의 참여코드 반환")
-    @PatchMapping("/reset-code")
+    @PatchMapping("/{groupId}/reset-code")
     public ResponseEntity<String> resetGroupUniqueCode(@AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long groupId) {
         Long userId = Long.parseLong(userDetails.getUsername());
@@ -154,7 +156,7 @@ public class GroupController {
     }
 
     // -------------- Group Schedule Service -----------
-    @Operation(summary = "9. 그룹 캘린더 조회", description = "기간과 멤버 목록을 기반으로 병합된 그룹 캘린더 일정을 조회합니다.")
+    @Operation(summary = "9. 그룹 멘버의 병합된 캘린더 조회", description = "기간과 멤버 목록을 기반으로 병합된 그룹 캘린더 일정을 조회합니다.")
     @GetMapping("/{groupId}/calendar")
     public ResponseEntity<List<ConvergedScheduleDto>> getGroupCalendar(@AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long groupId, @RequestBody GroupCalendarRequestDto request) {
@@ -203,6 +205,16 @@ public class GroupController {
 
         groupScheduleService.deleteSchedule(groupId, scheduleId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "13. 그룹 스케줄 가져오기", description = "해당 그룹에서 추가된 모든 일정을 Get합니다.")
+    @GetMapping("/{groupId}/schedule")
+    public ResponseEntity<List<GroupScheduleDto>> getGroupSchedules(@AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long groupId){
+        Long userId = Long.parseLong(userDetails.getUsername());
+        groupMemberService.isUserInGroup(groupId, userId);
+        List<GroupScheduleDto> schedules = groupScheduleService.getGroupSchedules(groupId, userId);
+        return ResponseEntity.ok(schedules);
     }
 }
 

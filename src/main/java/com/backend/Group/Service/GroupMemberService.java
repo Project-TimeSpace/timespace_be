@@ -177,4 +177,10 @@ public class GroupMemberService {
         groupMembersRepository.delete(membership);
     }
 
+    public List<Long> getGroupIdsByUserId(Long userId) {
+        return groupMembersRepository.findGroupIdsByUserId(userId);
+    }
+
+
+
 }

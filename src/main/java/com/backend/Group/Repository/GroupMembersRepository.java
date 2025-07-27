@@ -2,6 +2,7 @@ package com.backend.Group.Repository;
 
 import com.backend.Group.Dto.GroupSummaryDto;
 import com.backend.Group.Entity.GroupMembers;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,4 +35,8 @@ public interface GroupMembersRepository extends JpaRepository<GroupMembers, Long
     List<GroupMembers> findByGroupId(Long groupId);
 
     Optional<GroupMembers> findByGroupIdAndUserId(Long groupId, Long userId);
+
+
+    @Query("SELECT gm.group.id FROM GroupMembers gm WHERE gm.user.id = :userId")
+    List<Long> findGroupIdsByUserId(@Param("userId") Long userId);
 }

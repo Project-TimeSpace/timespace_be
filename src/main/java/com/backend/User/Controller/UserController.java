@@ -1,6 +1,7 @@
 package com.backend.User.Controller;
 
 import com.backend.User.Dto.UserInfoDto;
+import com.backend.User.Dto.UserUpdateRequestDto;
 import com.backend.User.Service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,13 +42,9 @@ public class UserController {
             description = "사용자의 프로필 정보를 수정합니다. null 값으로 전달된 항목은 기존 값을 유지합니다.")
     @PatchMapping("/me")
     public ResponseEntity<String> updateMyInfo(@AuthenticationPrincipal UserDetails userDetails,
-            @RequestBody UserInfoDto dto) {
+            @RequestBody UserUpdateRequestDto dto) {
         Long userId = Long.parseLong(userDetails.getUsername());
 
-        // 본인확인 필요
-        if(userId != dto.getId()){
-            throw new AccessDeniedException("본인의 정보만 수정 가능합니다");
-        }
         userService.updateMyInfo(userId, dto);
 
         return ResponseEntity.ok("정보 수정 성공");

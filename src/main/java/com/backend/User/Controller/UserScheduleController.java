@@ -1,5 +1,7 @@
 package com.backend.User.Controller;
 
+import com.backend.Group.Dto.GroupScheduleDto;
+import com.backend.Group.Service.GroupScheduleService;
 import com.backend.User.Dto.CreateRepeatScheduleDto;
 import com.backend.User.Dto.CreateSingleScheduleDto;
 import com.backend.User.Dto.UserRepeatScheduleDto;
@@ -28,6 +30,7 @@ public class UserScheduleController {
 
     private final UserSingleScheduleService userSingleScheduleService;
     private final UserRepeatScheduleService userRepeatScheduleService;
+    private final GroupScheduleService groupScheduleService;
 
     /*
     1. 전체 일정 조회 : 사용자 본인의 전체 일정(단일 + 반복)을 모두 조회합니다.
@@ -44,7 +47,7 @@ public class UserScheduleController {
         return userSingleScheduleService.getAllSchedules(userId);
     }
 
-    @Operation(summary = "2. 기간별 일정 조회", description = "지정된 날짜 범위 내의 단일 및 반복 일정을 조회합니다. YYYY-MM-DD 형식 사용.")
+    @Operation(summary = "2. 기간별 일정 조회-> 개인일정(친구약속 수락한거 포함)", description = "지정된 날짜 범위 내의 단일 및 반복 일정을 조회합니다. YYYY-MM-DD 형식 사용.")
     @GetMapping("/range")
     public ResponseEntity<List<UserScheduleDto>> getSchedulesByPeriod(@AuthenticationPrincipal UserDetails userDetails,
             @RequestParam String startDate, @RequestParam String endDate) {
@@ -67,6 +70,17 @@ public class UserScheduleController {
 
         return ResponseEntity.ok(combined);
     }
+
+    @Operation(summary = "2-2. 기간별 그룹 일정 조회", description = "로그인한 사용자가 속한 모든 그룹의 일정 중, 기간 내 일정만 조회합니다. YYYY-MM-DD 형식 사용.")
+    @GetMapping("/range/group-schedule")
+    public ResponseEntity<List<GroupScheduleDto>> getGroupSchedulesByPeriod(@AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam String startDate, @RequestParam String endDate) {
+        Long userId = Long.parseLong(userDetails.getUsername());
+
+        List<GroupScheduleDto> schedules = groupScheduleService.getGroupSchedulesByPeriod(userId, startDate, endDate);
+        return ResponseEntity.ok(schedules);
+    }
+
 
     // ------------------- 3. Single Schedule CRUD -----------------
 

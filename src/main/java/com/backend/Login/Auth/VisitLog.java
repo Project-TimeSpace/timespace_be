@@ -1,4 +1,4 @@
-package com.backend.Admin.Entity;
+package com.backend.Login.Auth;
 
 import com.backend.User.Entity.User;
 import jakarta.persistence.*;
@@ -24,6 +24,10 @@ public class VisitLog {
     @Column(name = "visit_date", nullable = false)
     @Schema(description = "방문 날짜", example = "2025-06-14")
     private LocalDate visitDate;
+
+    @Column(name = "count", nullable = false)
+    @Schema(description = "하루 방문 횟수")
+    private int count;
 
     @Column(name = "created_at")
     @Schema(description = "로그 생성 일시", example = "2025-06-14T08:00:00")

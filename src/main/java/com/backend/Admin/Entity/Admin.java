@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class Admin {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "관리자 고유 ID", example = "1")
-    private Integer id;
+    private Long id;
 
     @Column(nullable = false, length = 50)
     @Schema(description = "관리자 이메일", example = "admin@example.com")

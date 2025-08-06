@@ -1,8 +1,10 @@
 package com.backend.Friend.Service;
 
 
+import com.backend.ConfigEnum.GlobalEnum;
 import com.backend.ConfigEnum.GlobalEnum.NotificationType;
 import com.backend.ConfigEnum.GlobalEnum.RequestStatus;
+import com.backend.ConfigEnum.GlobalEnum.ScheduleColor;
 import com.backend.ConfigEnum.GlobalEnum.Visibility;
 import com.backend.Friend.Dto.ScheduleRequestDto;
 import com.backend.SharedFunction.Converge.ConvergedScheduleDto;
@@ -51,24 +53,29 @@ public class FriendScheduleService {
     // 4. 친구 캘린더 조회
     @Transactional(readOnly = true)
     public Object getFriendCalendar(Long userId, Long friendId, String startDate, String endDate) {
-        Friend relation = getFriendRelationOrThrow(userId, friendId);
+        Friend relation = getFriendRelationOrThrow(friendId,userId);
         Visibility visibility = relation.getVisibility();
 
         if(visibility.equals(Visibility.SECRET)){
             throw new AccessDeniedException("이 사람의 캘린더는 비공개 설정입니다.");
         }
 
+        // All, SIMPLE은 데이터 조회
+        // DTO 한가지로 만들고, 대신 불필요 데이터 null처리
         List<UserScheduleDto> combined = userSingleScheduleService.getSingleSchedulesByPeriod(friendId, startDate, endDate);
         combined.addAll(userRepeatScheduleService.getRepeatSchedulesByPeriod(friendId, startDate, endDate));
-        if (visibility.equals(Visibility.SECRET)) {
+
+        if (visibility == Visibility.SIMPLE) {
             return combined.stream()
-                    .map(s -> SimpleScheduleDto.builder()
+                    .map(s -> UserScheduleDto.builder()
+                            .color(ScheduleColor.GRAY.getCode())
                             .date(s.getDate())
                             .day(s.getDay())
                             .startTime(s.getStartTime())
                             .endTime(s.getEndTime())
                             .build()
-                    ).collect(Collectors.toList());
+                    )
+                    .collect(Collectors.toList());
         }
         return combined;
     }

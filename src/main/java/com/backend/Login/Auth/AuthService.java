@@ -66,7 +66,7 @@ public class AuthService {
                 throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
             }
             String token = jwtTokenProvider.createToken(admin.getId(), "admin");
-            return new LoginResponseDto(token, "admin");
+            return new LoginResponseDto(token, "null","admin");
         }
 
         // 2. User 조회
@@ -81,9 +81,9 @@ public class AuthService {
         String token = jwtTokenProvider.createToken(user.getId(), "user");
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(), "user");
 
-        LocalDateTime expiryDate = LocalDateTime.now().plusDays(3);
+        LocalDateTime expiryDate = LocalDateTime.now().plusDays(7);
         refreshTokenService.saveOrUpdateToken(user, refreshToken, expiryDate);
-        return new LoginResponseDto(token, "user");
+        return new LoginResponseDto(token, refreshToken,"user");
     }
 
     public String reissueAccessToken(String refreshTokenValue) {

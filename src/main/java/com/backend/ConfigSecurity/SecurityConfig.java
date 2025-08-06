@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
     private static final List<String> ALLOWED_ORIGINS = List.of(
@@ -44,14 +46,17 @@ public class SecurityConfig {
             "/webjars/**",
 
             // Auth
+            "/api/v1/auth/**",
             "/api/v1/auth/test",
             "/api/v1/auth/login",
             "/api/v1/auth/register",
             "/api/v1/auth/send-verification-code",
             "/api/v1/auth/verify-code",
             "/api/v1/auth/reset-password",
+            "/api/v1/auth/reissue",
 
             // Enum for FE
+            "/api/v1/enum/**",
             "/api/v1/enum/univ-list",
             "/api/v1/enum/color-list",
             "/api/v1/enum/days-of-week",
@@ -86,6 +91,11 @@ public class SecurityConfig {
                             response.setStatus(HttpStatus.UNAUTHORIZED.value());
                             response.setContentType("application/json");
                             response.getWriter().write("{\"error\": \"Unauthorized access\"}");
+                        })
+                        .accessDeniedHandler((req, res, accessDeniedEx) -> {
+                            res.setStatus(HttpStatus.FORBIDDEN.value());
+                            res.setContentType("application/json");
+                            res.getWriter().write("{\"error\": \"Forbidden: 권한이 없습니다.\"}");
                         })
                 );
 

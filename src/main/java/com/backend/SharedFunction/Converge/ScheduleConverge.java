@@ -78,7 +78,7 @@ public class ScheduleConverge {
         LocalDate start = LocalDate.parse(startDate);
         LocalDate end   = LocalDate.parse(endDate);
         int days = (int) ChronoUnit.DAYS.between(start, end) + 1;
-        int slotsPerDay = 24 * 6;
+        int slotsPerDay = 24 * 12;
 
         // starts, ends 그리드 생성
         List<List<List<ParticipantDto>>> starts = new ArrayList<>(days);

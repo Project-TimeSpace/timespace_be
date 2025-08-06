@@ -1,6 +1,8 @@
 package com.backend.User.Entity;
 
+import com.backend.ConfigEnum.Converter.DayOfWeekConverter;
 import com.backend.ConfigEnum.Converter.ScheduleColorConverter;
+import com.backend.ConfigEnum.GlobalEnum.DayOfWeek;
 import com.backend.ConfigEnum.GlobalEnum.ScheduleColor;
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,9 +40,10 @@ public class RepeatSchedule {
     @Schema(description = "반복 종료 날짜", example = "2025-12-31")
     private LocalDate endDate;
 
+    @Convert(converter = DayOfWeekConverter.class)
     @Column(name = "repeat_days", nullable = false)
-    @Schema(description = "반복 요일", example = "1=월요일~7=일요일")
-    private Integer repeatDays;
+    @Schema(description = "반복요일(1=월, 7=일요일)", example = "5")
+    private DayOfWeek repeatDays;
 
     @Column(name = "start_time", nullable = false)
     @Schema(description = "시작 시간", example = "09:00:00")

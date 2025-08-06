@@ -189,6 +189,24 @@ CREATE TABLE VisitLog (
     FOREIGN KEY (user_id) REFERENCES `User`(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+-- schema.sql에 추가할 Inquiry 테이블 정의
+CREATE TABLE Inquiry (
+    id            BIGINT       AUTO_INCREMENT PRIMARY KEY,
+    user_id       BIGINT       NOT NULL,
+    title         VARCHAR(255) NOT NULL,
+    content       TEXT         NOT NULL,
+    status        INT          NOT NULL DEFAULT 0,
+    responder_id  BIGINT       NULL,
+    answered_at   DATETIME     NULL,
+    reply_content TEXT         NULL,
+    created_at    DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    updated_at    DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_inquiry_user FOREIGN KEY (user_id) REFERENCES `User`(id) ON DELETE CASCADE,
+    CONSTRAINT fk_inquiry_responder FOREIGN KEY (responder_id) REFERENCES 'Admin'(id),
+    UNIQUE KEY uq_inquiry_pending (user_id, status)
+) ENGINE=InnoDB;
+
+
 -- Index Definitions
 CREATE INDEX idx_ss_user_date     ON SingleSchedule (user_id, date);
 CREATE INDEX idx_ss_user_day      ON SingleSchedule (user_id, day);

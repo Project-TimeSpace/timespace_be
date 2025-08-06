@@ -27,9 +27,9 @@ public class JwtTokenProvider {
     private final UserDetailsService userDetailsService;  // ← 추가
 
     private final Key secretKey;
-    private final long tokenValidity = 1000L * 60 * 90 * 4; // 유효시간 60분
-    private final long refreshThreshold = 1000L * 60 * 30; // 10분 이하 시 갱신
-    private final long refreshTokenValidityInMs = 3 * 24 * 60 * 60 * 1000L; // 리프레시 토큰 유효 3일
+    private final long tokenValidity = 1000L * 60 * 60; // 유효시간 60분
+    private final long refreshThreshold = 1000L * 60 * 30; // 30분 이하 시 갱신
+    private final long refreshTokenValidityInMs = 1000L * 60 * 60 * 24 * 7; // 리프레시 토큰 유효 3일
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secret,
@@ -100,6 +100,7 @@ public class JwtTokenProvider {
         try {
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(secretKey)
+                    .setAllowedClockSkewSeconds(30)
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
@@ -107,7 +108,7 @@ public class JwtTokenProvider {
             Date expiration = claims.getExpiration();
             Date now = new Date();
 
-            // 만료까지 10분 이하 남으면 갱신 필요
+            // 만료까지 30분 이하 남으면 갱신 필요
             return expiration.getTime() - now.getTime() >= refreshThreshold;
         } catch (ExpiredJwtException e) {
             logger.warn("JWT 만료됨: {}", e.getMessage());

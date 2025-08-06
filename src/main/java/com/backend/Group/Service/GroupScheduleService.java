@@ -32,13 +32,14 @@ public class GroupScheduleService {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new RuntimeException("그룹이 존재하지 않습니다."));
 
+        int day = request.getDate().getDayOfWeek().getValue();
         // 2) 엔티티 생성
         GroupSchedule schedule = GroupSchedule.builder()
                 .group(group)
                 .title(request.getTitle())
                 .color(ScheduleColor.fromCode(request.getColor()))
                 .date(request.getDate())
-                .day(DayOfWeek.fromValue(request.getDay()))
+                .day(DayOfWeek.fromValue(day))
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime())
                 .build();
@@ -100,6 +101,7 @@ public class GroupScheduleService {
 
         return schedules.stream()
                 .map(schedule -> GroupScheduleDto.builder()
+                        .groupId(groupId)
                         .scheduleId(schedule.getId())
                         .title(schedule.getTitle())
                         .color(schedule.getColor().getCode())
@@ -116,7 +118,7 @@ public class GroupScheduleService {
         LocalDate end = LocalDate.parse(endDateStr);
 
         // 1. 유저가 속한 그룹 ID 목록 조회
-        List<Long> groupIds = groupMemberService.getGroupIdsByUserId(userId); // List<Long>
+        List<Long> groupIds = groupMemberService.getGroupIdsByUserId(userId);
 
         if (groupIds.isEmpty()) return Collections.emptyList();
 
@@ -126,14 +128,15 @@ public class GroupScheduleService {
         // 3. DTO로 변환
         return schedules.stream()
                 .map(schedule -> GroupScheduleDto.builder()
-                        .scheduleId(schedule.getId())
-                        .title(schedule.getTitle())
-                        .color(schedule.getColor().getCode())
-                        .date(schedule.getDate())
-                        .day(schedule.getDay().getValue())
-                        .startTime(schedule.getStartTime())
-                        .endTime(schedule.getEndTime())
-                        .build())
+                    .groupId(schedule.getGroup().getId())
+                    .scheduleId(schedule.getId())
+                    .title(schedule.getTitle())
+                    .color(schedule.getColor().getCode())
+                    .date(schedule.getDate())
+                    .day(schedule.getDay().getValue())
+                    .startTime(schedule.getStartTime())
+                    .endTime(schedule.getEndTime())
+                    .build())
                 .collect(Collectors.toList());
     }
 

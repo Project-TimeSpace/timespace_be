@@ -41,6 +41,13 @@ public class JwtAuthFilter extends OncePerRequestFilter{
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        String path = request.getServletPath();
+        // 1) enum API는 JWT 필터를 건너뛴다
+        if (path.startsWith("/api/v1/enum/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = jwtTokenProvider.resolveToken(request);
 
         if (token != null) {
@@ -61,12 +68,10 @@ public class JwtAuthFilter extends OncePerRequestFilter{
 
                 // 4) 권한 리스트 생성 ("Manager" 또는 "User")
                 List<GrantedAuthority> authorities;
-                if ("manager".equals(userType)) {
-                    authorities = List.of(new SimpleGrantedAuthority("Manager"));
-                } else if("admin".equals(userType)){
-                    authorities = List.of(new SimpleGrantedAuthority("Admin"));
+                if("admin".equals(userType)){
+                    authorities = List.of(new SimpleGrantedAuthority("ROLE_Admin"));
                 } else {
-                    authorities = List.of(new SimpleGrantedAuthority("User"));
+                    authorities = List.of(new SimpleGrantedAuthority("ROLE_User"));
                 }
 
                 // 5) Authentication 객체 생성 및 SecurityContext에 등록

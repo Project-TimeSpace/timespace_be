@@ -1,5 +1,6 @@
 package com.backend.User.Service;
 
+import com.backend.ConfigEnum.GlobalEnum.DayOfWeek;
 import com.backend.ConfigEnum.GlobalEnum.ScheduleColor;
 import com.backend.SharedFunction.SharedFunction;
 import com.backend.User.Dto.CreateRepeatScheduleDto;
@@ -83,7 +84,7 @@ public class UserRepeatScheduleService {
                             .title(r.getTitle())
                             .color(r.getColor().getCode())
                             .date(occurrence)
-                            .day(r.getRepeatDays())
+                            .day(r.getRepeatDays().getValue())
                             .startTime(r.getStartTime())
                             .endTime(r.getEndTime())
                             .build());
@@ -184,7 +185,7 @@ public class UserRepeatScheduleService {
                 .color(ScheduleColor.fromCode(dto.getColor()))
                 .startDate(startDate)
                 .endDate(endDate)
-                .repeatDays(dow)
+                .repeatDays(DayOfWeek.fromValue(dow))
                 .startTime(startTime)
                 .endTime(endTime)
                 .build();
@@ -209,7 +210,7 @@ public class UserRepeatScheduleService {
                 .color(r.getColor().getCode())
                 .startDate(r.getStartDate())
                 .endDate(r.getEndDate())
-                .repeatDays(r.getRepeatDays())
+                .repeatDays(r.getRepeatDays().getValue())
                 .startTime(r.getStartTime())
                 .endTime(r.getEndTime())
                 .build();
@@ -228,7 +229,7 @@ public class UserRepeatScheduleService {
         // 2) 최종값 병합
         LocalDate finalStartDate = dto.getStartDate()   != null ? dto.getStartDate()   : r.getStartDate();
         LocalDate finalEndDate   = dto.getEndDate()     != null ? dto.getEndDate()     : r.getEndDate();
-        int      finalDow        = dto.getRepeatDays()  != 0    ? dto.getRepeatDays()    : r.getRepeatDays();
+        int      finalDow        = dto.getRepeatDays()  != 0    ? dto.getRepeatDays()    : r.getRepeatDays().getValue();
         LocalTime finalStartTime = dto.getStartTime()   != null ? dto.getStartTime()   : r.getStartTime();
         LocalTime finalEndTime   = dto.getEndTime()     != null ? dto.getEndTime()     : r.getEndTime();
 
@@ -255,7 +256,7 @@ public class UserRepeatScheduleService {
         if (patternChanged) {
             r.setStartDate(finalStartDate);
             r.setEndDate(finalEndDate);
-            r.setRepeatDays(finalDow);
+            r.setRepeatDays(DayOfWeek.fromValue(finalDow));
             r.setStartTime(finalStartTime);
             r.setEndTime(finalEndTime);
         }

@@ -1,5 +1,6 @@
 package com.backend.User.Service;
 
+import com.backend.ConfigEnum.GlobalEnum.DayOfWeek;
 import com.backend.ConfigEnum.GlobalEnum.ScheduleColor;
 import com.backend.SharedFunction.SharedFunction;
 import com.backend.User.Dto.CreateSingleScheduleDto;
@@ -28,7 +29,7 @@ public class UserSingleScheduleService {
 
     // 1. 전체 일정 조회
     public Object getAllSchedules(Long userId) {
-        // TODO: 단일 + 반복 일정 전체 조회 로직
+        // 단일 + 반복 일정 전체 조회 로직
         return null;
     }
 
@@ -46,7 +47,7 @@ public class UserSingleScheduleService {
                         .title(s.getTitle())
                         .color(s.getColor().getCode())
                         .date(s.getDate())
-                        .day(s.getDay())
+                        .day(s.getDay().getValue())
                         .startTime(s.getStartTime())
                         .endTime(s.getEndTime())
                         .build())
@@ -70,12 +71,14 @@ public class UserSingleScheduleService {
         // 해당 시간대에 추가 가능한지.
         sharedFunction.validateSingleScheduleOverlap(userId, date, startTime, endTime, 0L);
 
+        int day = date.getDayOfWeek().getValue();
+
         SingleSchedule s = SingleSchedule.builder()
                 .user(user)
                 .title(dto.getTitle())
                 .color(ScheduleColor.fromCode(dto.getColor()))
                 .date(date)
-                .day(dto.getDay())
+                .day(DayOfWeek.fromValue(day))
                 .startTime(startTime)
                 .endTime(endTime)
                 .build();
@@ -99,7 +102,7 @@ public class UserSingleScheduleService {
                 .title(s.getTitle())
                 .color(s.getColor().getCode())
                 .date(s.getDate())
-                .day(s.getDay())
+                .day(s.getDay().getValue())
                 .startTime(s.getStartTime())
                 .endTime(s.getEndTime())
                 .build();
@@ -130,9 +133,10 @@ public class UserSingleScheduleService {
             s.setColor(ScheduleColor.fromCode(dto.getColor()));
         if (dto.getDate() != null) {
             s.setDate(finalDate);
-            s.setDay(dto.getDay());  // dto.getDay()도 null 체크 필요 or default→s.getDay()
+            s.setDay(DayOfWeek.fromValue(dto.getDay()));  // dto.getDay()도 null 체크 필요 or default→s.getDay()
         }
-        if (dto.getDay() != 0 ) s.setDay(dto.getDay());
+        //if (dto.getDay() != 0 )
+        //    s.setDay(DayOfWeek.fromValue(dto.getDay()));
         // start/end 는 이미 검증했으니 바로 덮어쓰기
         s.setStartTime(finalStart);
         s.setEndTime(finalEnd);

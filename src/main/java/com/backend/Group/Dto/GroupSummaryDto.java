@@ -20,6 +20,12 @@ public class GroupSummaryDto {
     @Schema(description = "그룹 타입", example = "Normal")
     private String groupType;
 
+    @Schema(description = "그룹 카테고리 code값", example = "1")
+    private Integer categoryCode;
+
+    @Schema(description = "그룹 카테고리 이름값(코드랑 연관 데이터임)", example = "일반")
+    private String categoryName;
+
     @Schema(description = "현재 멤버 수", example = "5")
     private Long memberCount;
 

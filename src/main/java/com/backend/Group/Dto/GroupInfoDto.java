@@ -14,6 +14,8 @@ public class GroupInfoDto {
     private Long groupId;
     private String groupName;
     private String groupType;
+    private Integer categoryCode;
+    private String categoryName;
     private int memberCount;
     private int maxMember;
     private Long masterId;

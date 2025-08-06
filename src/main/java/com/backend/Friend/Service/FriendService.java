@@ -3,6 +3,7 @@ package com.backend.Friend.Service;
 import com.backend.ConfigEnum.GlobalEnum.SortOption;
 import com.backend.ConfigEnum.GlobalEnum.Visibility;
 import com.backend.Friend.Dto.FriendDto;
+import com.backend.Friend.Dto.FriendNicknameUpdate;
 import com.backend.Friend.Entity.Friend;
 import com.backend.Friend.Repository.FriendRepository;
 import java.text.Collator;
@@ -10,6 +11,8 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,5 +104,20 @@ public class FriendService {
                 .orElseThrow(() -> new IllegalArgumentException("친구삭제. 이 오류는 발생하면 안됩니다."));
         friendRepository.delete(rel);
         friendRepository.delete(urel);
+    }
+
+    @Transactional
+    public FriendNicknameUpdate updateNickname(Long userId, Long friendUserId, String newNickname) {
+        Friend f = friendRepository
+            .findByUser_IdAndFriend_Id(userId, friendUserId)
+            .orElseThrow(() -> new AccessDeniedException(
+                "친구 관계를 찾을 수 없거나, 권한이 없습니다."
+            ));
+
+        if (!newNickname.equals(f.getNickname())) {
+            f.setNickname(newNickname);
+        }
+        // dirty checking 반영 후, 실제 저장된 닉네임을 반환
+        return new FriendNicknameUpdate(f.getNickname());
     }
 }

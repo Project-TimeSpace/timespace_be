@@ -11,11 +11,13 @@ import org.springframework.data.repository.query.Param;
 
 public interface GroupMembersRepository extends JpaRepository<GroupMembers, Long> {
 
+    /*
     @Query("""
             SELECT new com.backend.Group.Dto.GroupSummaryDto(
             g.id,
             g.groupName,
             g.groupType,
+            g.category,
             COUNT(m.id),
             g.maxMember
         )
@@ -23,9 +25,10 @@ public interface GroupMembersRepository extends JpaRepository<GroupMembers, Long
         JOIN gm.group g
         LEFT JOIN GroupMembers m ON m.group.id = g.id
         WHERE gm.user.id = :userId
-        GROUP BY g.id, g.groupName, g.groupType, g.maxMember
+        GROUP BY g.id, g.groupName, g.groupType, g.category ,g.maxMember
     """)
     List<GroupSummaryDto> findGroupSummariesByUserId(@Param("userId") Long userId);
+     */
 
 
     int countByGroupId(Long groupId);
@@ -39,4 +42,6 @@ public interface GroupMembersRepository extends JpaRepository<GroupMembers, Long
 
     @Query("SELECT gm.group.id FROM GroupMembers gm WHERE gm.user.id = :userId")
     List<Long> findGroupIdsByUserId(@Param("userId") Long userId);
+
+    List<GroupMembers> findByUserId(Long userId);
 }

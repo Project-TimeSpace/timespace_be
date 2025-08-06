@@ -9,5 +9,6 @@ import lombok.Getter;
 @Builder
 public class LoginResponseDto {
     private String token;
+    private String refreshToken;
     private String type;
 }

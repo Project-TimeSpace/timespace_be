@@ -13,6 +13,9 @@ import java.time.LocalTime;
 @Builder
 public class GroupScheduleDto {
 
+    @Schema(description = "그룹 ID", example = "1")
+    private Long groupId;
+
     @Schema(description = "그룹 일정 ID", example = "101")
     private Long scheduleId;
 

@@ -1,7 +1,9 @@
 package com.backend.User.Entity;
 
+import com.backend.ConfigEnum.Converter.DayOfWeekConverter;
 import com.backend.ConfigEnum.Converter.ScheduleColorConverter;
 import com.backend.ConfigEnum.GlobalEnum;
+import com.backend.ConfigEnum.GlobalEnum.DayOfWeek;
 import com.backend.ConfigEnum.GlobalEnum.ScheduleColor;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,9 +37,10 @@ public class SingleSchedule {
     @Schema(description = "일정 날짜", example = "2025-06-14")
     private LocalDate date;
 
+    @Convert(converter = DayOfWeekConverter.class)
     @Column(nullable = false)
-    @Schema(description = "요일(1=월요일~7=일요일)", example = "0")
-    private Integer day;
+    @Schema(description = "요일(1=월, 7=일요일)", example = "5")
+    private DayOfWeek day;
 
     @Column(name = "start_time", nullable = false)
     @Schema(description = "시작 시간", example = "09:00:00")

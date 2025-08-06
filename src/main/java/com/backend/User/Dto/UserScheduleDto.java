@@ -1,9 +1,6 @@
 package com.backend.User.Dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,10 +8,12 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-@AllArgsConstructor(access = AccessLevel.PUBLIC)  // ← 생성자를 public 으로
+@AllArgsConstructor(access = AccessLevel.PUBLIC)  //  생성자를 public 으로
+@NoArgsConstructor
 @Schema(description = "사용자의 일정 정보를 담은 DTO")
 public class UserScheduleDto {
 

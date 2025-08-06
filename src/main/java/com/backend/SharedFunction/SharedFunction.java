@@ -50,7 +50,7 @@ public class SharedFunction {
 
         for (RepeatSchedule r : repeats) {
             // 2-2) 요일이 맞지 않으면 건너뜀
-            if (r.getRepeatDays() != date.getDayOfWeek().getValue()) continue;
+            if (r.getRepeatDays().getValue() != date.getDayOfWeek().getValue()) continue;
 
             // 2-3) 해당 날짜가 예외일이면 충돌 검사에서 제외
             boolean isException = repeatExceptionRepository
@@ -143,7 +143,7 @@ public class SharedFunction {
             // 5-2) 반복 일정 충돌
             for (RepeatSchedule r : repeats) {
                 if (r.getId().equals(excludeRepeatId)) continue;
-                if (r.getRepeatDays() != repeatDay) continue;
+                if (r.getRepeatDays().getValue() != repeatDay) continue;
 
                 Set<LocalDate> exceptions = exMap.getOrDefault(r.getId(), Set.of());
                 if (exceptions.contains(date)) continue;

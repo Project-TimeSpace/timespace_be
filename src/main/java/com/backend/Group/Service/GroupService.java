@@ -15,6 +15,7 @@ import com.backend.User.Entity.User;
 import com.backend.User.Repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -39,7 +40,7 @@ public class GroupService {
             throw new AccessDeniedException("마스터만 사용할 수 있는 기능입니다.");
         }
     }
-    public String generateUniqueGroupCode() {
+    private String generateUniqueGroupCode() {
         String code;
         do {
             code = UUID.randomUUID().toString().substring(0, 16); // 예: 16자리
@@ -48,7 +49,6 @@ public class GroupService {
     }
 
 
-    /**유저가 속한 그룹 리스트 조회
     public List<GroupSummaryDto> getGroupsByUserId(Long userId) {
         // 1. 유저가 속한 GroupMembers 조회
         List<GroupMembers> memberships = groupMembersRepository.findByUserId(userId);
@@ -65,19 +65,23 @@ public class GroupService {
                     .groupId(group.getId())
                     .groupName(group.getGroupName())
                     .groupType(group.getGroupType())
-                    .memberCount(memberCount)
+                    .categoryCode(group.getCategory().getCode())
+                    .categoryName(group.getCategory().getDisplayName())
+                    .memberCount((long) memberCount)
                     .maxMemberCount(group.getMaxMember())
-                    .groupImageUrl(null) // groupImage 추후 확장
+                    //.groupImageUrl(null) // groupImage 추후 확장
                     .build());
         }
 
         return result;
-    }*/
+    }
 
     // 이게 1 join으로 해결하는 조금더 빠른 방법
+    /*
     public List<GroupSummaryDto> getGroupsByUserId(Long userId) {
         return groupMembersRepository.findGroupSummariesByUserId(userId);
     }
+     */
 
     @Transactional
     public GroupInfoDto getGroupInfo(Long userId, Long groupId) {
@@ -115,6 +119,8 @@ public class GroupService {
                 .groupId(group.getId())
                 .groupName(group.getGroupName())
                 .groupType(group.getGroupType())
+                .categoryCode(group.getCategory().getCode())
+                .categoryName(group.getCategory().getDisplayName())
                 .memberCount(memberCount)
                 .maxMember(group.getMaxMember())
                 .masterId(group.getMaster().getId())

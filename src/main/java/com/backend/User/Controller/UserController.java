@@ -1,5 +1,9 @@
 package com.backend.User.Controller;
 
+import java.util.List;
+
+import com.backend.User.Dto.InquiryRequestDto;
+import com.backend.User.Dto.InquiryResponseDto;
 import com.backend.User.Dto.UserInfoDto;
 import com.backend.User.Dto.UserUpdateRequestDto;
 import com.backend.User.Service.UserService;
@@ -7,7 +11,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -48,6 +51,25 @@ public class UserController {
         userService.updateMyInfo(userId, dto);
 
         return ResponseEntity.ok("정보 수정 성공");
+    }
+
+    @Operation(summary = "5. 문의하기 생성", description = "앱 사용 관련 문의를 생성합니다. 진행 중인 문의가 있으면 등록이 불가합니다.")
+    @PostMapping("/inquiries")
+    public ResponseEntity<InquiryResponseDto> createInquiry(@AuthenticationPrincipal UserDetails userDetails,
+        @RequestBody InquiryRequestDto dto) {
+
+        Long userId = Long.parseLong(userDetails.getUsername());
+        InquiryResponseDto response = userService.createInquiry(userId, dto);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "6. 내 문의 내역 조회",
+        description = "로그인한 사용자가 등록한 문의 목록을 생성일 내림차순으로 반환합니다.")
+    @GetMapping("/inquiries")
+    public ResponseEntity<List<InquiryResponseDto>> getMyInquiries(@AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = Long.parseLong(userDetails.getUsername());
+        List<InquiryResponseDto> list = userService.getMyInquiries(userId);
+        return ResponseEntity.ok(list);
     }
 
 }

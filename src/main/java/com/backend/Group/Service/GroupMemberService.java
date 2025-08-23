@@ -1,12 +1,15 @@
 package com.backend.Group.Service;
 
+import com.backend.ConfigEnum.GlobalEnum;
 import com.backend.ConfigEnum.GlobalEnum.NotificationType;
 import com.backend.ConfigEnum.GlobalEnum.RequestStatus;
 import com.backend.Friend.Repository.FriendRepository;
+import com.backend.Group.Dto.GroupInviteResponse;
 import com.backend.Group.Dto.GroupMemberDto;
 import com.backend.Group.Entity.Group;
 import com.backend.Group.Entity.GroupMembers;
 import com.backend.Group.Entity.GroupRequest;
+import com.backend.Group.Entity.GroupScheduleUser;
 import com.backend.Group.Repository.GroupMembersRepository;
 import com.backend.Group.Repository.GroupRepository;
 import com.backend.Group.Repository.GroupRequestRepository;
@@ -16,6 +19,7 @@ import com.backend.User.Entity.User;
 import com.backend.User.Repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -51,6 +55,7 @@ public class GroupMemberService {
                             .userId(user.getId())
                             .userName(user.getUserName())
                             .email(user.getEmail())
+                            .profileImageUrl(user.getProfileImageUrl())
                             .isMaster(user.getId().equals(masterId))
                             .build();
                 })
@@ -99,7 +104,7 @@ public class GroupMemberService {
         String content = String.format("%s님이 \"%s\" 그룹에 초대했습니다.",
                 inviter.getUserName(), group.getGroupName());
         notificationService.createNotification(
-                inviterId,receiver.getId(), NotificationType.GROUP_INVITE, content);
+                inviterId,receiver.getId(), NotificationType.GROUP_INVITE, content,request.getId());
     }
 
     @Transactional
@@ -145,7 +150,7 @@ public class GroupMemberService {
         // 7. 알림 전송
         String content = String.format("%s님이 \"%s\" 그룹에 초대했습니다.", inviter.getUserName(), group.getGroupName());
         notificationService.createNotification(
-                inviterId, friendId, NotificationType.GROUP_INVITE, content);
+                inviterId, friendId, NotificationType.GROUP_INVITE, content, request.getId());
     }
 
     // 이거는 로직 업데이트 필요
@@ -180,6 +185,7 @@ public class GroupMemberService {
     public List<Long> getGroupIdsByUserId(Long userId) {
         return groupMembersRepository.findGroupIdsByUserId(userId);
     }
+
 
 
 

@@ -36,11 +36,6 @@ public class Group {
     @Schema(description = "최대 그룹 멤버 수", example = "20")
     private Integer maxMember;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    @Schema(description = "그룹 생성 일시", example = "2025-06-01T15:00:00")
-    private LocalDateTime createdAt;
-
     @Convert(converter = GroupCategoryConverter.class)
     @Column(name = "category", nullable = false)
     @Schema(description = "그룹 카테고리 코드", example = "1")
@@ -49,4 +44,13 @@ public class Group {
     @Column(name = "unique_code", length = 100, unique = true)
     @Schema(description = "그룹 참여용 고유 코드", example = "abc123xyz")
     private String uniqueCode;
+
+    @Column(name = "group_image_url", length = 255)
+    @Schema(description = "그룹 이미지 URL", example = "https://example.com/groupImg.jpg")
+    private String groupImageUrl;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    @Schema(description = "그룹 생성 일시", example = "2025-06-01T15:00:00")
+    private LocalDateTime createdAt;
 }

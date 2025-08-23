@@ -133,7 +133,7 @@ public class UserSingleScheduleService {
             s.setColor(ScheduleColor.fromCode(dto.getColor()));
         if (dto.getDate() != null) {
             s.setDate(finalDate);
-            s.setDay(DayOfWeek.fromValue(dto.getDay()));  // dto.getDay()도 null 체크 필요 or default→s.getDay()
+            s.setDay(DayOfWeek.fromValue(finalDate.getDayOfWeek().getValue()));
         }
         //if (dto.getDay() != 0 )
         //    s.setDay(DayOfWeek.fromValue(dto.getDay()));

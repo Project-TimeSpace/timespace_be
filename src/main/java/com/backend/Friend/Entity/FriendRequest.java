@@ -29,7 +29,7 @@ public class FriendRequest {
     private User receiver;
 
     @Convert(converter = RequestStatusConverter.class)
-    @Column(nullable = false)
+    @Column(nullable = false, name = "status")
     private RequestStatus status;
 
     @Column(name = "requested_at")

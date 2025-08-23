@@ -10,13 +10,14 @@ INSERT INTO Admin (id, email, password, admin_name) VALUES
 
 -- 2) 사용자 5명
 INSERT INTO `User` (user_name, email, password, university, phone_number, self_memo, birth_date, profile_image_url) VALUES
-    ('김민수',    'aa@test.com',   '$2a$10$KqNntwd5aFUOPTj1gj62r.8BtmaUeUiae0H7r6Dj8tOlX9HuPgbNS', 1, '010-1111-1111', 'Hi, I am Alice.',                     '1995-03-15', 'https://sampleImgUrl'),
-    ('이지훈',    'bb@test.com',   '$2a$10$KqNntwd5aFUOPTj1gj62r.8BtmaUeUiae0H7r6Dj8tOlX9HuPgbNS', 2, '010-2222-2222', 'Bob here!',                          '1992-07-20', 'https://sampleImgUrl'),
-    ('박서연',    'cc@test.com',   '$2a$10$KqNntwd5aFUOPTj1gj62r.8BtmaUeUiae0H7r6Dj8tOlX9HuPgbNS', 3, '010-3333-3333', NULL,                                 '1990-12-05', 'https://sampleImgUrl'),
-    ('최민호',    'dd@test.com',   '$2a$10$KqNntwd5aFUOPTj1gj62r.8BtmaUeUiae0H7r6Dj8tOlX9HuPgbNS', 1, NULL,                                 'Diana''s memo',                     '1998-11-02', 'https://sampleImgUrl'),
-    ('정윤아',    'ee@test.com',   '$2a$10$KqNntwd5aFUOPTj1gj62r.8BtmaUeUiae0H7r6Dj8tOlX9HuPgbNS', 2, '010-5555-5555', NULL,                                 '1993-05-30', 'https://sampleImgUrl'),
-    ('유준호',    'ff@test.com',   '$2a$10$KqNntwd5aFUOPTj1gj62r.8BtmaUeUiae0H7r6Dj8tOlX9HuPgbNS', 3, '010-6666-6666', 'Hello, I am Frank.',                 '1994-09-12', 'https://sampleImgUrl'),
-    ('박하영',    'gg@test.com',   '$2a$10$KqNntwd5aFUOPTj1gj62r.8BtmaUeUiae0H7r6Dj8tOlX9HuPgbNS', 2, NULL,                                 NULL,                                 '1996-02-28', 'https://sampleImgUrl');
+    ('김민수',    'aa@test.com',   '$2a$10$KqNntwd5aFUOPTj1gj62r.8BtmaUeUiae0H7r6Dj8tOlX9HuPgbNS', 1, '010-1111-1111', 'Hi, I am Alice.',                     '1995-03-15', ''),
+    ('이지훈',    'bb@test.com',   '$2a$10$KqNntwd5aFUOPTj1gj62r.8BtmaUeUiae0H7r6Dj8tOlX9HuPgbNS', 2, '010-2222-2222', 'Bob here!',                          '1992-07-20', ''),
+    ('박서연',    'cc@test.com',   '$2a$10$KqNntwd5aFUOPTj1gj62r.8BtmaUeUiae0H7r6Dj8tOlX9HuPgbNS', 3, '010-3333-3333', NULL,                                 '1990-12-05', ''),
+    ('최민호',    'dd@test.com',   '$2a$10$KqNntwd5aFUOPTj1gj62r.8BtmaUeUiae0H7r6Dj8tOlX9HuPgbNS', 1, NULL,                                 'Diana''s memo',                     '1998-11-02', ''),
+    ('정윤아',    'ee@test.com',   '$2a$10$KqNntwd5aFUOPTj1gj62r.8BtmaUeUiae0H7r6Dj8tOlX9HuPgbNS', 2, '010-5555-5555', NULL,                                 '1993-05-30', ''),
+    ('유준호',    'ff@test.com',   '$2a$10$KqNntwd5aFUOPTj1gj62r.8BtmaUeUiae0H7r6Dj8tOlX9HuPgbNS', 3, '010-6666-6666', 'Hello, I am Frank.',                 '1994-09-12', ''),
+    ('박하영',    'gg@test.com',   '$2a$10$KqNntwd5aFUOPTj1gj62r.8BtmaUeUiae0H7r6Dj8tOlX9HuPgbNS', 2, NULL,                                 NULL,                                 '1996-02-28', ''),
+    ('박아영',    'hh@test.com',   '$2a$10$KqNntwd5aFUOPTj1gj62r.8BtmaUeUiae0H7r6Dj8tOlX9HuPgbNS', 120, NULL,                                 NULL,                                 '1996-02-28', '');
 
 INSERT INTO`User`(user_name,email,password,university,phone_number,self_memo,birth_date,profile_image_url) VALUES
       ('seongjin','glisvast@hanyang.ac.kr','$2a$10$8wdZt86wsOEFxzsWucmJmexAn6ZelqWNM55VEb2d4jD2sL9As1WWO',4,NULL,NULL,NULL,NULL),
@@ -26,8 +27,6 @@ INSERT INTO`User`(user_name,email,password,university,phone_number,self_memo,bir
 INSERT INTO SocialAccount (user_id, provider, provider_user_id) VALUES
     (2, 'kakao', 'kakao_2002'),
     (3, 'google','google_3003');
-
-USE timespace;
 
 -- User 1
 INSERT INTO SingleSchedule (user_id, title, color, date, day, start_time, end_time) VALUES
@@ -201,6 +200,56 @@ INSERT INTO GroupMembers (group_id, user_id, is_favorite) VALUES
 INSERT INTO SystemNotices (title, content) VALUES
     ('시스템 점검 안내',  '7/30 02:00 ~ 04:00 시스템 점검이 예정되어 있습니다.'),
     ('새 기능 출시',      '캘린더 공유 기능이 추가되었습니다.');
+
+/* =========================
+   1) 그룹 초대 (user #5 → group #2 로 초대, PENDING)
+   ========================= */
+-- GroupRequest.status 가 INT(예: 0=PENDING) 라면 아래 사용
+INSERT INTO GroupRequest (group_id, inviter_id, receiver_id, status, requested_at, responded_at)
+VALUES (2, 1, 5, 0, NOW(), null);
+-- ❗만약 status 가 ENUM('PENDING','ACCEPTED','DECLINED') 라면 위 대신 이 줄 사용:
+-- INSERT INTO GroupRequest (group_id, inviter_id, invitee_id, status, created_at)
+-- VALUES (2, 1, 5, 'PENDING', NOW());
+
+-- 알림: type=5(GROUP_INVITE), target_id=groupId(=2)
+INSERT INTO Notifications (sender_id, user_id, type, target_id, content, is_read, created_at)
+VALUES (1, 5, 5, 2, '그룹 초대: 밥약 2조', FALSE, NOW());
+
+
+/* =========================
+   2) 그룹1 일정 (id=1001) - user #1 이 수락 테스트용
+      날짜: 2025-08-05(화=2), 시간: 10:30~12:00
+      → user #1 개인 일정과 겹치지 않음(10:30은 이전 수업의 종료시각과 같아 OK)
+   ========================= */
+INSERT INTO GroupSchedule (id, group_id, title, color, date, day, start_time, end_time, created_at)
+VALUES (1001, 1, '그룹 스터디', 2, '2025-08-05', 2, '10:30:00', '12:00:00', NOW());
+
+-- (선택) 수락 대기 표시
+INSERT INTO GroupScheduleUser (group_schedule_id, user_id, status, created_at)
+VALUES (1001, 1, 'PENDING', NOW());
+
+-- 알림: type=6(GROUP_SCHEDULE), target_id=scheduleId(=1001)
+INSERT INTO Notifications (sender_id, user_id, type, target_id, content, is_read, created_at)
+VALUES (1, 1, 6, 1001, '그룹 일정: [그룹 스터디] (2025-08-05 10:30)', FALSE, NOW());
+
+
+/* =========================
+   3) 그룹2 일정 (id=1002) - user #5 가 초대 수락 후 수락 테스트용
+      날짜: 2025-08-06(수=3), 시간: 12:00~13:00
+      → user #5 개인 일정과 겹치지 않음
+   ========================= */
+INSERT INTO GroupSchedule (id, group_id, title, color, date, day, start_time, end_time, created_at)
+VALUES (1002, 2, '밥약 미팅', 4, '2025-08-06', 3, '12:00:00', '13:00:00', NOW());
+
+-- (선택) 수락 대기 표시
+INSERT INTO GroupScheduleUser (group_schedule_id, user_id, status, created_at)
+VALUES (1002, 5, 'PENDING', NOW());
+
+-- 알림: type=6(GROUP_SCHEDULE), target_id=scheduleId(=1002)
+INSERT INTO Notifications (sender_id, user_id, type, target_id, content, is_read, created_at)
+VALUES (1, 5, 6, 1002, '그룹 일정: [밥약 미팅] (2025-08-06 12:00)', FALSE, NOW());
+
+
 
 SET FOREIGN_KEY_CHECKS = 1;
 

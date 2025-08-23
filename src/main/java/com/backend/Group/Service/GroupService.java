@@ -1,5 +1,6 @@
 package com.backend.Group.Service;
 
+import com.backend.ConfigEnum.GlobalEnum;
 import com.backend.ConfigEnum.GlobalEnum.GroupCategory;
 import com.backend.ConfigEnum.GlobalEnum.NotificationType;
 import com.backend.Group.Dto.GroupCreateRequestDto;
@@ -11,9 +12,12 @@ import com.backend.Group.Entity.GroupMembers;
 import com.backend.Group.Repository.GroupMembersRepository;
 import com.backend.Group.Repository.GroupRepository;
 import com.backend.Notification.Service.NotificationService;
+import com.backend.SharedFunction.ProfileImageService;
 import com.backend.User.Entity.User;
 import com.backend.User.Repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +37,7 @@ public class GroupService {
     private final GroupMembersRepository groupMembersRepository;
     private final NotificationService notificationService;
     private final UserRepository userRepository;
+    private final ProfileImageService profileImageService;
 
     public void validateGroupMaster(Long groupId, Long userId) {
         Group group = groupRepository.findById(groupId)
@@ -69,7 +75,7 @@ public class GroupService {
                     .categoryName(group.getCategory().getDisplayName())
                     .memberCount((long) memberCount)
                     .maxMemberCount(group.getMaxMember())
-                    //.groupImageUrl(null) // groupImage 추후 확장
+                    .groupImageUrl(group.getGroupImageUrl()) // groupImage 추후 확장
                     .build());
         }
 
@@ -124,6 +130,7 @@ public class GroupService {
                 .memberCount(memberCount)
                 .maxMember(group.getMaxMember())
                 .masterId(group.getMaster().getId())
+                .groupImageUrl(group.getGroupImageUrl())
                 .members(memberDtos)
                 .build();
 
@@ -156,6 +163,36 @@ public class GroupService {
     }
 
     @Transactional
+    public void createGroup(Long userId, GroupCreateRequestDto request, MultipartFile image) throws IOException {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다. id=" + userId));
+
+        Group group = Group.builder()
+            .groupName(request.getGroupName())
+            .category(GroupCategory.fromCode(request.getCategory()))
+            .groupType(request.getGroupType())
+            .maxMember(request.getMaxMember())
+            .master(user)
+            .createdAt(LocalDateTime.now())
+            .uniqueCode(generateUniqueGroupCode())
+            .build();
+        groupRepository.save(group);
+
+        String uploadedUrl = null;
+        if (image != null && !image.isEmpty()) {
+            uploadedUrl = profileImageService.uploadImage(GlobalEnum.ProfileImageType.GROUP, group.getId(), image, null);
+            group.setGroupImageUrl(uploadedUrl);
+        }
+
+        GroupMembers member = GroupMembers.builder()
+            .group(group)
+            .user(User.builder().id(userId).build())
+            .isFavorite(false)
+            .build();
+        groupMembersRepository.save(member);
+    }
+
+    @Transactional
     public void changeMaster(Long userId,Long groupId, Long newMasterId) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("그룹이 존재하지 않습니다."));
@@ -169,10 +206,11 @@ public class GroupService {
         // 5) 새로운 방장에게 알림 전송
         String content = String.format("그룹 ‘%s’의 새로운 방장으로 지정되었습니다.", group.getGroupName());
         notificationService.createNotification(
-                userId,                        // 발신자: 기존 방장
-                newMasterId,                       // 수신자: 새로운 방장
-                NotificationType.GROUP_MASTER,  // 알림 타입: SYSTEM_NOTICE 사용
-                content
+                userId,
+                newMasterId,                   
+                NotificationType.GROUP_MASTER,
+                content,
+                (long)-1
         );
     }
 

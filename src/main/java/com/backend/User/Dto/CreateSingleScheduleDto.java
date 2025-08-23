@@ -22,9 +22,6 @@ public class CreateSingleScheduleDto {
     @Schema(description = "일정 날짜(YYYY-MM-DD)", example = "2025-07-01")
     private LocalDate date;
 
-    @Schema(description = "요일 (1=월요일 ~ 7=일요일)", example = "3")
-    private int day;
-
     @Schema(description = "시작 시간 (HH:mm:ss)", example = "09:00:00")
     private LocalTime startTime;
 

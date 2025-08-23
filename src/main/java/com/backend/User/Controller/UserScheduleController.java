@@ -71,16 +71,18 @@ public class UserScheduleController {
         return ResponseEntity.ok(combined);
     }
 
-    @Operation(summary = "2-2. 기간별 그룹 일정 조회", description = "로그인한 사용자가 속한 모든 그룹의 일정 중, 기간 내 일정만 조회합니다. YYYY-MM-DD 형식 사용.")
+    @Operation(summary = "2-2. 기간별 그룹 일정 조회",
+        description = "로그인한 사용자가 속한 모든 그룹의 일정 중, 기간 내 일정만 조회합니다. YYYY-MM-DD 형식 사용.")
     @GetMapping("/range/group-schedule")
-    public ResponseEntity<List<GroupScheduleDto>> getGroupSchedulesByPeriod(@AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam String startDate, @RequestParam String endDate) {
+    public ResponseEntity<List<GroupScheduleDto>> getMyGroupSchedulesByPeriod(
+        @AuthenticationPrincipal UserDetails userDetails,
+        @RequestParam String startDate, @RequestParam String endDate,
+        @RequestParam(required = false) String status) {
+
         Long userId = Long.parseLong(userDetails.getUsername());
-
-        List<GroupScheduleDto> schedules = groupScheduleService.getGroupSchedulesByPeriod(userId, startDate, endDate);
-        return ResponseEntity.ok(schedules);
+        List<GroupScheduleDto> list = groupScheduleService.getMyGroupSchedules(userId, startDate, endDate, status);
+        return ResponseEntity.ok(list);
     }
-
 
     // ------------------- 3. Single Schedule CRUD -----------------
 
@@ -121,7 +123,6 @@ public class UserScheduleController {
     }
 
     // -----------4. Repeat Schedule CRUD --------------
-
     @Operation(summary = "4-1.반복 일정 추가", description = "반복 일정을 생성합니다.")
     @PostMapping("/repeat")
     public ResponseEntity<String> createRepeat(@AuthenticationPrincipal UserDetails userDetails,

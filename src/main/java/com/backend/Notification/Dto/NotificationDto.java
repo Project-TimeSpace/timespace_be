@@ -28,9 +28,6 @@ public class NotificationDto {
     @Schema(description = "발신자 이메일 주소", example = "hong@example.com")
     private String senderEmail;
 
-    @Schema(description = "알림 유형 (GlobalEnum.NotificationType 참조)", example = "FRIEND_REQUEST")
-    private GlobalEnum.NotificationType type;
-
     @Schema(description = "알림 내용", example = "홍길동님이 친구 요청을 보냈습니다.")
     private String content;
 

@@ -1,5 +1,7 @@
 package com.backend.Admin.Service;
 
+import com.backend.Admin.Dto.SystemNoticeRequestDto;
+import com.backend.Admin.Dto.SystemNoticeResponseDto;
 import com.backend.Admin.Entity.SystemNotice;
 import com.backend.Admin.Repository.SystemNoticeRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,39 +17,50 @@ public class SystemNoticeService {
 
     private final SystemNoticeRepository systemNoticeRepository;
 
-    /** 생성 */
     @Transactional
-    public SystemNotice create(SystemNotice notice) {
-        return systemNoticeRepository.save(notice);
-    }
-
-    /** 전체 조회 */
-    @Transactional(readOnly = true)
-    public List<SystemNotice> listAll() {
-        return systemNoticeRepository.findAll(
-                Sort.by(Sort.Direction.DESC, "createdAt")
+    public SystemNoticeResponseDto create(SystemNoticeRequestDto req) {
+        SystemNotice saved = systemNoticeRepository.save(
+            SystemNotice.builder()
+                .title(req.getTitle())
+                .content(req.getContent())
+                .build()
         );
+        return SystemNoticeResponseDto.builder()
+            .id(saved.getId())
+            .title(saved.getTitle())
+            .content(saved.getContent())
+            .build();
     }
 
-    /** 단건 조회 */
     @Transactional(readOnly = true)
-    public SystemNotice getById(Integer id) {
-        return systemNoticeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공지입니다."));
+    public SystemNoticeResponseDto get(Integer id) {
+        SystemNotice n = systemNoticeRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("공지 없음: " + id));
+        return SystemNoticeResponseDto.builder()
+            .id(n.getId())
+            .title(n.getTitle())
+            .content(n.getContent())
+            .build();
     }
 
-    /** 수정 */
-    @Transactional
-    public SystemNotice update(Integer id, SystemNotice dto) {
-        SystemNotice notice = getById(id);
-        notice.setTitle(dto.getTitle());
-        notice.setContent(dto.getContent());
-        return systemNoticeRepository.save(notice);
+    @Transactional(readOnly = true)
+    public List<SystemNoticeResponseDto> list() {
+        return systemNoticeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"))
+            .stream()
+            .map(n -> SystemNoticeResponseDto.builder()
+                .id(n.getId())
+                .title(n.getTitle())
+                .content(n.getContent())
+                .build())
+            .toList();
     }
 
-    /** 삭제 */
     @Transactional
     public void delete(Integer id) {
+        if (!systemNoticeRepository.existsById(id)) {
+            throw new IllegalArgumentException("공지 없음: " + id);
+        }
         systemNoticeRepository.deleteById(id);
     }
 }
+

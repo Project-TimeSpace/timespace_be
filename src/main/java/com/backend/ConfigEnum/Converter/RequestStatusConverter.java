@@ -1,5 +1,6 @@
 package com.backend.ConfigEnum.Converter;
 
+import com.backend.ConfigEnum.GlobalEnum;
 import com.backend.ConfigEnum.GlobalEnum.RequestStatus;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
@@ -10,17 +11,13 @@ public class RequestStatusConverter
 
     /** 엔티티 → DB (INT) */
     @Override
-    public Integer convertToDatabaseColumn(RequestStatus attribute) {
-        return attribute != null
-                ? attribute.getCode()
-                : null;
+    public Integer convertToDatabaseColumn(GlobalEnum.RequestStatus attribute) {
+        return attribute == null ? null : attribute.getCode(); // 1,2,3…
     }
 
-    /** DB (INT) → 엔티티 */
+
     @Override
-    public RequestStatus convertToEntityAttribute(Integer dbData) {
-        return dbData != null
-                ? RequestStatus.fromCode(dbData)
-                : null;
+    public GlobalEnum.RequestStatus convertToEntityAttribute(Integer dbData) {
+        return dbData == null ? null : GlobalEnum.RequestStatus.fromCode(dbData);
     }
 }

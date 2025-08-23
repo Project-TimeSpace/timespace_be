@@ -303,8 +303,8 @@ public class GlobalEnum {
         FRIEND_SCHEDULE_REJECTED (4, "FRIEND_SCHEDULE_REJECTED"),
         GROUP_INVITE             (5, "GROUP_INVITE"),
         GROUP_SCHEDULE           (6, "GROUP_SCHEDULE"),
-        SYSTEM_NOTICE            (7, "SYSTEM_NOTICE"),
-        GROUP_MASTER             (8, "GRUOP_MASTER");
+        GROUP_MASTER             (7, "GROUP_MASTER"),
+        SYSTEM_NOTICE            (8, "SYSTEM_NOTICE");
 
         private final int code;
         private final String name;
@@ -324,6 +324,11 @@ public class GlobalEnum {
             }
             throw new IllegalArgumentException("유효하지 않은 NotificationType name: " + name);
         }
+    }
+
+    public enum ProfileImageType {
+        USER,  // 사용자 프로필
+        GROUP  // 그룹 프로필
     }
 
 

@@ -1,5 +1,8 @@
 package com.backend.SharedFunction;
 
+import com.backend.ConfigEnum.GlobalEnum;
+import com.backend.Group.Entity.GroupScheduleUser;
+import com.backend.Group.Repository.GroupScheduleUserRepository;
 import com.backend.User.Entity.RepeatException;
 import com.backend.User.Entity.RepeatSchedule;
 import com.backend.User.Entity.SingleSchedule;
@@ -24,6 +27,7 @@ public class SharedFunction {
     private final SingleScheduleRepository singleScheduleRepository;
     private final RepeatScheduleRepository repeatScheduleRepository;
     private final RepeatExceptionRepository repeatExceptionRepository;
+    private final GroupScheduleUserRepository groupScheduleUserRepository;
 
     // Long scheduleId가 0L 일때는 새로 등록하는 일정일 때, 수정하는 상황에서는 id 넣어주고
     public void validateSingleScheduleOverlap(Long userId, LocalDate date,
@@ -61,6 +65,14 @@ public class SharedFunction {
             if (newStart.isBefore(r.getEndTime()) && r.getStartTime().isBefore(newEnd)) {
                 throw new IllegalArgumentException("반복 일정(id=" + r.getId() + ")과 시간이 겹칩니다: " + r.getStartTime() + "~" + r.getEndTime());
             }
+        }
+
+        boolean hasAcceptedGroupOverlap = groupScheduleUserRepository.
+            existsByUser_IdAndStatusAndGroupSchedule_DateAndGroupSchedule_StartTimeLessThanAndGroupSchedule_EndTimeGreaterThan(
+            userId, GlobalEnum.RequestStatus.ACCEPTED, date, newEnd, newStart);
+
+        if (hasAcceptedGroupOverlap) {
+            throw new IllegalArgumentException("수락한 그룹 일정과 시간이 겹칩니다.");
         }
     }
 
@@ -156,6 +168,13 @@ public class SharedFunction {
                     );
                 }
             }
+        }
+
+        boolean hasAcceptedGroupOverlap = groupScheduleUserRepository.existsAcceptedOverlapInDates(
+                userId, GlobalEnum.RequestStatus.ACCEPTED, occurrences, newStart, newEnd);
+
+        if (hasAcceptedGroupOverlap) {
+            throw new IllegalArgumentException("수락한 그룹 일정과 시간이 겹칩니다.");
         }
     }
 

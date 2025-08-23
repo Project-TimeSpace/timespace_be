@@ -1,14 +1,17 @@
 package com.backend.Group.Controller;
 
-import com.backend.Group.Dto.GroupScheduleCreateRequest;
-import com.backend.Group.Dto.GroupScheduleDto;
+import java.util.Map;
+
+import com.backend.Group.Service.GroupImageAppService;
 import com.backend.Group.Service.GroupMemberService;
 import com.backend.Group.Service.GroupScheduleService;
 import com.backend.Group.Service.GroupService;
-import com.backend.SharedFunction.Converge.ScheduleConverge;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,21 +22,22 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequiredArgsConstructor
+@AllArgsConstructor
 @RequestMapping("/api/v1/group")
-@Tag(name = "4-2. 그룹 방장이 사용가능한 api")
+@Tag(name = "4-2. 그룹 방장이 사용가능한 멤버 관리 api")
 @PreAuthorize("hasRole('User')")
 public class GroupMasterController {
 
     private final GroupService groupService;
     private final GroupMemberService groupMemberService;
-    private final GroupScheduleService groupScheduleService;
+    private final GroupImageAppService groupImageAppService;
 
     @Operation(summary = "1. 그룹 참여 코드", description = "그룹의 참여코드 반환")
     @GetMapping("/{groupId}/code")
@@ -46,7 +50,7 @@ public class GroupMasterController {
         return ResponseEntity.ok(code);
     }
 
-    @Operation(summary = "1-2. 그룹 참여 코드", description = "그룹의 참여코드 초기화")
+    @Operation(summary = "1-2. 그룹 참여 코드 리셋", description = "그룹의 참여코드 초기화")
     @PatchMapping("/{groupId}/reset-code")
     public ResponseEntity<String> resetGroupUniqueCode(@AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long groupId) {
@@ -89,44 +93,27 @@ public class GroupMasterController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "5. 그룹 스케줄 추가", description = "해당 그룹에 단일 일정을 추가합니다.")
-    @PostMapping("/{groupId}/new-schedule")
-    public ResponseEntity<GroupScheduleDto> createGroupSchedule(@AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long groupId, @RequestBody GroupScheduleCreateRequest request) {
+    @Operation(summary = "그룹 프로필 이미지 업로드/교체", description = "그룹 마스터만 가능. png/jpg/webp, ≤ 5MB")
+    @PostMapping(value = "/{groupId}/profile-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, String>> uploadGroupProfileImage(
+        @AuthenticationPrincipal UserDetails ud, @PathVariable Long groupId,
+        @RequestPart("file") MultipartFile file) throws Exception {
 
-        Long userId = Long.parseLong(userDetails.getUsername());
-        // 1) 그룹 멤버인지 체크
-        groupMemberService.isUserInGroup(groupId, userId);
+        Long userId = Long.parseLong(ud.getUsername());
         groupService.validateGroupMaster(groupId, userId);
-        // 2) 일정 생성
-        GroupScheduleDto dto = groupScheduleService.createSchedule(groupId, request);
-        return ResponseEntity.ok(dto);
+        String url = groupImageAppService.updateGroupProfileImage(groupId, file);
+        return ResponseEntity.ok(Map.of("groupImageUrl", url));
     }
 
-    @Operation(summary = "6. 그룹 스케줄 수정", description = "기존 그룹의 일정을 수정합니다.")
-    @PutMapping("/{groupId}/schedule/{scheduleId}")
-    public ResponseEntity<GroupScheduleDto> updateGroupSchedule(@AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long groupId, @PathVariable Long scheduleId,
-            @RequestBody GroupScheduleCreateRequest request) {
-        Long userId = Long.parseLong(userDetails.getUsername());
+    @Operation(summary = "그룹 프로필 이미지 삭제", description = "그룹 마스터만 가능")
+    @DeleteMapping("/{groupId}/profile-image")
+    public ResponseEntity<Void> deleteGroupProfileImage(
+        @AuthenticationPrincipal UserDetails ud,
+        @PathVariable Long groupId) {
 
-        groupMemberService.isUserInGroup(groupId, userId);
+        Long userId = Long.parseLong(ud.getUsername());
         groupService.validateGroupMaster(groupId, userId);
-
-        GroupScheduleDto dto = groupScheduleService.updateSchedule(groupId, scheduleId, request);
-        return ResponseEntity.ok(dto);
-    }
-
-    @Operation(summary = "7. 그룹 스케줄 삭제", description = "해당 그룹의 일정을 삭제합니다.")
-    @DeleteMapping("/{groupId}/schedule/{scheduleId}")
-    public ResponseEntity<Void> deleteGroupSchedule(@AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long groupId, @PathVariable Long scheduleId) {
-        Long userId = Long.parseLong(userDetails.getUsername());
-
-        groupMemberService.isUserInGroup(groupId, userId);
-        groupService.validateGroupMaster(groupId, userId);
-
-        groupScheduleService.deleteSchedule(groupId, scheduleId);
+        groupImageAppService.deleteGroupProfileImage(groupId);
         return ResponseEntity.noContent().build();
     }
 }

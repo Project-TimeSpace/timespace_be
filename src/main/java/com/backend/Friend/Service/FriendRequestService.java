@@ -62,7 +62,7 @@ public class FriendRequestService {
         // 6) 알림 전송
         String content = String.format("%s(%s)님이 친구 요청을 보냈습니다.", sender.getUserName(), sender.getEmail());
         notificationService.createNotification(
-                userId, receiver.getId(), NotificationType.FRIEND_REQUEST, content);
+                userId, receiver.getId(), NotificationType.FRIEND_REQUEST, content, req.getId());
     }
 
     @Transactional(readOnly = true)
@@ -105,6 +105,7 @@ public class FriendRequestService {
                 .isFavorite(false)
                 .visibility(Visibility.SIMPLE)
                 .nickname(receiver.getUserName())
+                .createdAt(LocalDateTime.now())
                 .build();
         Friend rel2 = Friend.builder()
                 .user(receiver)
@@ -112,6 +113,7 @@ public class FriendRequestService {
                 .isFavorite(false)
                 .visibility(Visibility.SIMPLE)
                 .nickname(sender.getUserName())
+                .createdAt(LocalDateTime.now())
                 .build();
         friendRepository.save(rel1);
         friendRepository.save(rel2);

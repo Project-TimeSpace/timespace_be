@@ -1,5 +1,7 @@
 package com.backend.Admin.Dto;
 
+import java.time.LocalDateTime;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -25,14 +27,14 @@ public class AdminInquiryDetailDto {
 	private Integer status;
 
 	@Schema(description = "등록 일시 (ISO 8601 형식)", example = "2025-08-06T10:15:30")
-	private String createdAt;
+	private LocalDateTime createdAt;
 
 	@Schema(description = "관리자 답변 내용", example = "서버 시간을 확인해 주세요.")
 	private String replyContent;
 
 	@Schema(description = "답변 일시 (ISO 8601 형식)", example = "2025-08-06T12:05:00")
-	private String answeredAt;
+	private LocalDateTime answeredAt;
 
-	@Schema(description = "처리한 관리자 ID", example = "3")
-	private Long responderId;
+	@Schema(description = "처리한 관리자 이름", example = "관리자1")
+	private String adminName;
 }

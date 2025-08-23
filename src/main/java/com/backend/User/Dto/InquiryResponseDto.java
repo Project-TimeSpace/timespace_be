@@ -1,5 +1,7 @@
 package com.backend.User.Dto;
 
+import java.time.LocalDateTime;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -25,11 +27,9 @@ public class InquiryResponseDto {
 	private String replyContent;
 
 	@Schema(description = "답변 일시", example = "2025-08-06T12:05:00")
-	private String answeredAt;
+	private LocalDateTime answeredAt;
 
 	@Schema(description = "생성 일시", example = "2025-08-06T10:15:30")
-	private String createdAt;
+	private LocalDateTime createdAt;
 
-	@Schema(description = "수정 일시(admin 동시성 제어)", example = "2025-08-06T12:00:00")
-	private String updatedAt;
 }

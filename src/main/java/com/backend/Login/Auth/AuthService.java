@@ -8,6 +8,7 @@ import com.backend.ConfigSecurity.RefreshToken.RefreshToken;
 import com.backend.ConfigSecurity.RefreshToken.RefreshTokenService;
 import com.backend.Login.Dto.LoginResponseDto;
 import com.backend.Login.Dto.RegisterRequestDto;
+import com.backend.Login.Dto.TokenResponseDto;
 import com.backend.User.Entity.User;
 import com.backend.User.Repository.UserRepository;
 import jakarta.mail.MessagingException;
@@ -81,34 +82,37 @@ public class AuthService {
         String token = jwtTokenProvider.createToken(user.getId(), "user");
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(), "user");
 
-        LocalDateTime expiryDate = LocalDateTime.now().plusDays(7);
-        refreshTokenService.saveOrUpdateToken(user, refreshToken, expiryDate);
+        refreshTokenService.storeToken(refreshToken);
+
+        // LocalDateTime expiryDate = LocalDateTime.now().plusDays(7);
+        // refreshTokenService.saveOrUpdateToken(user, refreshToken, expiryDate);
         return new LoginResponseDto(token, refreshToken,"user");
     }
 
-    public String reissueAccessToken(String refreshTokenValue) {
-        // 1) 저장된 RefreshToken 조회
-        RefreshToken refreshToken = refreshTokenService.getByToken(refreshTokenValue);
-
-        // 2) 만료 여부 확인
-        if (refreshToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Refresh token expired");
+    public TokenResponseDto reissueToken(String oldRefresh) {
+        if (!jwtTokenProvider.validateToken(oldRefresh)) {
+            throw new RuntimeException("유효하지 않은 Refresh Token");
+        }
+        if (!jwtTokenProvider.isRefreshToken(oldRefresh)) {
+            throw new RuntimeException("AccessToken이 아닌 RefreshToken을 보내야 합니다.");
+        }
+        if (!refreshTokenService.exists(oldRefresh)) {
+            throw new RuntimeException("만료되었거나 로그아웃된 토큰입니다.");
         }
 
-        // 3) User 정보로부터 ID와 역할 가져오기
-        User user = refreshToken.getUser();
-        Long userId = user.getId();
-        String role = "user"; // 필요한 경우 User 엔티티에서 실제 역할을 가져오도록 변경
+        Long userId = jwtTokenProvider.getIdFromToken(oldRefresh);   // OK: sub 읽기
+        String role = jwtTokenProvider.getTypeFromToken(oldRefresh); // OK: type 읽기
 
-        // 4) AccessToken 재발급 (ID, 역할 전달)
-        return jwtTokenProvider.createToken(userId, role);
+        String newAccess  = jwtTokenProvider.createToken(userId, role);
+        String newRefresh = jwtTokenProvider.createRefreshToken(userId, role);
+        refreshTokenService.rotate(oldRefresh, newRefresh);
+
+        return new TokenResponseDto(newAccess, newRefresh);
     }
 
 
-    public void logout(String userEmail) {
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        refreshTokenService.deleteByUser(user);
+    public void logout(String refreshToken) {
+        refreshTokenService.delete(refreshToken);
     }
 
 
@@ -135,7 +139,7 @@ public class AuthService {
         MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
 
         helper.setTo(toEmail);
-        helper.setSubject("[프로젝트] 이메일 인증코드");
+        helper.setSubject("[언제볼래?] 이메일 인증코드");
         try {
             helper.setFrom(fromEmail, "프로젝트 인증팀"); // ← 이름 추가
         } catch (UnsupportedEncodingException e) {

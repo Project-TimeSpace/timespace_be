@@ -14,22 +14,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtTokenProvider {
-
-    /*
-     * 2025/04/13 - 기본적인 JWT 기능만 구현
-     * 추가 - Refresh 토큰, 로그아웃 토큰 블랙리스트 처리, 토큰 만료 시간 확인 메서드
-     * */
 
     private final UserDetailsService userDetailsService;  // ← 추가
 
     private final Key secretKey;
     private final long tokenValidity = 1000L * 60 * 60; // 유효시간 60분
     private final long refreshThreshold = 1000L * 60 * 30; // 30분 이하 시 갱신
-    private final long refreshTokenValidityInMs = 1000L * 60 * 60 * 24 * 7; // 리프레시 토큰 유효 3일
+    private final long refreshTokenValidityInMs = 1000L * 60 * 60 * 24 * 5; // 리프레시 토큰 유효 3일
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secret,
@@ -38,40 +35,43 @@ public class JwtTokenProvider {
         this.userDetailsService = userDetailsService;
     }
 
-    // JWT 토큰 생성
-    public String createToken(Long id, String type) {
+    // JWT Access 토큰 생성
+    public String createToken(Long id, String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + tokenValidity);
 
         return Jwts.builder()
-                .setSubject(String.valueOf(id))
-                .claim("type", type)  // user,manager Type도 추가로 저장
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(secretKey)
-                .compact();
+            .setSubject(String.valueOf(id))
+            .claim("type", role)
+            .setIssuedAt(now)
+            .setExpiration(expiryDate)
+            .signWith(secretKey, SignatureAlgorithm.HS512)
+            .compact();
     }
+
+    /** Refresh Token 생성: JTI(고유 ID) 부여 */
     public String createRefreshToken(Long id, String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshTokenValidityInMs);
+        String jti = UUID.randomUUID().toString();
 
         return Jwts.builder()
-                .setSubject(String.valueOf(id))
-                .claim("type", role)      // RefreshToken에도 동일한 키("type")로 역할 정보 삽입
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(secretKey, SignatureAlgorithm.HS256)
-                .compact();
+            .setSubject(String.valueOf(id))
+            .claim("type", role)
+            .setId(jti) // Refresh만 JTI를 가짐
+            .setIssuedAt(now)
+            .setExpiration(expiryDate)
+            .signWith(secretKey, SignatureAlgorithm.HS512)
+            .compact();
     }
 
-    // 토큰에서 email 추출
-    public String getEmailFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
+    public String getJti(String token) {
+        return Jwts.parserBuilder()
+            .setSigningKey(secretKey)
+            .build()
+            .parseClaimsJws(token)
+            .getBody()
+            .getId();
     }
 
     // 토큰에서 ID 추출
@@ -82,9 +82,7 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
         return Long.valueOf(claims.getSubject());
-
     }
-
     // 토큰에서 User인지 Admin인지 구분
     public String getTypeFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
@@ -93,6 +91,10 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
         return claims.get("type", String.class);
+    }
+
+    public boolean isRefreshToken(String token) {
+        return getJti(token) != null;   // jti가 있으면 Refresh
     }
 
     // JWT 유효성 검증
@@ -131,6 +133,15 @@ public class JwtTokenProvider {
             return bearerToken.substring(7);
         }
         return null;
+    }
+
+    public Date getExpirationDate(String token) {
+        return Jwts.parserBuilder()
+            .setSigningKey(secretKey)
+            .build()
+            .parseClaimsJws(token)
+            .getBody()
+            .getExpiration();
     }
 
 

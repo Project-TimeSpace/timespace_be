@@ -60,8 +60,18 @@ public class FriendScheduleController {
         return ResponseEntity.ok("약속을 신청했습니다.");
     }
 
+    @Operation(summary = "4. 받은 약속 신청 조회", description = "친구들이 보낸 약속 신청 목록을 확인합니다.")
+    @GetMapping("/schedules/requests")
+    public ResponseEntity<List<ScheduleRequestDto>> getReceivedScheduleRequests(
+        @AuthenticationPrincipal UserDetails userDetails) {
+
+        Long userId = Long.parseLong(userDetails.getUsername());
+        List<ScheduleRequestDto> dtoList = friendScheduleService.getReceivedScheduleRequests(userId);
+        return ResponseEntity.ok(dtoList);
+    }
+
     // 4. 상대방이 보낸 약속 수락하기
-    @Operation(summary = "4. 약속 수락하기", description = "친구가 보낸 일정 요청을 수락하여 실제 일정으로 등록합니다.")
+    @Operation(summary = "5. 약속 수락하기", description = "친구가 보낸 일정 요청을 수락하여 실제 일정으로 등록합니다.")
     @PostMapping("/schedules/requests/{requestId}/accept")
     public ResponseEntity<String> acceptScheduleRequest(
             @AuthenticationPrincipal UserDetails userDetails, @PathVariable Long requestId) {
@@ -71,7 +81,7 @@ public class FriendScheduleController {
     }
 
     // 5. 약속 거절하기
-    @Operation(summary = "5. 약속 거절하기", description = "친구가 보낸 일정 요청을 거절하고 상태를 REJECTED로 업데이트합니다.->이거 그냥 알림 보내고 삭제로 할까..")
+    @Operation(summary = "6. 약속 거절하기", description = "친구가 보낸 일정 요청을 거절하고 상태를 REJECTED로 업데이트합니다.->이거 그냥 알림 보내고 삭제로 할까..")
     @PostMapping("/schedules/requests/{requestId}/reject")
     public ResponseEntity<String> rejectScheduleRequest(
             @AuthenticationPrincipal UserDetails userDetails, @PathVariable Long requestId) {
@@ -81,13 +91,5 @@ public class FriendScheduleController {
         return ResponseEntity.ok("약속을 거절했습니다.");
     }
 
-    @Operation(summary = "6. 받은 약속 신청 조회", description = "친구들이 보낸 약속 신청 목록을 확인합니다.")
-    @GetMapping("/schedules/requests")
-    public ResponseEntity<List<ScheduleRequestDto>> getReceivedScheduleRequests(
-            @AuthenticationPrincipal UserDetails userDetails) {
 
-        Long userId = Long.parseLong(userDetails.getUsername());
-        List<ScheduleRequestDto> dtoList = friendScheduleService.getReceivedScheduleRequests(userId);
-        return ResponseEntity.ok(dtoList);
-    }
 }

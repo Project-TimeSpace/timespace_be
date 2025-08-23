@@ -23,6 +23,8 @@ import com.backend.User.Entity.User;
 import com.backend.User.Repository.UserRepository;
 import com.backend.User.Service.UserRepeatScheduleService;
 import com.backend.User.Service.UserSingleScheduleService;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -122,7 +124,8 @@ public class FriendScheduleService {
                 .date(dto.getDate())
                 .startTime(dto.getStartTime())
                 .endTime(dto.getEndTime())
-                .status(RequestStatus.PENDING)   // 초기 상태는 PENDING
+                .status(RequestStatus.PENDING)
+                .requestedAt(LocalDateTime.now())
                 .build();
 
         scheduleRequestRepository.save(req);
@@ -131,7 +134,7 @@ public class FriendScheduleService {
         String content = String.format("%s님이 %s에 \"%s\" 약속을 신청했습니다.",
                 sender.getUserName(), dto.getDate().toString(), dto.getTitle());
         notificationService.createNotification(
-                userId, friendId, NotificationType.FRIEND_SCHEDULE_REQUEST, content);
+                userId, friendId, NotificationType.FRIEND_SCHEDULE_REQUEST, content, req.getId());
     }
 
     @Transactional(readOnly = true)
@@ -163,7 +166,7 @@ public class FriendScheduleService {
         if (!req.getReceiver().getId().equals(userId)) {
             throw new AccessDeniedException("본인이 수신자가 아닙니다.");
         }
-        if (!RequestStatus.PENDING.name().equals(req.getStatus())) {
+        if (!RequestStatus.PENDING.equals(req.getStatus())) {
             throw new IllegalStateException("이미 처리된 요청입니다.");
         }
 
@@ -172,7 +175,6 @@ public class FriendScheduleService {
                 .title(req.getTitle())
                 .color(1)
                 .date(req.getDate())
-                .day(req.getDate().getDayOfWeek().getValue())
                 .startTime(req.getStartTime())
                 .endTime(req.getEndTime())
                 .build();
@@ -185,14 +187,16 @@ public class FriendScheduleService {
         userSingleScheduleService.createSingleSchedule(receiverId, dto);
 
         // 5) 요청 상태 업데이트
-        req.setStatus(RequestStatus.ACCEPTED);
-        scheduleRequestRepository.save(req);
+        //req.setStatus(RequestStatus.ACCEPTED);
+        //scheduleRequestRepository.save(req);
 
         // 6) 알림 생성 (요청자에게 수락 알림)
         String content = String.format("%s님이 %s에 \"%s\" 약속 요청을 수락했습니다.",
                 req.getReceiver().getUserName(), req.getDate(), req.getTitle());
         notificationService.createNotification(receiverId, senderId,
-                NotificationType.FRIEND_SCHEDULE_ACCEPTED, content);
+                NotificationType.FRIEND_SCHEDULE_ACCEPTED, content, (long)-1);
+
+        scheduleRequestRepository.delete(req);
     }
 
     @Transactional
@@ -206,18 +210,13 @@ public class FriendScheduleService {
             throw new AccessDeniedException("본인이 수신자가 아닙니다.");
         }
         // 3) 상태 확인
-        if (!RequestStatus.PENDING.name().equals(req.getStatus())) {
+        if (!RequestStatus.PENDING.equals(req.getStatus())) {
             throw new IllegalStateException("이미 처리된 요청입니다.");
         }
 
         Long senderId   = req.getSender().getId();
         Long receiverId = req.getReceiver().getId();
 
-        // 4) 상태 REJECTED로 변경 후 저장
-        req.setStatus(RequestStatus.REJECTED);
-        scheduleRequestRepository.save(req);
-
-        // 5) 알림 생성 (요청자에게 거절 알림)
         String content = String.format(
                 "%s님이 %s에 \"%s\" 약속 요청을 거절했습니다.",
                 req.getReceiver().getUserName(),
@@ -225,6 +224,8 @@ public class FriendScheduleService {
                 req.getTitle()
         );
         notificationService.createNotification(receiverId, senderId,
-                NotificationType.FRIEND_SCHEDULE_REJECTED, content);
+                NotificationType.FRIEND_SCHEDULE_REJECTED, content, (long)-1);
+
+        scheduleRequestRepository.delete(req);
     }
 }

@@ -1,15 +1,48 @@
 package com.backend.ConfigSecurity.RefreshToken;
 
+import com.backend.ConfigSecurity.JwtTokenProvider;
 import com.backend.User.Entity.User;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
-    private final RefreshTokenRepository refreshTokenRepository;
+
+
+    private final StringRedisTemplate redis;
+    private final JwtTokenProvider jwtProvider;
+
+    public void storeToken(String refreshToken) {
+        String jti = jwtProvider.getJti(refreshToken);
+        long ttl = jwtProvider.getExpirationDate(refreshToken).getTime() - System.currentTimeMillis();
+        redis.opsForValue()
+            .set("refresh:" + jti, refreshToken, ttl, TimeUnit.MILLISECONDS);
+    }
+
+    public boolean exists(String refreshToken) {
+        String jti = jwtProvider.getJti(refreshToken);
+        return Boolean.TRUE.equals(redis.hasKey("refresh:" + jti));
+    }
+
+    public void delete(String refreshToken) {
+        String jti = jwtProvider.getJti(refreshToken);
+        redis.delete("refresh:" + jti);
+    }
+
+    public void rotate(String oldToken, String newToken) {
+        String oldJti = jwtProvider.getJti(oldToken);
+        redis.delete("refresh:" + oldJti);
+        storeToken(newToken);
+    }
+
+    /* 기존 DB기반 리프레시 토큰 Service
+    // final RefreshTokenRepository refreshTokenRepository;
 
     public void saveOrUpdateToken(User user, String token, LocalDateTime expiry) {
         refreshTokenRepository.findByUser(user).ifPresentOrElse(
@@ -36,4 +69,8 @@ public class RefreshTokenService {
     public void deleteByUser(User user) {
         refreshTokenRepository.deleteByUser(user);
     }
+    */
+
+
+
 }

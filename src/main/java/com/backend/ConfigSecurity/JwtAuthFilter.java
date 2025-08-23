@@ -66,7 +66,6 @@ public class JwtAuthFilter extends OncePerRequestFilter{
                 UserDetails userDetails;
                 userDetails = userDetailsService.loadUserByUsername(String.valueOf(userId));
 
-                // 4) 권한 리스트 생성 ("Manager" 또는 "User")
                 List<GrantedAuthority> authorities;
                 if("admin".equals(userType)){
                     authorities = List.of(new SimpleGrantedAuthority("ROLE_Admin"));
@@ -81,7 +80,7 @@ public class JwtAuthFilter extends OncePerRequestFilter{
 
             } catch (ExpiredJwtException e) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("{\"message\": \"세션이 만료되었습니다. 다시 로그인하세요.\"}");
+                response.getWriter().write("{\"message\": \"토큰이 만료되었습니다. 다시 로그인하세요.\"}");
                 return;
             }
         }

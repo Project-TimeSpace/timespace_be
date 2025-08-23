@@ -32,7 +32,7 @@ public class GroupSummaryDto {
     @Schema(description = "최대 멤버 수", example = "10")
     private Integer maxMemberCount;
 
-    //@Schema(description = "그룹 이미지 URL", example = "https://example.com/image.png")
-    //private String groupImageUrl;
+    @Schema(description = "그룹 이미지 URL", example = "https://kr.object.ncloudstorage.com/your-bucket/groups/1/abc.png")
+    private String groupImageUrl;
 }
 

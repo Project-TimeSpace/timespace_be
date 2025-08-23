@@ -16,6 +16,7 @@ CREATE TABLE `User` (
     created_at    DATETIME     DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
+/*
 CREATE TABLE RefreshToken (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL UNIQUE,
@@ -23,6 +24,7 @@ CREATE TABLE RefreshToken (
     expiry_date DATETIME NOT NULL,
     FOREIGN KEY (user_id) REFERENCES `User`(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+*/
 
 CREATE TABLE SocialAccount (
     id                 BIGINT       AUTO_INCREMENT PRIMARY KEY,
@@ -114,6 +116,7 @@ CREATE TABLE `Group` (
     created_at   DATETIME     DEFAULT CURRENT_TIMESTAMP,
     category     INT NOT NULL,
     unique_code  VARCHAR(100),
+    group_image_url   VARCHAR(255),
     FOREIGN KEY (master_id) REFERENCES `User`(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
@@ -154,20 +157,37 @@ CREATE TABLE GroupSchedule (
     FOREIGN KEY (group_id) REFERENCES `Group`(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+CREATE TABLE GroupScheduleUser (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    group_schedule_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    status INT NOT NULL ,
+    accepted_at DATETIME NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    UNIQUE KEY uq_gsu (group_schedule_id, user_id),
+    KEY idx_gsu_user_status (user_id, status),
+    CONSTRAINT fk_gsu_schedule FOREIGN KEY (group_schedule_id) REFERENCES GroupSchedule(id) ON DELETE CASCADE,
+    CONSTRAINT fk_gsu_user     FOREIGN KEY (user_id) REFERENCES `User`(id)          ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 CREATE TABLE Notifications (
     id         INT AUTO_INCREMENT PRIMARY KEY,
     sender_id  BIGINT   NOT NULL,
     user_id    BIGINT   NOT NULL,
     type       INT NOT NULL,
+    target_id   BIGINT,
     content    TEXT,
     is_read    BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at DATETIME NULL,
     FOREIGN KEY (user_id) REFERENCES `User`(id) ON DELETE CASCADE,
     FOREIGN KEY (sender_id) REFERENCES `User`(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE Admin (
-    id           INT AUTO_INCREMENT PRIMARY KEY,
+    id           BIGINT AUTO_INCREMENT PRIMARY KEY,
     email        VARCHAR(50)  NOT NULL,
     password     VARCHAR(100) NOT NULL,
     admin_name   VARCHAR(30)
@@ -202,9 +222,29 @@ CREATE TABLE Inquiry (
     created_at    DATETIME     DEFAULT CURRENT_TIMESTAMP,
     updated_at    DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_inquiry_user FOREIGN KEY (user_id) REFERENCES `User`(id) ON DELETE CASCADE,
-    CONSTRAINT fk_inquiry_responder FOREIGN KEY (responder_id) REFERENCES 'Admin'(id),
+    CONSTRAINT fk_inquiry_responder FOREIGN KEY (responder_id) REFERENCES Admin(id),
     UNIQUE KEY uq_inquiry_pending (user_id, status)
 ) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS user_update_requests (
+    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id           BIGINT       NOT NULL,
+    -- 요청된 값(부분 업데이트 허용: null이면 해당 항목은 유지)
+    requested_user_name     VARCHAR(50),
+    requested_univ_code     INT,
+    requested_phone_number  VARCHAR(20),
+    requested_birth_date    DATE,
+
+    status           INT          NOT NULL DEFAULT 1,
+    admin_id         BIGINT       NULL,
+    review_reason    VARCHAR(255) NULL,
+    created_at       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    reviewed_at      DATETIME     NULL,
+    updated_at       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_user_update_requests_user FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE
+);
+
 
 
 -- Index Definitions
@@ -223,3 +263,5 @@ CREATE INDEX idx_notif_user       ON Notifications (user_id);
 CREATE INDEX idx_notif_is_read    ON Notifications (is_read);
 CREATE INDEX idx_fsr_receiver     ON FriendScheduleRequest (receiver_id);
 CREATE UNIQUE INDEX uq_visit_date ON VisitLog (user_id, visit_date);
+CREATE INDEX idx_notifications_user_read_created ON Notifications (user_id, is_read, created_at);
+CREATE INDEX idx_notifications_is_read ON Notifications (is_read);

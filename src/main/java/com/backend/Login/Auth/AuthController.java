@@ -3,6 +3,8 @@ package com.backend.Login.Auth;
 import com.backend.Login.Dto.LoginRequestDto;
 import com.backend.Login.Dto.LoginResponseDto;
 import com.backend.Login.Dto.RegisterRequestDto;
+import com.backend.Login.Dto.TokenResponseDto;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
@@ -62,14 +64,15 @@ public class AuthController {
     @Operation(summary = "AccessToken 재발급", description = "유효한 RefreshToken을 받아 새로운 AccessToken을 발급합니다.")
     @PostMapping("/reissue")
     public ResponseEntity<TokenResponseDto> reissue(@RequestBody TokenRequestDto requestDto) {
-        String newAccessToken = authService.reissueAccessToken(requestDto.getRefreshToken());
-        return ResponseEntity.ok(new TokenResponseDto(newAccessToken));
+        TokenResponseDto tokens = authService.reissueToken(requestDto.getRefreshToken());
+        return ResponseEntity.ok(tokens);
     }
 
     @Operation(summary = "로그아웃", description = "현재 사용자의 RefreshToken을 삭제하여 세션을 만료시킵니다.")
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@AuthenticationPrincipal UserDetails userDetails) {
-        authService.logout(userDetails.getUsername());
+    public ResponseEntity<?> logout(@AuthenticationPrincipal UserDetails userDetails,
+        @RequestBody TokenRequestDto requestDto) {
+        authService.logout(requestDto.getRefreshToken());
         return ResponseEntity.ok().build();
     }
 
@@ -129,9 +132,5 @@ public class AuthController {
         private String refreshToken;
     }
 
-    @Getter @Setter @AllArgsConstructor
-    public static class TokenResponseDto {
-        private String accessToken;
-    }
 
 }

@@ -33,6 +33,10 @@ public class Notification {
     @Schema(description = "알림 종류 코드 (GlobalEnum.NotificationType)", example = "1")
     private NotificationType type;
 
+    @Column(name = "target_id")
+    @Schema(description = "친구가 약속 신청한거 | 그룹 스케쥴 추가 관련 ID정보")
+    private Long targetId;
+
     @Column(columnDefinition = "TEXT")
     @Schema(description = "알림 내용", example = "홍길동님이 친구 요청을 보냈습니다.")
     private String content;
@@ -44,4 +48,7 @@ public class Notification {
     @Column(name = "created_at")
     @Schema(description = "알림 생성 일시", example = "2025-06-01T18:00:00")
     private LocalDateTime createdAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 }

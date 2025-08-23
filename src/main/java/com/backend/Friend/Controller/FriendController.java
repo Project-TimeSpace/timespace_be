@@ -33,6 +33,7 @@ public class FriendController {
         return ResponseEntity.ok(friendService.getFriends(userId, sortOption));
     }
 
+    // 이거 수정해야해
     @Operation(summary = "2. 친구 즐겨찾기 설정", description = "상태 변경True->False , False->True.")
     @PatchMapping("/{friendId}/favorite")
     public ResponseEntity<Void> setFavorite(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long friendId) {
@@ -50,16 +51,7 @@ public class FriendController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "4. 친구 삭제", description = "특정 친구 관계를 삭제합니다.")
-    @DeleteMapping("/{friendId}")
-    public ResponseEntity<Void> removeFriend(@AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long friendId) {
-        Long userId = Long.parseLong(userDetails.getUsername());
-        friendService.deleteFriend(userId, friendId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @Operation(summary = "친구 닉네임 수정",
+    @Operation(summary = "4. 친구 닉네임 수정",
         description = "로그인한 사용자가 지정한 친구(user ↔ friend 관계)의 닉네임을 변경합니다.")
     @PatchMapping("/{friendUserId}/nickname")
     public ResponseEntity<FriendNicknameUpdate> updateNickname(@AuthenticationPrincipal UserDetails userDetails,
@@ -69,5 +61,17 @@ public class FriendController {
         FriendNicknameUpdate result = friendService.updateNickname(userId, friendUserId, request.getNickname());
         return ResponseEntity.ok(result);
     }
+
+    // 이것도 수정
+    @Operation(summary = "5. 친구 삭제", description = "특정 친구 관계를 삭제합니다.")
+    @DeleteMapping("/{friendId}")
+    public ResponseEntity<Void> removeFriend(@AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long friendId) {
+        Long userId = Long.parseLong(userDetails.getUsername());
+        friendService.deleteFriend(userId, friendId);
+        return ResponseEntity.noContent().build();
+    }
+
+
 
 }

@@ -30,15 +30,6 @@ public class UserController {
     private final UserService userService;
     private final UserProfileAppService appService;
 
-    /*
-    1. 내 정보 조회 : 로그인된 사용자의 기본 정보(userName, email, university, major 등) 반환
-    2. 내 정보 수정 : 사용자 프로필 정보(userName, university, major, phoneNumber, selfMemo 등) 수정
-    3. 프로필 이미지 업로드/수정 : Multipart 파일로 프로필 이미지를 업로드하고 저장 경로 갱신
-
-    4. 회원 탈퇴 : 사용자 계정 삭제 및 로그인 토큰 무효화 처리
-    5. 연결된 소셜 계정 조회 : 로그인된 사용자의 소셜 로그인 연결 상태(Kakao, Google 등) 조회
-    */
-
     @Operation(summary = "1. 내 정보 조회",
             description = "로그인된 사용자의 기본 정보(userName, email, university, major 등)를 반환합니다.")
     @GetMapping("/me")

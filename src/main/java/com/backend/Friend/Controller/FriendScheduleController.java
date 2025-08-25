@@ -3,7 +3,7 @@ package com.backend.Friend.Controller;
 import com.backend.Friend.Dto.FriendScheduleRequestDto;
 import com.backend.Friend.Dto.ScheduleRequestDto;
 import com.backend.Friend.Service.FriendScheduleService;
-import com.backend.SharedFunction.Converge.ConvergedScheduleDto;
+import com.backend.shared.Converge.ConvergedScheduleDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;

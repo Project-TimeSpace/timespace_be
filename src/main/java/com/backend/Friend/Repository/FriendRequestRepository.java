@@ -9,5 +9,5 @@ public interface FriendRequestRepository extends JpaRepository<FriendRequest, Lo
 
     List<FriendRequest> findAllByReceiverId(Long userId);
 
-    boolean existsBySenderIdAndReceiverIdAndStatus(Long id, Long id1, RequestStatus requestStatus);
+    boolean existsBySenderIdAndReceiverId(Long id, Long id1);
 }

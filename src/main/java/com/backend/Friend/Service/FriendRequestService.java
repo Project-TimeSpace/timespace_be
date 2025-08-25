@@ -46,7 +46,7 @@ public class FriendRequestService {
 
         // 중복 요청 방지 (이미 보낸 요청이 PENDING 상태라면)
         boolean pendingExists = friendRequestRepository
-                .existsBySenderIdAndReceiverIdAndStatus(sender.getId(), receiver.getId(), RequestStatus.PENDING);
+                .existsBySenderIdAndReceiverId(sender.getId(), receiver.getId());
         if (pendingExists) {
             throw new IllegalArgumentException("이미 요청을 보낸 상태입니다.");
         }
@@ -54,7 +54,6 @@ public class FriendRequestService {
         FriendRequest req = FriendRequest.builder()
                 .sender(sender)
                 .receiver(receiver)
-                .status(RequestStatus.PENDING)
                 .requestedAt(LocalDateTime.now())
                 .build();
         friendRequestRepository.save(req);
@@ -74,7 +73,6 @@ public class FriendRequestService {
                         .id(r.getId())
                         .name(r.getSender().getUserName())
                         .email(r.getSender().getEmail())
-                        .status(r.getStatus())       // enum 그대로
                         .requestedAt(r.getRequestedAt())
                         .build()
                 )
@@ -90,9 +88,6 @@ public class FriendRequestService {
         // 권한 확인
         if (!req.getReceiver().getId().equals(userId)) {
             throw new AccessDeniedException("친구 요청을 수락할 권한이 없습니다.");
-        }
-        if (req.getStatus() != RequestStatus.PENDING) {
-            throw new IllegalArgumentException("이미 처리된 요청입니다.");
         }
 
         User sender   = req.getSender();
@@ -130,9 +125,6 @@ public class FriendRequestService {
         // 권한 확인
         if (!req.getReceiver().getId().equals(userId)) {
             throw new AccessDeniedException("친구 요청을 거절할 권한이 없습니다.");
-        }
-        if (req.getStatus() != RequestStatus.PENDING) {
-            throw new IllegalArgumentException("이미 처리된 요청입니다.");
         }
 
         // 거절된 요청도 삭제

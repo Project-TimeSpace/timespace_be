@@ -1,4 +1,4 @@
-package com.backend.SharedFunction.Converge;
+package com.backend.shared.Converge;
 
 import com.backend.User.Dto.UserScheduleDto;
 import com.backend.User.Entity.User;

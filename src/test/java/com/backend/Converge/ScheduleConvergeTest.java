@@ -3,8 +3,8 @@ package com.backend.Converge;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.backend.SharedFunction.Converge.ConvergedScheduleDto;
-import com.backend.SharedFunction.Converge.ScheduleConverge;
+import com.backend.shared.Converge.ConvergedScheduleDto;
+import com.backend.shared.Converge.ScheduleConverge;
 import com.backend.User.Service.UserRepeatScheduleService;
 import com.backend.User.Service.UserSingleScheduleService;
 import java.time.LocalDate;

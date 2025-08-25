@@ -2,6 +2,8 @@
 package com.backend.User.Dto;
 
 import com.backend.ConfigEnum.GlobalEnum;
+import com.backend.User.Entity.RepeatSchedule;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -40,5 +42,18 @@ public class UserRepeatScheduleDto {
 
     @Schema(description = "종료 시간 (HH:mm:ss)", example = "10:00:00")
     private LocalTime endTime;
+
+    public static UserRepeatScheduleDto from(RepeatSchedule r) {
+        return UserRepeatScheduleDto.builder()
+            .id(r.getId())
+            .title(r.getTitle())
+            .color(r.getColor() != null ? r.getColor().getCode() : 0)
+            .startDate(r.getStartDate())
+            .endDate(r.getEndDate())
+            .repeatDays(r.getRepeatDays().getValue())
+            .startTime(r.getStartTime())
+            .endTime(r.getEndTime())
+            .build();
+    }
 }
 

@@ -1,12 +1,13 @@
 package com.backend.Group.Dto;
 
-import com.backend.ConfigEnum.GlobalEnum;
-import com.backend.Group.Entity.GroupSchedule;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+
+import com.backend.Group.Entity.GroupSchedule;
+import com.backend.Group.Entity.GroupScheduleUser;
 
 @Data
 @AllArgsConstructor
@@ -38,5 +39,19 @@ public class GroupScheduleDto {
     @Schema(description = "종료 시간", example = "20:00:00")
     private LocalTime endTime;
 
+
+    public static GroupScheduleDto from(GroupScheduleUser gsu) {
+        GroupSchedule gs = gsu.getGroupSchedule();
+        return GroupScheduleDto.builder()
+            .groupId(gs.getGroup().getId())
+            .scheduleId(gs.getId())
+            .status(gsu.getStatus().name()) // 라벨 쓰려면 getLabel()
+            .title(gs.getTitle())
+            .color(gs.getColor() != null ? gs.getColor().getCode() : 0)
+            .date(gs.getDate())
+            .startTime(gs.getStartTime())
+            .endTime(gs.getEndTime())
+            .build();
+    }
 }
 

@@ -28,10 +28,6 @@ public class FriendRequest {
     @Schema(description = "수신자 정보")
     private User receiver;
 
-    @Convert(converter = RequestStatusConverter.class)
-    @Column(nullable = false, name = "status")
-    private RequestStatus status;
-
     @Column(name = "requested_at")
     @Schema(description = "요청 일시", example = "2025-06-01T12:00:00")
     private LocalDateTime requestedAt;

@@ -14,7 +14,9 @@ import com.backend.Group.Repository.GroupRepository;
 import com.backend.Group.Repository.GroupScheduleRepository;
 import com.backend.Group.Repository.GroupScheduleUserRepository;
 import com.backend.Notification.Service.NotificationService;
-import com.backend.SharedFunction.SharedFunction;
+import com.backend.response.BusinessException;
+import com.backend.response.CommonErrorCode;
+import com.backend.shared.SharedFunction;
 import com.backend.User.Repository.UserRepository;
 
 import java.time.LocalDate;
@@ -296,37 +298,17 @@ public class GroupScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public List<GroupScheduleDto> getMyGroupSchedules(Long userId, String startDateStr, String endDateStr, String statusStr) {
-        LocalDate start = LocalDate.parse(startDateStr);
-        LocalDate end   = LocalDate.parse(endDateStr);
+    public List<GroupScheduleDto> getMyGroupSchedules(Long userId, LocalDate start, LocalDate end) {
+
         if (end.isBefore(start)) {
-            throw new IllegalArgumentException("end date가 start date 보다 앞일 수 없습니다.");
+            throw new BusinessException(CommonErrorCode.INVALID_DATE_RANGE);
         }
 
-        // status 파싱 (없거나 잘못된 값이면 null → 전체 조회)
-        GlobalEnum.RequestStatus status = parseStatusNullable(statusStr);
-
-        List<GroupScheduleUser> rows = (status == null)
-            ? groupScheduleUserRepository
-            .findByUser_IdAndGroupSchedule_DateBetweenOrderByGroupSchedule_DateAscGroupSchedule_StartTimeAsc(userId, start, end)
-            : groupScheduleUserRepository
-            .findByUser_IdAndStatusAndGroupSchedule_DateBetweenOrderByGroupSchedule_DateAscGroupSchedule_StartTimeAsc(userId, status, start, end);
+        List<GroupScheduleUser> rows = groupScheduleUserRepository
+            .findByUser_IdAndGroupSchedule_DateBetweenOrderByGroupSchedule_DateAscGroupSchedule_StartTimeAsc(userId, start, end);
 
         return rows.stream()
-            .map(gsu -> {
-                GroupSchedule gs = gsu.getGroupSchedule();
-                return GroupScheduleDto.builder()
-                    .groupId(gs.getGroup().getId())
-                    .scheduleId(gs.getId())
-                    .title(gs.getTitle())
-                    .color(gs.getColor() != null ? gs.getColor().getCode() : 0)
-                    .date(gs.getDate())
-                    .startTime(gs.getStartTime())
-                    .endTime(gs.getEndTime())
-                    // 라벨을 쓰고 싶다면 gsu.getStatus().getLabel() 로 교체
-                    .status(gsu.getStatus().name())
-                    .build();
-            })
+            .map(GroupScheduleDto::from)
             .toList();
     }
 

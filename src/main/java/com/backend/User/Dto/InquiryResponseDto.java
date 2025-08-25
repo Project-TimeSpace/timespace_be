@@ -2,6 +2,8 @@ package com.backend.User.Dto;
 
 import java.time.LocalDateTime;
 
+import com.backend.shared.inquiry.Inquiry;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -31,5 +33,28 @@ public class InquiryResponseDto {
 
 	@Schema(description = "생성 일시", example = "2025-08-06T10:15:30")
 	private LocalDateTime createdAt;
+
+
+	public static InquiryResponseDto from(Inquiry inquiry) {
+		return InquiryResponseDto.builder()
+			.inquiryId(inquiry.getId())
+			.title(inquiry.getTitle())
+			.content(inquiry.getContent())
+			.status(inquiry.getStatus())
+			.createdAt(inquiry.getCreatedAt())
+			.build();
+	}
+
+	public static InquiryResponseDto from(Inquiry inquiry, String replyContent, LocalDateTime answeredAt) {
+		return InquiryResponseDto.builder()
+			.inquiryId(inquiry.getId())
+			.title(inquiry.getTitle())
+			.content(inquiry.getContent())
+			.status(inquiry.getStatus())
+			.createdAt(inquiry.getCreatedAt())
+			.replyContent(replyContent)
+			.answeredAt(answeredAt)
+			.build();
+	}
 
 }

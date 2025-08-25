@@ -12,7 +12,7 @@ import com.backend.Group.Entity.GroupMembers;
 import com.backend.Group.Repository.GroupMembersRepository;
 import com.backend.Group.Repository.GroupRepository;
 import com.backend.Notification.Service.NotificationService;
-import com.backend.SharedFunction.ProfileImageService;
+import com.backend.shared.ProfileImageService;
 import com.backend.User.Entity.User;
 import com.backend.User.Repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -228,6 +229,20 @@ public class GroupService {
         group.setUniqueCode(generateUniqueGroupCode());
 
         return group.getUniqueCode();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void handoverOrCloseOwnedGroups(Long userId) {
+        List<Long> groupIds = groupRepository.findIdsByMasterId(userId);
+
+        for (Long groupId : groupIds) {
+            Long successorId = groupMembersRepository.findAnyOtherMemberId(groupId, userId);
+            if (successorId != null) {
+                groupRepository.updateMasterId(groupId, successorId);
+            } else {
+                groupRepository.deleteById(groupId);
+            }
+        }
     }
 }
 

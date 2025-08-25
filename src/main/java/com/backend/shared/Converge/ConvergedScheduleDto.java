@@ -1,4 +1,4 @@
-package com.backend.SharedFunction.Converge;
+package com.backend.shared.Converge;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;

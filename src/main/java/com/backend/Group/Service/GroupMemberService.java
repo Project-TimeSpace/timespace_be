@@ -95,7 +95,7 @@ public class GroupMemberService {
                 .group(group)
                 .inviter(inviter)
                 .receiver(receiver)
-                .status(RequestStatus.PENDING)
+
                 .requestedAt(LocalDateTime.now())
                 .build();
         groupRequestRepository.save(request);
@@ -142,7 +142,6 @@ public class GroupMemberService {
                 .group(group)
                 .inviter(inviter)
                 .receiver(receiver)
-                .status(RequestStatus.PENDING)
                 .requestedAt(LocalDateTime.now())
                 .build();
         groupRequestRepository.save(request);

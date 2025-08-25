@@ -1,10 +1,11 @@
-package com.backend.User.Entity;
+package com.backend.shared.inquiry;
 
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
 import com.backend.Admin.Entity.Admin;
+import com.backend.User.Entity.User;
 
 @Entity
 @Table(name = "Inquiry",

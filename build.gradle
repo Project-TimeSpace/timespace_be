@@ -24,6 +24,7 @@ dependencies {
 	// 1. Spring 핵심 기능 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-web' // 웹 MVC, REST API 개발을 위한 기본 설정 (Tomcat 포함)
 	implementation 'org.springframework.boot:spring-boot-starter-validation' // @Valid 등 Bean Validation 지원
+	implementation "me.paulschwarz:spring-dotenv:4.0.0"
 
 	// 2. Spring Security 관련
 	implementation 'org.springframework.boot:spring-boot-starter-security' // 스프링 시큐리티 기본 설정 (인증/인가)

@@ -1,22 +1,20 @@
 package com.backend.Friend.Service;
 
 
-import com.backend.ConfigEnum.GlobalEnum;
 import com.backend.ConfigEnum.GlobalEnum.NotificationType;
 import com.backend.ConfigEnum.GlobalEnum.RequestStatus;
 import com.backend.ConfigEnum.GlobalEnum.ScheduleColor;
 import com.backend.ConfigEnum.GlobalEnum.Visibility;
 import com.backend.Friend.Dto.ScheduleRequestDto;
-import com.backend.SharedFunction.Converge.ConvergedScheduleDto;
-import com.backend.SharedFunction.Converge.ScheduleConverge;
+import com.backend.shared.Converge.ConvergedScheduleDto;
+import com.backend.shared.Converge.ScheduleConverge;
 import com.backend.Friend.Dto.FriendScheduleRequestDto;
-import com.backend.Friend.Dto.SimpleScheduleDto;
 import com.backend.Friend.Entity.Friend;
 import com.backend.Friend.Entity.FriendScheduleRequest;
 import com.backend.Friend.Repository.FriendRepository;
 import com.backend.Friend.Repository.FriendScheduleRequestRepository;
 import com.backend.Notification.Service.NotificationService;
-import com.backend.SharedFunction.SharedFunction;
+import com.backend.shared.SharedFunction;
 import com.backend.User.Dto.CreateSingleScheduleDto;
 import com.backend.User.Dto.UserScheduleDto;
 import com.backend.User.Entity.User;

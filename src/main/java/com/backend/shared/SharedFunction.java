@@ -1,7 +1,6 @@
-package com.backend.SharedFunction;
+package com.backend.shared;
 
 import com.backend.ConfigEnum.GlobalEnum;
-import com.backend.Group.Entity.GroupScheduleUser;
 import com.backend.Group.Repository.GroupScheduleUserRepository;
 import com.backend.User.Entity.RepeatException;
 import com.backend.User.Entity.RepeatSchedule;

@@ -1,9 +1,8 @@
-package com.backend.User.Repository;
+package com.backend.shared.inquiry;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.backend.User.Entity.Inquiry;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface InquiryRepository extends JpaRepository<Inquiry, Long> {

@@ -7,7 +7,6 @@ import com.backend.User.Dto.InquiryRequestDto;
 import com.backend.User.Dto.InquiryResponseDto;
 import com.backend.User.Dto.UserInfoDto;
 import com.backend.User.Dto.UserUpdateRequestDto;
-import com.backend.User.Service.UserProfileAppService;
 import com.backend.User.Service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,8 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 @PreAuthorize("hasRole('User')")    // = @PreAuthorize("hasAuthority('ROLE_User')")
 @Tag(name = "1.마이페이지 api")
 public class UserController {
+
     private final UserService userService;
-    private final UserProfileAppService appService;
 
     @Operation(summary = "1. 내 정보 조회",
             description = "로그인된 사용자의 기본 정보(userName, email, university, major 등)를 반환합니다.")
@@ -54,7 +53,7 @@ public class UserController {
         @RequestPart("file") MultipartFile file) throws Exception {
 
         Long userId = Long.parseLong(ud.getUsername());
-        String url = appService.updateMyProfileImage(userId, file);
+        String url = userService.updateMyProfileImage(userId, file);
         return ResponseEntity.ok(Map.of("profileImageUrl", url));
     }
 
@@ -62,7 +61,7 @@ public class UserController {
     @DeleteMapping("/image")
     public ResponseEntity<Void> deleteMyProfileImage(@AuthenticationPrincipal UserDetails ud) {
         Long userId = Long.parseLong(ud.getUsername());
-        appService.deleteMyProfileImage(userId);
+        userService.deleteMyProfileImage(userId);
         return ResponseEntity.noContent().build();
     }
 
@@ -72,7 +71,7 @@ public class UserController {
         @RequestBody InquiryRequestDto dto) {
 
         Long userId = Long.parseLong(userDetails.getUsername());
-        InquiryResponseDto response = userService.createInquiry(userId, dto);
+        userService.createInquiry(userId, dto);
         return ResponseEntity.ok("문의가 등록되었습니다.");
     }
 
@@ -83,6 +82,15 @@ public class UserController {
         Long userId = Long.parseLong(userDetails.getUsername());
         List<InquiryResponseDto> list = userService.getMyInquiries(userId);
         return ResponseEntity.ok(list);
+    }
+
+    @Operation(summary = "7. 회원 탈퇴",
+        description = "방장 그룹을 먼저 승계/정리한 뒤, 사용자를 안전하게 삭제합니다.")
+    @DeleteMapping("/out")
+    public ResponseEntity<Void> deleteMe(@AuthenticationPrincipal UserDetails ud) {
+        Long userId = Long.parseLong(ud.getUsername());
+        userService.deleteAccount(userId);
+        return ResponseEntity.noContent().build();
     }
 
 }

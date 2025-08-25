@@ -16,25 +16,13 @@ import org.springframework.data.repository.query.Param;
 
 public interface GroupMembersRepository extends JpaRepository<GroupMembers, Long> {
 
-    /*
-    @Query("""
-            SELECT new com.backend.Group.Dto.GroupSummaryDto(
-            g.id,
-            g.groupName,
-            g.groupType,
-            g.category,
-            COUNT(m.id),
-            g.maxMember
-        )
+    @Query(value = """
+        SELECT gm.user_id
         FROM GroupMembers gm
-        JOIN gm.group g
-        LEFT JOIN GroupMembers m ON m.group.id = g.id
-        WHERE gm.user.id = :userId
-        GROUP BY g.id, g.groupName, g.groupType, g.category ,g.maxMember
-    """)
-    List<GroupSummaryDto> findGroupSummariesByUserId(@Param("userId") Long userId);
-     */
-
+        WHERE gm.group_id = :groupId AND gm.user_id <> :excludingUser
+        LIMIT 1
+        """, nativeQuery = true)
+    Long findAnyOtherMemberId(@Param("groupId") Long groupId, @Param("excludingUser") Long excludingUser);
 
     int countByGroupId(Long groupId);
 

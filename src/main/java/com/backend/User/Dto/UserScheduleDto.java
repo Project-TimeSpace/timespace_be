@@ -8,6 +8,10 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+
+import com.backend.User.Entity.RepeatSchedule;
+import com.backend.User.Entity.SingleSchedule;
+
 import lombok.NoArgsConstructor;
 
 @Getter
@@ -40,4 +44,30 @@ public class UserScheduleDto {
 
     @Schema(description = "종료 시간 (HH:mm:ss)", example = "10:30:00")
     private LocalTime endTime;
+
+    public static UserScheduleDto fromSingle(SingleSchedule s) {
+        return UserScheduleDto.builder()
+            .id(s.getId())
+            .isRepeat(false)
+            .title(s.getTitle())
+            .color(s.getColor().getCode())
+            .date(s.getDate())
+            .day(s.getDay().getValue())
+            .startTime(s.getStartTime())
+            .endTime(s.getEndTime())
+            .build();
+    }
+
+    public static UserScheduleDto fromRepeat(RepeatSchedule r, LocalDate occurrenceDate) {
+        return UserScheduleDto.builder()
+            .id(r.getId())
+            .isRepeat(true)
+            .title(r.getTitle())
+            .color(r.getColor().getCode())
+            .date(occurrenceDate)
+            .day(r.getRepeatDays().getValue())
+            .startTime(r.getStartTime())
+            .endTime(r.getEndTime())
+            .build();
+    }
 }

@@ -16,14 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend.ConfigEnum.GlobalEnum;
 import com.backend.Group.Dto.GroupScheduleCreateRequest;
 import com.backend.Group.Dto.GroupScheduleDto;
 import com.backend.Group.Service.GroupMemberService;
 import com.backend.Group.Service.GroupScheduleService;
 import com.backend.Group.Service.GroupService;
-import com.backend.SharedFunction.Converge.ConvergedScheduleDto;
-import com.backend.SharedFunction.Converge.ScheduleConverge;
+import com.backend.shared.Converge.ConvergedScheduleDto;
+import com.backend.shared.Converge.ScheduleConverge;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

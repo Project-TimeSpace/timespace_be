@@ -32,41 +32,21 @@ public class UserScheduleController {
     private final UserRepeatScheduleService userRepeatScheduleService;
     private final GroupScheduleService groupScheduleService;
 
-    /*
-    1. 전체 일정 조회 : 사용자 본인의 전체 일정(단일 + 반복)을 모두 조회합니다.
-    2. 기간별 일정 조회 : 특정 날짜 범위 내의 단일 및 반복 일정을 모두 조회합니다.
-    3. 단일일정 CRUD
-    4. 반복일정 CRUD + 반복일정 예외날짜 처리
-    */
 
-    @Operation(summary = "1. user 개인의 전체 일정(모든 것) 조회->근데 이거 안쓸거 같음.",
-            description = "로그인한 사용자의 개인 전체 일정(단일 + 반복)을 모두 조회합니다.")
-    @GetMapping("/all")
-    public Object getAllSchedules(@AuthenticationPrincipal UserDetails userDetails) {
-        Long userId = Long.parseLong(userDetails.getUsername());
-        return userSingleScheduleService.getAllSchedules(userId);
-    }
-
-    @Operation(summary = "2. 기간별 일정 조회-> 개인일정(친구약속 수락한거 포함)", description = "지정된 날짜 범위 내의 단일 및 반복 일정을 조회합니다. YYYY-MM-DD 형식 사용.")
+    @Operation(summary = "1. 기간별 일정 조회-> 개인일정(친구약속 수락한거 포함)", description = "지정된 날짜 범위 내의 단일 및 반복 일정을 조회합니다. YYYY-MM-DD 형식 사용.")
     @GetMapping("/range")
     public ResponseEntity<List<UserScheduleDto>> getSchedulesByPeriod(@AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam String startDate, @RequestParam String endDate) {
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         Long userId = Long.parseLong(userDetails.getUsername());
 
         // 1) 단일, 반복 일정 조회
         List<UserScheduleDto> singles = userSingleScheduleService.getSingleSchedulesByPeriod(userId, startDate, endDate);
         List<UserScheduleDto> repeats = userRepeatScheduleService.getRepeatSchedulesByPeriod(userId, startDate, endDate);
 
-        // 2) 합치고 정렬
         List<UserScheduleDto> combined = new ArrayList<>();
         combined.addAll(singles);
         combined.addAll(repeats);
-        /*
-        combined.sort(Comparator
-                .comparing(UserScheduleDto::getDate)
-                .thenComparing(UserScheduleDto::getStartTime)
-        );
-        */
 
         return ResponseEntity.ok(combined);
     }
@@ -76,11 +56,11 @@ public class UserScheduleController {
     @GetMapping("/range/group-schedule")
     public ResponseEntity<List<GroupScheduleDto>> getMyGroupSchedulesByPeriod(
         @AuthenticationPrincipal UserDetails userDetails,
-        @RequestParam String startDate, @RequestParam String endDate,
-        @RequestParam(required = false) String status) {
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
         Long userId = Long.parseLong(userDetails.getUsername());
-        List<GroupScheduleDto> list = groupScheduleService.getMyGroupSchedules(userId, startDate, endDate, status);
+        List<GroupScheduleDto> list = groupScheduleService.getMyGroupSchedules(userId, startDate, endDate);
         return ResponseEntity.ok(list);
     }
 

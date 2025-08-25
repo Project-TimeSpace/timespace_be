@@ -3,9 +3,9 @@ package com.backend.Group.Service;
 import com.backend.ConfigEnum.GlobalEnum;
 import com.backend.Group.Entity.Group;
 import com.backend.Group.Repository.GroupRepository;
-import com.backend.SharedFunction.ProfileImageService;
+import com.backend.shared.ProfileImageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;

@@ -14,13 +14,13 @@ public interface GroupRequestRepository extends JpaRepository<GroupRequest, Long
 
     boolean existsByGroupIdAndReceiverId(Long groupId, Long id);
 
-	Optional<GroupRequest> findByGroup_IdAndReceiver_IdAndStatus(Long groupId, Long receiverId, GlobalEnum.RequestStatus status);
+	Optional<GroupRequest> findByGroup_IdAndReceiver_Id(Long groupId, Long receiverId);
 
 	List<GroupRequest> findAllByReceiver_IdOrderByRequestedAtDesc(Long receiverId);
 
 	@Transactional
 	@Modifying(clearAutomatically = true, flushAutomatically = true)
-	int deleteByGroup_IdAndReceiver_IdAndStatus(
-		Long groupId, Long receiverId, GlobalEnum.RequestStatus status);
+	int deleteByGroup_IdAndReceiver_Id(
+		Long groupId, Long receiverId);
 
 }

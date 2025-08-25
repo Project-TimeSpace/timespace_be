@@ -41,7 +41,6 @@ public class GroupRequestService {
 				.groupName(gr.getGroup().getGroupName())
 				.inviterName(gr.getInviter().getUserName())
 				.inviterEmail(gr.getInviter().getEmail())
-				.status(gr.getStatus() != null ? gr.getStatus().name() : null)
 				.requestedAt(gr.getRequestedAt())
 				.build())
 			.toList();
@@ -64,7 +63,7 @@ public class GroupRequestService {
 
 		// 3) 초대 상태 확인 (이메일/친구 초대 공통: 상태 PENDING이어야 함)
 		GroupRequest req = groupRequestRepository
-			.findByGroup_IdAndReceiver_IdAndStatus(groupId, userId, GlobalEnum.RequestStatus.PENDING)
+			.findByGroup_IdAndReceiver_Id(groupId, userId)
 			.orElseThrow(() -> new IllegalStateException("수락할 초대가 없습니다."));
 
 		// 4) 멤버 등록
@@ -93,7 +92,7 @@ public class GroupRequestService {
 	@Transactional
 	public void declineInvite(Long userId, Long groupId) {
 		int deleted = groupRequestRepository
-			.deleteByGroup_IdAndReceiver_IdAndStatus(groupId, userId, GlobalEnum.RequestStatus.PENDING);
+			.deleteByGroup_IdAndReceiver_Id(groupId, userId);
 
 		if (deleted == 0) {
 			throw new NoSuchElementException("초대가 없습니다.");

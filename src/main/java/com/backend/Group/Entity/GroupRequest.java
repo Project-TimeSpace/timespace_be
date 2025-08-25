@@ -32,11 +32,6 @@ public class GroupRequest {
     @Schema(description = "초대받은 사용자")
     private User receiver;
 
-    @Convert(converter = RequestStatusConverter.class)
-    @Column(nullable = false)
-    @Schema(description = "요청 상태 코드 (GlobalEnum.RequestStatus)", example = "1")
-    private RequestStatus status;
-
     @Column(name = "requested_at")
     @Schema(description = "요청 일시", example = "2025-06-01T16:00:00")
     private LocalDateTime requestedAt;

@@ -33,9 +33,9 @@ public class UserController {
     @Operation(summary = "1. 내 정보 조회",
             description = "로그인된 사용자의 기본 정보(userName, email, university, major 등)를 반환합니다.")
     @GetMapping("/me")
-    public UserInfoDto getMyInfo(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<UserInfoDto> getMyInfo(@AuthenticationPrincipal UserDetails userDetails) {
         Long userId = Long.parseLong(userDetails.getUsername());
-        return userService.getMyInfo(userId);
+        return ResponseEntity.ok(userService.getMyInfo(userId));
     }
 
     @Operation(summary="2. 내 정보 변경 요청", description="요청 접수만 하고, 관리자가 승인해야 반영됩니다.")

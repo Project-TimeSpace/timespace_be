@@ -4,6 +4,9 @@ import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 
+import com.backend.ConfigEnum.GlobalEnum;
+import com.backend.User.Entity.User;
+
 @Getter @Setter
 @Builder
 @AllArgsConstructor
@@ -32,4 +35,18 @@ public class UserInfoDto {
 
     @Schema(description = "생년월일", example = "1990-01-01")
     private LocalDate birthDate;
+
+    public static UserInfoDto from(User user) {
+        GlobalEnum.University univ = user.getUniversity();
+        return UserInfoDto.builder()
+            .id(user.getId())
+            .userName(user.getUserName())
+            .email(user.getEmail())
+            .univCode(univ != null ? univ.getCode() : null)
+            .univName(univ != null ? univ.getDisplayName() : null)
+            .phoneNumber(user.getPhoneNumber())
+            .birthDate(user.getBirthDate())
+            .profileImageUrl(user.getProfileImageUrl())
+            .build();
+    }
 }

@@ -12,57 +12,35 @@ import com.backend.User.Dto.UserUpdateRequestDto;
 import com.backend.User.Entity.Inquiry;
 import com.backend.User.Entity.User;
 import com.backend.User.Entity.UserUpdateRequest;
+import com.backend.User.Error.UserErrorCode;
 import com.backend.User.Repository.InquiryRepository;
 import com.backend.User.Repository.UserRepository;
 import com.backend.User.Repository.UserUpdateRequestRepository;
+import com.backend.response.BusinessException;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final InquiryRepository inquiryRepository;
     private final UserUpdateRequestRepository requestRepository;
 
-    public UserInfoDto getMyInfo(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        return UserInfoDto.builder()
-                .id(user.getId())
-                .userName(user.getUserName())
-                .email(user.getEmail())
-                .univCode(user.getUniversity().getCode())
-                .univName(user.getUniversity().getDisplayName())
-                .phoneNumber(user.getPhoneNumber())
-                .birthDate(user.getBirthDate())
-                .profileImageUrl(user.getProfileImageUrl())
-                .build();
+    public User getUserById(Long id) {
+        if (id == null)
+            throw new BusinessException(UserErrorCode.USER_ID_REQUIRED);
+        return userRepository.findById(id)
+            .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
     }
 
-    @Transactional
-    public void updateMyInfo(Long userId, UserUpdateRequestDto dto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-
-        if (dto.getUserName() != null) {
-            user.setUserName(dto.getUserName());
-        }
-        if (dto.getUnivCode() != null) {
-            user.setUniversity(University.fromCode(dto.getUnivCode()));
-        }
-        if (dto.getPhoneNumber() != null) {
-            user.setPhoneNumber(dto.getPhoneNumber());
-        }
-        if (dto.getBirthDate() != null) {
-            user.setBirthDate(dto.getBirthDate());
-        }
-
-        userRepository.save(user);
+    @Transactional(readOnly = true)
+    public UserInfoDto getMyInfo(Long id) {
+        User user = getUserById(id);
+        return UserInfoDto.from(user);
     }
 
     @Transactional

@@ -4,20 +4,14 @@ import com.backend.Admin.Dto.AdminInquiryAnswerRequestDto;
 import com.backend.Admin.Dto.AdminInquiryDetailDto;
 import com.backend.Admin.Dto.AdminInquirySummaryDto;
 import com.backend.Admin.Dto.UserUpdateRequestAdminDto;
-import com.backend.Admin.Entity.SystemNotice;
 import com.backend.Admin.Service.AdminService;
-import com.backend.Admin.Service.SystemNoticeService;
-import com.backend.ConfigEnum.GlobalEnum;
-import com.backend.User.Entity.UserUpdateRequest;
-import com.backend.User.Repository.UserUpdateRequestRepository;
+import com.backend.configenum.GlobalEnum;
+import com.backend.user.Repository.UserUpdateRequestRepository;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -98,7 +92,7 @@ public class AdminController {
     }
 
 
-    // User 개인정보 변경요청
+    // user 개인정보 변경요청
     @Operation(summary="1. 변경 요청 대기 목록 조회", description="statusCode(1=대기,2=수락,3=거절). 기본 1")
     @GetMapping("/list")
     public ResponseEntity<List<UserUpdateRequestAdminDto>> list(

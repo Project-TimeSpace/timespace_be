@@ -1,7 +1,7 @@
 package com.backend.Login.Auth;
 
-import com.backend.User.Entity.User;
-import com.backend.User.Repository.UserRepository;
+import com.backend.user.Entity.User;
+import com.backend.user.Repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

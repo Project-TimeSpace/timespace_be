@@ -2,7 +2,7 @@ package com.backend.Login;
 
 import jakarta.persistence.*;
 import lombok.*;
-import com.backend.User.Entity.User;
+import com.backend.user.Entity.User;
 
 import java.time.LocalDateTime;
 

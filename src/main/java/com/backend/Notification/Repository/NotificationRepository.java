@@ -1,6 +1,6 @@
 package com.backend.Notification.Repository;
 
-import com.backend.ConfigEnum.GlobalEnum;
+import com.backend.configenum.GlobalEnum;
 import com.backend.Notification.Entity.Notification;
 import java.util.List;
 

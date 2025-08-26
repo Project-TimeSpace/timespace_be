@@ -5,7 +5,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 import com.backend.Admin.Entity.Admin;
-import com.backend.User.Entity.User;
+import com.backend.user.Entity.User;
 
 @Entity
 @Table(name = "Inquiry",

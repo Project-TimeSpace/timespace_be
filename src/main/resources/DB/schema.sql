@@ -22,7 +22,7 @@ CREATE TABLE RefreshToken (
     user_id BIGINT NOT NULL UNIQUE,
     token VARCHAR(500) NOT NULL,
     expiry_date DATETIME NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES `User`(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES `user`(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 */
 

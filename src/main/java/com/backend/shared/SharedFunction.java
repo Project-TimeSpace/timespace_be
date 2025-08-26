@@ -1,13 +1,13 @@
 package com.backend.shared;
 
-import com.backend.ConfigEnum.GlobalEnum;
-import com.backend.Group.Repository.GroupScheduleUserRepository;
-import com.backend.User.Entity.RepeatException;
-import com.backend.User.Entity.RepeatSchedule;
-import com.backend.User.Entity.SingleSchedule;
-import com.backend.User.Repository.RepeatExceptionRepository;
-import com.backend.User.Repository.RepeatScheduleRepository;
-import com.backend.User.Repository.SingleScheduleRepository;
+import com.backend.configenum.GlobalEnum;
+import com.backend.group.Repository.GroupScheduleUserRepository;
+import com.backend.user.Entity.RepeatException;
+import com.backend.user.Entity.RepeatSchedule;
+import com.backend.user.Entity.SingleSchedule;
+import com.backend.user.Repository.RepeatExceptionRepository;
+import com.backend.user.Repository.RepeatScheduleRepository;
+import com.backend.user.Repository.SingleScheduleRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;

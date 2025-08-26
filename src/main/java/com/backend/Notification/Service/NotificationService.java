@@ -1,12 +1,12 @@
 package com.backend.Notification.Service;
 
-import com.backend.ConfigEnum.GlobalEnum;
+import com.backend.configenum.GlobalEnum;
 import com.backend.Notification.Dto.NotificationDto;
 import com.backend.Notification.Entity.Notification;
 import com.backend.Notification.Repository.NotificationRepository;
-import com.backend.ConfigEnum.GlobalEnum.NotificationType;
-import com.backend.User.Entity.User;
-import com.backend.User.Repository.UserRepository;
+import com.backend.configenum.GlobalEnum.NotificationType;
+import com.backend.user.Entity.User;
+import com.backend.user.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;

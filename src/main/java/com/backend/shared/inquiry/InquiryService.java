@@ -5,14 +5,13 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.backend.User.Dto.InquiryRequestDto;
-import com.backend.User.Dto.InquiryResponseDto;
-import com.backend.User.Error.UserErrorCode;
+import com.backend.user.Dto.InquiryRequestDto;
+import com.backend.user.Dto.InquiryResponseDto;
+import com.backend.user.Error.UserErrorCode;
 import com.backend.response.BusinessException;
-import com.backend.User.Entity.User;
+import com.backend.user.Entity.User;
 
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Service
 @AllArgsConstructor

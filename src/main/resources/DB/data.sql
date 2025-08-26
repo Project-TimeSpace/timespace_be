@@ -28,7 +28,7 @@ INSERT INTO SocialAccount (user_id, provider, provider_user_id) VALUES
     (2, 'kakao', 'kakao_2002'),
     (3, 'google','google_3003');
 
--- User 1
+-- user 1
 INSERT INTO SingleSchedule (user_id, title, color, date, day, start_time, end_time) VALUES
     (1, '데이터베이스시스템및응용',               1, '2025-08-05', 2, '09:00:00', '10:30:00'),
     (1, '이산수학',                             2, '2025-08-05', 2, '13:00:00', '14:30:00'),
@@ -42,7 +42,7 @@ INSERT INTO SingleSchedule (user_id, title, color, date, day, start_time, end_ti
     (1, '데이터베이스시스템및응용',             1, '2025-08-08', 5, '09:00:00', '10:30:00'),
     (1, '소프트웨어공학',                       7, '2025-08-08', 5, '13:00:00', '16:00:00');
 
-    -- User 2
+    -- user 2
 INSERT INTO SingleSchedule (user_id, title, color, date, day, start_time, end_time) VALUES
     (2, '시스템프로그래밍',           8, '2025-08-04', 1, '13:00:00', '15:00:00'),
     (2, '알고리즘및문제해결기법',     9, '2025-08-05', 2, '10:30:00', '12:00:00'),
@@ -54,7 +54,7 @@ INSERT INTO SingleSchedule (user_id, title, color, date, day, start_time, end_ti
     (2, '기계학습이론',             12, '2025-08-07', 4, '14:30:00', '16:00:00'),
     (2, '알고리즘및문제해결기법',     9, '2025-08-08', 5, '10:30:00', '12:00:00');
 
-    -- User 3
+    -- user 3
 INSERT INTO SingleSchedule (user_id, title, color, date, day, start_time, end_time) VALUES
     (3, '컴퓨터그래픽스',                       1, '2025-08-04', 1, '09:00:00', '10:30:00'),
     (3, '필라테스',                             2, '2025-08-05', 2, '09:00:00', '10:30:00'),
@@ -66,7 +66,7 @@ INSERT INTO SingleSchedule (user_id, title, color, date, day, start_time, end_ti
     (3, '운영체제',                             6, '2025-08-09', 6, '17:00:00', '18:30:00');
 
 
-    -- Image #4 → User 4 일정 전체 (2025-08-04~10, 기본 1.5시간, 동일 과목 동일 color)
+    -- Image #4 → user 4 일정 전체 (2025-08-04~10, 기본 1.5시간, 동일 과목 동일 color)
 INSERT INTO SingleSchedule (user_id, title, color, date, day, start_time, end_time) VALUES
     (4, '미분적분학2',                4, '2025-08-04', 1, '10:30:00', '12:00:00'),
     (4, '선형대수',                  7, '2025-08-04', 1, '13:00:00', '14:30:00'),
@@ -79,7 +79,7 @@ INSERT INTO SingleSchedule (user_id, title, color, date, day, start_time, end_ti
     (4, '미시경제원론',              6, '2025-08-08', 5, '10:00:00', '11:30:00'),
     (4, '헌법의이해',                10,'2025-08-08', 5, '13:00:00', '16:00:00');
 
-    -- Image #5 → User 5 일정 전체 (2025-08-04~10, 기본 1.5시간, 동일 과목 동일 color)
+    -- Image #5 → user 5 일정 전체 (2025-08-04~10, 기본 1.5시간, 동일 과목 동일 color)
 INSERT INTO SingleSchedule (user_id, title, color, date, day, start_time, end_time) VALUES
     (5, '일반물리학및실험1',           1, '2025-08-04', 1, '09:00:00', '10:30:00'),
     (5, '말과글',                     3, '2025-08-05', 2, '10:30:00', '12:00:00'),
@@ -93,7 +93,7 @@ INSERT INTO SingleSchedule (user_id, title, color, date, day, start_time, end_ti
     (5, '과학기술의철학적이해',        6, '2025-08-05', 2, '16:30:00', '18:00:00');
 
 
-    -- Image #6 → User 6 일정 전체 (2025-08-04~10, 기본 1.5시간, 동일 과목 동일 color)
+    -- Image #6 → user 6 일정 전체 (2025-08-04~10, 기본 1.5시간, 동일 과목 동일 color)
 INSERT INTO SingleSchedule (user_id, title, color, date, day, start_time, end_time) VALUES
     (6, '자료조직론',               3, '2025-08-04', 1, '10:00:00', '13:00:00'),
     (6, '진로탐색 및 자기계발',     7, '2025-08-04', 1, '14:00:00', '16:00:00'),
@@ -104,7 +104,7 @@ INSERT INTO SingleSchedule (user_id, title, color, date, day, start_time, end_ti
     (6, '기독교와윤리',             12,'2025-08-07', 4, '14:00:00', '15:00:00'),
     (6, '장서개발론',               5, '2025-08-08', 5, '13:00:00', '14:30:00');
 
-    -- Image #7 → User 7 일정 전체 (2025-08-04~10, 기본 1.5시간, 동일 과목 동일 color)
+    -- Image #7 → user 7 일정 전체 (2025-08-04~10, 기본 1.5시간, 동일 과목 동일 color)
 INSERT INTO SingleSchedule (user_id, title, color, date, day, start_time, end_time) VALUES
     (7, '글로벌히스토리의재조명',       3, '2025-08-04', 1, '11:00:00', '12:30:00'),
     (7, '미술실기2',                   5, '2025-08-04', 1, '14:00:00', '15:30:00'),

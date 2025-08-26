@@ -1,11 +1,11 @@
 package com.backend.Login.Social;
 
-import com.backend.ConfigSecurity.JwtTokenProvider;
+import com.backend.configsecurity.JwtTokenProvider;
 import com.backend.Login.Dto.LoginResponseDto;
 import com.backend.Login.SocialAccount;
 import com.backend.Login.SocialAccountRepository;
-import com.backend.User.Entity.User;
-import com.backend.User.Repository.UserRepository;
+import com.backend.user.Entity.User;
+import com.backend.user.Repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ public class SocialService {
         SocialAccount account = socialAccountRepository
                 .findByProviderAndProviderUserId("kakao", kakaoId)
                 .orElseGet(() -> {
-                    // 3-1) User 신규 생성
+                    // 3-1) user 신규 생성
                     User newUser = User.builder()
                             .email(info.getEmail())
                             .userName(info.getNickname())

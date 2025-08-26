@@ -1,9 +1,8 @@
 package com.backend.Notification.Entity;
 
-import com.backend.ConfigEnum.Converter.NotificationTypeConverter;
-import com.backend.ConfigEnum.GlobalEnum;
-import com.backend.ConfigEnum.GlobalEnum.NotificationType;
-import com.backend.User.Entity.User;
+import com.backend.configenum.Converter.NotificationTypeConverter;
+import com.backend.configenum.GlobalEnum.NotificationType;
+import com.backend.user.Entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -1,6 +1,6 @@
 package com.backend.Login.Auth;
 
-import com.backend.User.Entity.User;
+import com.backend.user.Entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;

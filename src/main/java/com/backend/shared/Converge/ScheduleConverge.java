@@ -1,10 +1,10 @@
 package com.backend.shared.Converge;
 
-import com.backend.User.Dto.UserScheduleDto;
-import com.backend.User.Entity.User;
-import com.backend.User.Repository.UserRepository;
-import com.backend.User.Service.UserRepeatScheduleService;
-import com.backend.User.Service.UserSingleScheduleService;
+import com.backend.user.Dto.UserScheduleDto;
+import com.backend.user.Entity.User;
+import com.backend.user.Repository.UserRepository;
+import com.backend.user.Service.UserRepeatScheduleService;
+import com.backend.user.Service.UserSingleScheduleService;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;

@@ -2,20 +2,18 @@ package com.backend.Login.Auth;
 
 import com.backend.Admin.Entity.Admin;
 import com.backend.Admin.Repository.AdminRepository;
-import com.backend.ConfigEnum.GlobalEnum.University;
-import com.backend.ConfigSecurity.JwtTokenProvider;
-import com.backend.ConfigSecurity.RefreshToken.RefreshToken;
-import com.backend.ConfigSecurity.RefreshToken.RefreshTokenService;
+import com.backend.configenum.GlobalEnum.University;
+import com.backend.configsecurity.JwtTokenProvider;
+import com.backend.configsecurity.RefreshToken.RefreshTokenService;
 import com.backend.Login.Dto.LoginResponseDto;
 import com.backend.Login.Dto.RegisterRequestDto;
 import com.backend.Login.Dto.TokenResponseDto;
-import com.backend.User.Entity.User;
-import com.backend.User.Repository.UserRepository;
+import com.backend.user.Entity.User;
+import com.backend.user.Repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -70,7 +68,7 @@ public class AuthService {
             return new LoginResponseDto(token, "null","admin");
         }
 
-        // 2. User 조회
+        // 2. user 조회
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 사용자입니다: " + email));
 

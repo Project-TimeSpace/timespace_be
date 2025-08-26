@@ -5,8 +5,8 @@ import static org.mockito.Mockito.*;
 
 import com.backend.shared.Converge.ConvergedScheduleDto;
 import com.backend.shared.Converge.ScheduleConverge;
-import com.backend.User.Service.UserRepeatScheduleService;
-import com.backend.User.Service.UserSingleScheduleService;
+import com.backend.user.Service.UserRepeatScheduleService;
+import com.backend.user.Service.UserSingleScheduleService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.backend.User.Dto.UserScheduleDto;
-import com.backend.User.Entity.User;
-import com.backend.User.Repository.UserRepository;
+import com.backend.user.Dto.UserScheduleDto;
+import com.backend.user.Entity.User;
+import com.backend.user.Repository.UserRepository;
 
 import java.util.Random;
 import org.junit.jupiter.api.Test;
@@ -150,7 +150,7 @@ class ScheduleConvergeTest {
             when(userRepository.findById(userId)).thenReturn(Optional.of(
                     User.builder()
                             .id(userId)
-                            .userName("User" + userId)
+                            .userName("user" + userId)
                             .email("user" + userId + "@x.com")
                             .password("pass")
                             .university("Univ")
@@ -215,7 +215,7 @@ class ScheduleConvergeTest {
             when(userRepository.findById(userId)).thenReturn(Optional.of(
                     User.builder()
                             .id(userId)
-                            .userName("User" + userId)
+                            .userName("user" + userId)
                             .email("user" + userId + "@x.com")
                             .password("pass")
                             .university("Univ")
@@ -267,7 +267,7 @@ class ScheduleConvergeTest {
 
         // (옵션) 생성된 더미 일정 로그
         schedulesByUser.forEach((uid, list) -> {
-            System.out.println("=== User " + uid + " Schedules ===");
+            System.out.println("=== user " + uid + " Schedules ===");
             list.forEach(s -> System.out.println(
                     s.getDate() + " " + s.getStartTime() + "~" + s.getEndTime()));
         });

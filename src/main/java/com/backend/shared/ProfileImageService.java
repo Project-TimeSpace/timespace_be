@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import com.backend.ConfigEnum.GlobalEnum;
+import com.backend.configenum.GlobalEnum;
 
 @Service
 @RequiredArgsConstructor
